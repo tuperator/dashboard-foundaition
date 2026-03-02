@@ -1,7 +1,3 @@
-import { ComponentExample } from "@/components/component-example";
+import { App } from "@/app/App"
 
-export function App() {
-return <ComponentExample />;
-}
-
-export default App;
+export default App
