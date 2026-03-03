@@ -39,7 +39,9 @@ export function SidebarActionMenu({ actions = [] }: SidebarActionMenuProps) {
           <div key={action.label}>
             {index > 0 && action.destructive ? <DropdownMenuSeparator /> : null}
             <DropdownMenuItem
-              className={cn(action.destructive && "text-red-600 focus:text-red-600")}
+              className={cn(
+                action.destructive && "text-red-600 focus:text-red-600",
+              )}
             >
               {action.label}
             </DropdownMenuItem>

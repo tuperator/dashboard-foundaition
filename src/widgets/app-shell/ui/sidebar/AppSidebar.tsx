@@ -119,7 +119,7 @@ function CollapsedSidebarContent({
               <TooltipContent
                 side="right"
                 sideOffset={8}
-                className="[--tooltip-bg:#111827] [--tooltip-fg:#ffffff] rounded-xl px-3 py-1.5 text-xs font-medium"
+                className="rounded-xl px-3 py-1.5 text-xs font-medium [--tooltip-bg:#111827] [--tooltip-fg:#ffffff]"
               >
                 {item.label}
               </TooltipContent>

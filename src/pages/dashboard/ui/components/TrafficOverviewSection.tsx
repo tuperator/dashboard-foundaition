@@ -7,7 +7,10 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { yearlyTraffic, websiteTraffic } from "@/pages/dashboard/ui/config/dashboardData";
+import {
+  yearlyTraffic,
+  websiteTraffic,
+} from "@/pages/dashboard/ui/config/dashboardData";
 import {
   axisTick,
   chartGridStroke,

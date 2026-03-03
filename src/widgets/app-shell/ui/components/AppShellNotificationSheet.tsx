@@ -24,7 +24,12 @@ type AppShellNotificationSheetProps = {
   contacts: string[];
 };
 
-const notificationIcons = [NotificationIcon, UserIcon, NotificationIcon, MailIcon];
+const notificationIcons = [
+  NotificationIcon,
+  UserIcon,
+  NotificationIcon,
+  MailIcon,
+];
 const activityAvatarTone = [
   "from-[#f4a7b9] to-[#7b9cfb]",
   "from-[#f6c66a] to-[#f58a6d]",
@@ -64,16 +69,16 @@ export function AppShellNotificationSheet({
       >
         <HugeiconsIcon icon={NotificationIcon} className="size-4" />
         {notifications.length > 0 ? (
-          <span className="bg-[var(--dash-dot-secondary)] absolute top-1 right-1 size-1.5 rounded-full" />
+          <span className="absolute top-1 right-1 size-1.5 rounded-full bg-[var(--dash-dot-secondary)]" />
         ) : null}
       </button>
 
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent
           side="right"
-          className="w-[320px] max-w-[88vw] rounded-l-[28px] border-l border-border bg-card p-0 [zoom:var(--app-scale)] sm:max-w-[320px]"
+          className="border-border bg-card w-[320px] max-w-[88vw] rounded-l-[28px] border-l p-0 [zoom:var(--app-scale)] sm:max-w-[320px]"
         >
-          <div className="h-full overflow-y-auto px-5 pb-5 pt-6">
+          <div className="h-full overflow-y-auto px-5 pt-6 pb-5">
             <SheetTitle className="mb-4 text-lg font-medium tracking-[-0.01em]">
               Notifications
             </SheetTitle>
@@ -84,7 +89,7 @@ export function AppShellNotificationSheet({
             <div className="space-y-3">
               {notificationData.map((item) => (
                 <div key={item.title + item.time} className="flex gap-3">
-                  <div className="bg-muted mt-0.5 grid size-8 shrink-0 place-content-center rounded-xl text-foreground/80">
+                  <div className="bg-muted text-foreground/80 mt-0.5 grid size-8 shrink-0 place-content-center rounded-xl">
                     <HugeiconsIcon icon={item.icon} className="size-3.5" />
                   </div>
                   <div className="min-w-0">
@@ -100,10 +105,15 @@ export function AppShellNotificationSheet({
             </div>
 
             <section className="mt-7">
-              <h3 className="text-foreground mb-3 text-xl leading-7">Activities</h3>
+              <h3 className="text-foreground mb-3 text-xl leading-7">
+                Activities
+              </h3>
               <div className="space-y-3">
                 {activities.map((item, index) => (
-                  <div key={item.title + item.time} className="relative flex gap-3">
+                  <div
+                    key={item.title + item.time}
+                    className="relative flex gap-3"
+                  >
                     <div
                       className={cn(
                         "relative z-10 grid size-8 shrink-0 place-content-center rounded-full bg-gradient-to-br text-[11px] font-semibold text-white",
@@ -129,14 +139,18 @@ export function AppShellNotificationSheet({
             </section>
 
             <section className="mt-7">
-              <h3 className="text-foreground mb-3 text-xl leading-7">Contacts</h3>
+              <h3 className="text-foreground mb-3 text-xl leading-7">
+                Contacts
+              </h3>
               <div className="space-y-3">
                 {contacts.map((name, index) => (
                   <div key={name} className="flex items-center gap-3">
                     <div
                       className={cn(
                         "grid size-8 shrink-0 place-content-center rounded-full bg-gradient-to-br text-[11px] font-semibold text-white",
-                        activityAvatarTone[(index + 2) % activityAvatarTone.length],
+                        activityAvatarTone[
+                          (index + 2) % activityAvatarTone.length
+                        ],
                       )}
                     >
                       {name
