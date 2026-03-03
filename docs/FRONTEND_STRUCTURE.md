@@ -82,6 +82,7 @@ Dòng phụ thuộc đi từ trên xuống:
 `app -> pages -> widgets -> features -> entities -> shared`
 
 Quy tắc:
+
 - Không import ngược layer (ví dụ `shared` không import `features`).
 - `features` không gọi trực tiếp `features` khác.
 - `pages` nên lắp ghép từ `widgets/features/entities`, không chứa logic quá sâu.
@@ -103,6 +104,7 @@ src/features/approve-payment/
 ```
 
 Quy tắc:
+
 - `ui/`: component hiển thị
 - `model/`: state, hooks, business logic nội bộ feature
 - `api/`: gọi API, mapping DTO
@@ -117,8 +119,8 @@ Quy tắc:
 Ví dụ tốt:
 
 ```ts
-import { AppShell } from "@/widgets/app-shell"
-import { DashboardPage } from "@/pages/dashboard"
+import { AppShell } from "@/widgets/app-shell";
+import { DashboardPage } from "@/pages/dashboard";
 ```
 
 ## 6. Chuẩn maintain dài hạn cho ERP

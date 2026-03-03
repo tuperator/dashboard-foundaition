@@ -1,9 +1,9 @@
-import * as React from "react"
+import * as React from "react";
 
 import {
   Example,
   ExampleWrapper,
-} from "@/widgets/component-showcase/ui/Example"
+} from "@/widgets/component-showcase/ui/Example";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,9 +15,9 @@ import {
   AlertDialogMedia,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/shared/ui/alert-dialog"
-import { Badge } from "@/shared/ui/badge"
-import { Button } from "@/shared/ui/button"
+} from "@/shared/ui/alert-dialog";
+import { Badge } from "@/shared/ui/badge";
+import { Button } from "@/shared/ui/button";
 import {
   Card,
   CardAction,
@@ -26,7 +26,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/shared/ui/card"
+} from "@/shared/ui/card";
 import {
   Combobox,
   ComboboxContent,
@@ -34,7 +34,7 @@ import {
   ComboboxInput,
   ComboboxItem,
   ComboboxList,
-} from "@/shared/ui/combobox"
+} from "@/shared/ui/combobox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -51,9 +51,9 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/shared/ui/dropdown-menu"
-import { Field, FieldGroup, FieldLabel } from "@/shared/ui/field"
-import { Input } from "@/shared/ui/input"
+} from "@/shared/ui/dropdown-menu";
+import { Field, FieldGroup, FieldLabel } from "@/shared/ui/field";
+import { Input } from "@/shared/ui/input";
 import {
   Select,
   SelectContent,
@@ -61,10 +61,39 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/shared/ui/select"
-import { Textarea } from "@/shared/ui/textarea"
-import { HugeiconsIcon } from "@hugeicons/react"
-import { PlusSignIcon, BluetoothIcon, MoreVerticalCircle01Icon, FileIcon, FolderIcon, FolderOpenIcon, CodeIcon, MoreHorizontalCircle01Icon, SearchIcon, FloppyDiskIcon, DownloadIcon, EyeIcon, LayoutIcon, PaintBoardIcon, SunIcon, MoonIcon, ComputerIcon, UserIcon, CreditCardIcon, SettingsIcon, KeyboardIcon, LanguageCircleIcon, NotificationIcon, MailIcon, ShieldIcon, HelpCircleIcon, File01Icon, LogoutIcon } from "@hugeicons/core-free-icons"
+} from "@/shared/ui/select";
+import { Textarea } from "@/shared/ui/textarea";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  PlusSignIcon,
+  BluetoothIcon,
+  MoreVerticalCircle01Icon,
+  FileIcon,
+  FolderIcon,
+  FolderOpenIcon,
+  CodeIcon,
+  MoreHorizontalCircle01Icon,
+  SearchIcon,
+  FloppyDiskIcon,
+  DownloadIcon,
+  EyeIcon,
+  LayoutIcon,
+  PaintBoardIcon,
+  SunIcon,
+  MoonIcon,
+  ComputerIcon,
+  UserIcon,
+  CreditCardIcon,
+  SettingsIcon,
+  KeyboardIcon,
+  LanguageCircleIcon,
+  NotificationIcon,
+  MailIcon,
+  ShieldIcon,
+  HelpCircleIcon,
+  File01Icon,
+  LogoutIcon,
+} from "@hugeicons/core-free-icons";
 
 export function ComponentExample() {
   return (
@@ -72,14 +101,14 @@ export function ComponentExample() {
       <CardExample />
       <FormExample />
     </ExampleWrapper>
-  )
+  );
 }
 
 function CardExample() {
   return (
     <Example title="Card" className="items-center justify-center">
       <Card className="relative w-full max-w-sm overflow-hidden pt-0">
-        <div className="absolute inset-0 z-30 aspect-video bg-primary opacity-50 mix-blend-color" />
+        <div className="bg-primary absolute inset-0 z-30 aspect-video opacity-50 mix-blend-color" />
         <img
           src="https://images.unsplash.com/photo-1604076850742-4c7221f3101b?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           alt="Photo by mymind on Unsplash"
@@ -98,7 +127,11 @@ function CardExample() {
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button>
-                <HugeiconsIcon icon={PlusSignIcon} strokeWidth={2} data-icon="inline-start" />
+                <HugeiconsIcon
+                  icon={PlusSignIcon}
+                  strokeWidth={2}
+                  data-icon="inline-start"
+                />
                 Show Dialog
               </Button>
             </AlertDialogTrigger>
@@ -125,7 +158,7 @@ function CardExample() {
         </CardFooter>
       </Card>
     </Example>
-  )
+  );
 }
 
 const frameworks = [
@@ -134,15 +167,15 @@ const frameworks = [
   "Nuxt.js",
   "Remix",
   "Astro",
-] as const
+] as const;
 
 function FormExample() {
   const [notifications, setNotifications] = React.useState({
     email: true,
     sms: false,
     push: true,
-  })
-  const [theme, setTheme] = React.useState("light")
+  });
+  const [theme, setTheme] = React.useState("light");
 
   return (
     <Example title="Form">
@@ -154,7 +187,10 @@ function FormExample() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
-                  <HugeiconsIcon icon={MoreVerticalCircle01Icon} strokeWidth={2} />
+                  <HugeiconsIcon
+                    icon={MoreVerticalCircle01Icon}
+                    strokeWidth={2}
+                  />
                   <span className="sr-only">More options</span>
                 </Button>
               </DropdownMenuTrigger>
@@ -190,17 +226,26 @@ function FormExample() {
                           </DropdownMenuItem>
                           <DropdownMenuSub>
                             <DropdownMenuSubTrigger>
-                              <HugeiconsIcon icon={MoreHorizontalCircle01Icon} strokeWidth={2} />
+                              <HugeiconsIcon
+                                icon={MoreHorizontalCircle01Icon}
+                                strokeWidth={2}
+                              />
                               More Projects
                             </DropdownMenuSubTrigger>
                             <DropdownMenuPortal>
                               <DropdownMenuSubContent>
                                 <DropdownMenuItem>
-                                  <HugeiconsIcon icon={CodeIcon} strokeWidth={2} />
+                                  <HugeiconsIcon
+                                    icon={CodeIcon}
+                                    strokeWidth={2}
+                                  />
                                   Project Gamma
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>
-                                  <HugeiconsIcon icon={CodeIcon} strokeWidth={2} />
+                                  <HugeiconsIcon
+                                    icon={CodeIcon}
+                                    strokeWidth={2}
+                                  />
                                   Project Delta
                                 </DropdownMenuItem>
                               </DropdownMenuSubContent>
@@ -278,7 +323,10 @@ function FormExample() {
                               Dark
                             </DropdownMenuRadioItem>
                             <DropdownMenuRadioItem value="system">
-                              <HugeiconsIcon icon={ComputerIcon} strokeWidth={2} />
+                              <HugeiconsIcon
+                                icon={ComputerIcon}
+                                strokeWidth={2}
+                              />
                               System
                             </DropdownMenuRadioItem>
                           </DropdownMenuRadioGroup>
@@ -309,16 +357,25 @@ function FormExample() {
                         <DropdownMenuGroup>
                           <DropdownMenuLabel>Preferences</DropdownMenuLabel>
                           <DropdownMenuItem>
-                            <HugeiconsIcon icon={KeyboardIcon} strokeWidth={2} />
+                            <HugeiconsIcon
+                              icon={KeyboardIcon}
+                              strokeWidth={2}
+                            />
                             Keyboard Shortcuts
                           </DropdownMenuItem>
                           <DropdownMenuItem>
-                            <HugeiconsIcon icon={LanguageCircleIcon} strokeWidth={2} />
+                            <HugeiconsIcon
+                              icon={LanguageCircleIcon}
+                              strokeWidth={2}
+                            />
                             Language
                           </DropdownMenuItem>
                           <DropdownMenuSub>
                             <DropdownMenuSubTrigger>
-                              <HugeiconsIcon icon={NotificationIcon} strokeWidth={2} />
+                              <HugeiconsIcon
+                                icon={NotificationIcon}
+                                strokeWidth={2}
+                              />
                               Notifications
                             </DropdownMenuSubTrigger>
                             <DropdownMenuPortal>
@@ -336,7 +393,10 @@ function FormExample() {
                                       })
                                     }
                                   >
-                                    <HugeiconsIcon icon={NotificationIcon} strokeWidth={2} />
+                                    <HugeiconsIcon
+                                      icon={NotificationIcon}
+                                      strokeWidth={2}
+                                    />
                                     Push Notifications
                                   </DropdownMenuCheckboxItem>
                                   <DropdownMenuCheckboxItem
@@ -348,7 +408,10 @@ function FormExample() {
                                       })
                                     }
                                   >
-                                    <HugeiconsIcon icon={MailIcon} strokeWidth={2} />
+                                    <HugeiconsIcon
+                                      icon={MailIcon}
+                                      strokeWidth={2}
+                                    />
                                     Email Notifications
                                   </DropdownMenuCheckboxItem>
                                 </DropdownMenuGroup>
@@ -459,5 +522,5 @@ function FormExample() {
         </CardContent>
       </Card>
     </Example>
-  )
+  );
 }

@@ -1,7 +1,7 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import { DashboardPage } from "@/pages/dashboard"
-import { NotFoundPage } from "@/pages/not-found"
-import { appRoutes } from "@/shared/constants/routes"
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { DashboardPage } from "@/pages/dashboard";
+import { NotFoundPage } from "@/pages/not-found";
+import { appRoutes } from "@/shared/constants/routes";
 
 const router = createBrowserRouter([
   {
@@ -12,8 +12,8 @@ const router = createBrowserRouter([
     path: "*",
     element: <NotFoundPage />,
   },
-])
+]);
 
 export function AppRouter() {
-  return <RouterProvider router={router} />
+  return <RouterProvider router={router} />;
 }
