@@ -2,7 +2,7 @@
 
 springbootDockerGitOps(
     serviceName: 'beta-dashboard-foundation',
-        configRepoUrl: 'https://github.com/tuperator/dashboard-foundaition.git',
+    configRepoUrl: 'https://github.com/toanhhg123/jenkins.git',
     configRepoBranch: 'main',
     configRepoCredentialsId: 'github-toanhhg123'
 )
