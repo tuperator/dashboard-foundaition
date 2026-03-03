@@ -10,14 +10,14 @@ import {
 import {
   yearlyTraffic,
   websiteTraffic,
-} from "@/pages/dashboard/ui/config/dashboardData";
+} from "../config/dashboardData";
 import {
   axisTick,
   chartGridStroke,
   panelClassName,
   tooltipContentStyle,
   tooltipLabelStyle,
-} from "@/pages/dashboard/ui/config/dashboardTheme";
+} from "../config/dashboardTheme";
 
 export function TrafficOverviewSection() {
   return (

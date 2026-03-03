@@ -7,7 +7,7 @@ import {
   sidebarProfileName,
   sidebarSections,
   sidebarTabs,
-} from "./sidebar.data";
+} from "../../model/sidebarMenuData";
 import {
   SidebarBrand,
   SidebarFavorites,

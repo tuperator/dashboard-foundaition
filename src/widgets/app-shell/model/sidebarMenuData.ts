@@ -9,7 +9,11 @@ import {
   NotificationIcon,
   UserIcon,
 } from "@hugeicons/core-free-icons";
-import type { SidebarAction, SidebarSection, SidebarSimpleItem } from "./types";
+import type {
+  SidebarAction,
+  SidebarSection,
+  SidebarSimpleItem,
+} from "../ui/sidebar/types";
 
 export const sidebarProfileName = "ByeWind";
 

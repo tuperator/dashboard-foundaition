@@ -13,7 +13,7 @@ import {
 import {
   deviceTraffic,
   locationTraffic,
-} from "@/pages/dashboard/ui/config/dashboardData";
+} from "../config/dashboardData";
 import {
   axisTick,
   axisTickSmall,
@@ -21,7 +21,7 @@ import {
   panelClassName,
   tooltipContentStyle,
   tooltipLabelStyle,
-} from "@/pages/dashboard/ui/config/dashboardTheme";
+} from "../config/dashboardTheme";
 
 export function TrafficDetailSection() {
   return (

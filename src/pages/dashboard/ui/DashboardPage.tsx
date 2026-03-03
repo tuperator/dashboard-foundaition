@@ -1,5 +1,5 @@
 import { AppShell } from "@/widgets/app-shell";
-import { useDashboardKpis } from "@/pages/dashboard/model/useDashboardKpis";
+import { useDashboardKpis } from "../model/useDashboardKpis";
 import {
   DashboardHeader,
   KpiSection,

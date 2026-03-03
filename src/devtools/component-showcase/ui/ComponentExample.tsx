@@ -3,7 +3,7 @@ import * as React from "react";
 import {
   Example,
   ExampleWrapper,
-} from "@/widgets/component-showcase/ui/Example";
+} from "@/devtools/component-showcase/ui/Example";
 import {
   AlertDialog,
   AlertDialogAction,

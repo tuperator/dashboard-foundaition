@@ -1,5 +1,5 @@
-import type { DashboardKpi } from "@/pages/dashboard/model/useDashboardKpis";
-import { kpiBackgrounds } from "@/pages/dashboard/ui/config/dashboardData";
+import type { DashboardKpi } from "../../model/useDashboardKpis";
+import { kpiBackgrounds } from "../config/dashboardData";
 import { KpiCard } from "./KpiCard";
 
 type KpiSectionProps = {

@@ -1,14 +1,14 @@
 import { useMemo, useState } from "react";
 import type { CSSProperties, PropsWithChildren } from "react";
-import { AppSidebar } from "./sidebar/AppSidebar";
-import { AppSidebarMobileSheet } from "./sidebar/AppSidebarMobileSheet";
-import { useTheme } from "@/shared/providers/theme/ThemeProvider";
 import {
-  AppShellHeader,
   appShellActivities,
   appShellContacts,
   appShellNotifications,
-} from "./components";
+} from "../model/appShellFeedData";
+import { AppSidebar } from "./sidebar/AppSidebar";
+import { AppSidebarMobileSheet } from "./sidebar/AppSidebarMobileSheet";
+import { useTheme } from "@/shared/providers/theme/ThemeProvider";
+import { AppShellHeader } from "./components";
 
 export function AppShell({ children }: PropsWithChildren) {
   const { theme, toggleTheme } = useTheme();
