@@ -1,4 +1,5 @@
 import type { ComponentProps, ReactNode } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   LayoutIcon,
@@ -8,6 +9,8 @@ import {
   SunIcon,
   UserIcon,
 } from "@hugeicons/core-free-icons";
+import { appRoutes } from "@/shared/constants/routes";
+import { cn } from "@/shared/lib/utils";
 import { AppShellNotificationSheet } from "./AppShellNotificationSheet";
 
 type FeedItem = {
@@ -34,6 +37,11 @@ export function AppShellHeader({
   activities,
   contacts,
 }: AppShellHeaderProps) {
+  const location = useLocation();
+  const isSettingsPage = location.pathname.startsWith(appRoutes.settings);
+  const breadcrumbRoot = isSettingsPage ? "System" : "Dashboards";
+  const breadcrumbPage = isSettingsPage ? "Settings" : "Default";
+
   return (
     <header className="border-border/90 bg-card shrink-0 border-b px-3 py-2.5 shadow-[0_1px_0_rgba(16,24,40,0.03)] md:px-5 md:py-3">
       <div className="flex items-center justify-between gap-3">
@@ -42,13 +50,13 @@ export function AppShellHeader({
 
           <div className="text-foreground/70 hidden items-center gap-2 text-[13px] md:flex">
             <HugeiconsIcon icon={LayoutIcon} className="size-3.5" />
-            <span>Dashboards</span>
+            <span>{breadcrumbRoot}</span>
             <span>/</span>
-            <span className="text-foreground">Default</span>
+            <span className="text-foreground">{breadcrumbPage}</span>
           </div>
 
           <span className="text-foreground/80 truncate text-sm font-medium md:hidden">
-            Default
+            {breadcrumbPage}
           </span>
         </div>
 
@@ -70,24 +78,54 @@ export function AppShellHeader({
               className="size-4"
             />
           </button>
-          <HeaderIcon icon={SettingsIcon} />
+          <HeaderIcon
+            icon={SettingsIcon}
+            to={appRoutes.settings}
+            ariaLabel="Open settings page"
+          />
           <AppShellNotificationSheet
             notifications={notifications}
             activities={activities}
             contacts={contacts}
           />
-          <HeaderIcon icon={UserIcon} />
+          <HeaderIcon icon={UserIcon} ariaLabel="Open user account" />
         </div>
       </div>
     </header>
   );
 }
 
-function HeaderIcon({ icon }: { icon: IconType }) {
+function HeaderIcon({
+  icon,
+  to,
+  ariaLabel,
+}: {
+  icon: IconType;
+  to?: string;
+  ariaLabel: string;
+}) {
+  const baseClassName =
+    "text-foreground/65 hover:bg-muted hover:text-foreground grid h-7 w-7 place-content-center rounded-md transition";
+
+  if (to) {
+    return (
+      <NavLink
+        to={to}
+        aria-label={ariaLabel}
+        className={({ isActive }) =>
+          cn(baseClassName, isActive && "bg-muted text-foreground")
+        }
+      >
+        <HugeiconsIcon icon={icon} className="size-4" />
+      </NavLink>
+    );
+  }
+
   return (
     <button
       type="button"
-      className="text-foreground/65 hover:bg-muted hover:text-foreground grid h-7 w-7 place-content-center rounded-md transition"
+      aria-label={ariaLabel}
+      className={baseClassName}
     >
       <HugeiconsIcon icon={icon} className="size-4" />
     </button>
