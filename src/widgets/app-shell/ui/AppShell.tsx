@@ -26,7 +26,7 @@ export function AppShell({ children }: PropsWithChildren) {
     <div className="bg-background text-foreground h-screen overflow-hidden transition-colors">
       <div className="app-scale-frame">
         <div
-          className="mx-auto grid h-full grid-cols-1 lg:grid-cols-[var(--sb-layout-width)_minmax(0,1fr)]"
+          className="mx-auto grid h-full grid-cols-1 motion-safe:transition-[grid-template-columns] motion-safe:duration-300 motion-safe:ease-in-out lg:grid-cols-[var(--sb-layout-width)_minmax(0,1fr)]"
           style={layoutStyle}
         >
           <AppSidebar

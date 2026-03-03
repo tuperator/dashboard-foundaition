@@ -45,21 +45,23 @@ export function AppSidebar({ collapsed, onToggleCollapsed }: AppSidebarProps) {
   );
 
   return (
-    <aside className="figma-14-regular hidden h-full w-[var(--sb-layout-width)] shrink-0 overflow-hidden border-r border-[color:var(--sb-border)] bg-[var(--sb-bg)] lg:sticky lg:top-0 lg:block">
+    <aside className="figma-14-regular hidden h-full w-[var(--sb-layout-width)] shrink-0 overflow-hidden border-r border-[color:var(--sb-border)] bg-[var(--sb-bg)] motion-safe:transition-[width] motion-safe:duration-300 motion-safe:ease-in-out lg:sticky lg:top-0 lg:block">
       <div className="flex h-full min-h-0 flex-col">
         <div
           className={cn(
-            "min-h-0 flex-1 overflow-y-auto",
+            "min-h-0 flex-1 overflow-y-auto motion-safe:transition-[padding] motion-safe:duration-300 motion-safe:ease-in-out",
             collapsed ? "px-1.5 py-2.5" : "px-3 py-4",
           )}
         >
           {collapsed ? (
-            <CollapsedSidebarContent
-              items={collapsedItems}
-              onToggleCollapsed={onToggleCollapsed}
-            />
+            <div className="motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-95 motion-safe:duration-200">
+              <CollapsedSidebarContent
+                items={collapsedItems}
+                onToggleCollapsed={onToggleCollapsed}
+              />
+            </div>
           ) : (
-            <>
+            <div className="motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-95 motion-safe:duration-200">
               <div className="mb-4 flex items-center justify-between gap-2">
                 <SidebarBrand profileName={sidebarProfileName} />
                 <ToggleButton
@@ -70,7 +72,7 @@ export function AppSidebar({ collapsed, onToggleCollapsed }: AppSidebarProps) {
               <SidebarTabs tabs={sidebarTabs} />
               <SidebarFavorites items={sidebarFavorites} />
               <SidebarSections sections={sidebarSections} />
-            </>
+            </div>
           )}
         </div>
 
@@ -146,7 +148,7 @@ function ToggleButton({
       <HugeiconsIcon
         icon={collapsed ? ArrowRight01Icon : ArrowLeft01Icon}
         strokeWidth={2}
-        className="size-3.5"
+        className="size-3.5 motion-safe:transition-transform motion-safe:duration-200"
       />
     </button>
   );
