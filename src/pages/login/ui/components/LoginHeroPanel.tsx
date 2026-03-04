@@ -1,27 +1,27 @@
 export function LoginHeroPanel() {
   return (
-    <aside className="m-2 hidden rounded-[24px] border border-border/30 bg-[linear-gradient(145deg,var(--primary)_0%,var(--chart-2)_100%)] p-8 text-primary-foreground lg:flex lg:flex-col">
-      <div>
-        <h2 className="text-[50px] leading-[0.9] font-semibold tracking-[-0.03em] opacity-35">
+    <aside className="m-2 hidden rounded-[20px] border border-white/25 bg-[linear-gradient(148deg,#070b19_0%,#1a2552_44%,#36457f_100%)] p-6 text-primary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_20px_46px_rgba(8,12,28,0.46)] lg:flex lg:flex-col">
+      <div className="space-y-2">
+        <h2 className="text-[42px] leading-[0.9] font-semibold tracking-[-0.03em] opacity-35">
           +
         </h2>
-        <h3 className="mt-3 max-w-[440px] text-[44px] leading-tight font-semibold tracking-[-0.03em]">
+        <h3 className="max-w-[420px] text-[34px] leading-tight font-semibold tracking-[-0.03em]">
           Effortlessly manage your team and operations.
         </h3>
-        <p className="mt-3 max-w-[420px] text-sm opacity-90">
+        <p className="max-w-[400px] text-[13px] opacity-90">
           Log in to access your CRM dashboard and manage your team.
         </p>
       </div>
 
-      <div className="mt-8 rounded-2xl border border-white/25 bg-white/92 p-3 text-black shadow-[0_12px_30px_rgba(0,0,0,0.15)]">
+      <div className="mt-6 overflow-hidden rounded-2xl border border-white/30 bg-white/95 p-4 text-black shadow-[0_16px_36px_rgba(6,8,20,0.32)]">
         <img
           src="/login-dashboard-preview.png"
           alt="Dashboard preview on desktop and mobile"
-          className="h-auto w-full rounded-xl"
+          className="h-auto w-full rounded-xl border border-black/15"
         />
       </div>
 
-      <div className="mt-auto rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm">
+      <div className="mt-5 rounded-2xl border border-white/25 bg-black/10 px-4 py-3 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
         SSO options are planned in the next release.
       </div>
     </aside>

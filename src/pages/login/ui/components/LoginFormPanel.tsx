@@ -21,34 +21,34 @@ export function LoginFormPanel({ form }: LoginFormPanelProps) {
   } = form;
 
   return (
-    <section className="flex min-h-[640px] flex-col p-6 md:p-10">
-      <div className="mb-6 flex items-center gap-2">
+    <section className="flex min-h-[580px] flex-col p-5 md:p-8">
+      <div className="mb-5 flex items-center gap-2">
         <span className="bg-primary text-primary-foreground inline-flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-semibold">
           T
         </span>
-        <span className="text-foreground text-xl font-semibold tracking-[-0.01em]">
+        <span className="text-foreground text-lg font-semibold tracking-[-0.01em] md:text-xl">
           Tuperator
         </span>
       </div>
 
-      <div className="mx-auto flex w-full max-w-[380px] flex-1 flex-col justify-center">
-        <div className="mb-7 text-center">
-          <h1 className="text-foreground text-[42px] leading-tight font-semibold tracking-[-0.03em]">
+      <div className="mx-auto flex w-full max-w-[360px] flex-1 flex-col justify-center">
+        <div className="mb-6 text-center">
+          <h1 className="text-foreground text-[36px] leading-tight font-semibold tracking-[-0.03em] md:text-[40px]">
             Welcome Back
           </h1>
-          <p className="text-muted-foreground mt-2 text-sm">
+          <p className="text-muted-foreground mt-2 text-[13px] md:text-sm">
             Enter your email and password to access your account.
           </p>
         </div>
 
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-3.5">
           <div className="space-y-1.5">
             <Label htmlFor="identity">Email</Label>
             <Input
               id="identity"
               autoComplete="email"
               placeholder="sellostore@company.com"
-              className="h-11 rounded-xl px-3 text-sm"
+              className="h-10 rounded-xl px-3 text-sm"
               {...register("identity")}
             />
             {errors.identity ? (
@@ -64,7 +64,7 @@ export function LoginFormPanel({ form }: LoginFormPanelProps) {
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
                 placeholder="Enter your password"
-                className="h-11 rounded-xl px-3 pr-14 text-sm"
+                className="h-10 rounded-xl px-3 pr-14 text-sm"
                 {...register("password")}
               />
               <button
@@ -95,19 +95,14 @@ export function LoginFormPanel({ form }: LoginFormPanelProps) {
               )}
             />
 
-            <button
-              type="button"
-              className="text-primary text-sm font-medium transition hover:opacity-80"
-            >
-              Forgot Your Password?
-            </button>
+            <Label>Forgot your password ?</Label>
           </div>
 
           <Button
             type="submit"
             size="lg"
             disabled={!isValid || isSubmitting}
-            className="h-11 w-full rounded-xl text-sm font-medium"
+            className="h-10 w-full rounded-xl text-sm font-medium"
           >
             {isSubmitting ? "Logging in..." : "Log In"}
           </Button>
@@ -125,12 +120,12 @@ export function LoginFormPanel({ form }: LoginFormPanelProps) {
           </Button>
         </form>
 
-        <p className="text-muted-foreground mt-5 text-center text-sm">
+        <p className="text-muted-foreground mt-4 text-center text-sm">
           Need access to the system? Please contact your administrator.
         </p>
       </div>
 
-      <div className="text-muted-foreground mt-8 flex items-center justify-between text-xs">
+      <div className="text-muted-foreground mt-6 flex items-center justify-between text-xs">
         <span>Copyright © 2026 Tuperator Enterprises LTD.</span>
         <button type="button" className="hover:text-foreground transition">
           Privacy Policy
