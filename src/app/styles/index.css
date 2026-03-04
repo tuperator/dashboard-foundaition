@@ -60,7 +60,7 @@
   --sb-rail-hover: #f3f4f6;
   --sb-rail-active-bg: #0f172a;
   --sb-rail-active-icon: #ffffff;
-  --app-scale: 1;
+  --app-scale: 0.8;
 
   --background: var(--fig-primary-light);
   --foreground: var(--fig-black-100);
