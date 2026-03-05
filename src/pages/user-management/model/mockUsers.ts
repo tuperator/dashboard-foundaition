@@ -1,4 +1,4 @@
-import type { UserAccount, UserRole } from "./types";
+import type { Branch, UserAccount, UserRole } from "./types";
 
 export const mockRoles: UserRole[] = [
   { id: "role-oper-admin", roleName: "OPER_ADMIN" },
@@ -8,6 +8,37 @@ export const mockRoles: UserRole[] = [
   { id: "role-team-lead", roleName: "TEAM_LEAD" },
   { id: "role-staff", roleName: "STAFF" },
   { id: "role-auditor", roleName: "AUDITOR" },
+];
+
+export const mockBranches: Branch[] = [
+  {
+    id: "branch-hcm-01",
+    name: "HCM - Head Office",
+    address: "Quận 1, TP.HCM",
+    companyId: "company-01",
+    status: "ACTIVE",
+  },
+  {
+    id: "branch-hcm-02",
+    name: "HCM - East Hub",
+    address: "Quận 2, TP.HCM",
+    companyId: "company-01",
+    status: "ACTIVE",
+  },
+  {
+    id: "branch-hcm-03",
+    name: "HCM - West Hub",
+    address: "Quận Bình Tân, TP.HCM",
+    companyId: "company-01",
+    status: "ACTIVE",
+  },
+  {
+    id: "branch-dn-01",
+    name: "Dong Nai Branch",
+    address: "Biên Hòa, Đồng Nai",
+    companyId: "company-01",
+    status: "ACTIVE",
+  },
 ];
 
 function pickRoles(...ids: string[]) {
@@ -23,6 +54,7 @@ export const mockUsersSeed: UserAccount[] = [
     address: "Q.1, TP.HCM",
     companyId: "company-01",
     branchId: "branch-hcm-01",
+    branchIds: ["branch-hcm-01", "branch-hcm-02"],
     status: "WORKING",
     gender: "MALE",
     createdAt: "2024-02-20T03:00:00.000Z",
@@ -41,6 +73,7 @@ export const mockUsersSeed: UserAccount[] = [
     address: "Q.7, TP.HCM",
     companyId: "company-01",
     branchId: "branch-hcm-02",
+    branchIds: ["branch-hcm-02", "branch-hcm-03"],
     status: "WORKING",
     gender: "MALE",
     createdAt: "2024-05-01T03:00:00.000Z",
@@ -59,6 +92,7 @@ export const mockUsersSeed: UserAccount[] = [
     address: "TP. Thủ Đức, TP.HCM",
     companyId: "company-01",
     branchId: "branch-hcm-01",
+    branchIds: ["branch-hcm-01"],
     status: "ONLEAVE",
     gender: "FEMALE",
     createdAt: "2023-11-12T01:20:00.000Z",
@@ -77,6 +111,7 @@ export const mockUsersSeed: UserAccount[] = [
     address: "Q.3, TP.HCM",
     companyId: "company-01",
     branchId: "branch-hcm-03",
+    branchIds: ["branch-hcm-03", "branch-hcm-01"],
     status: "WORKING",
     gender: "FEMALE",
     createdAt: "2022-08-05T02:50:00.000Z",
@@ -95,6 +130,7 @@ export const mockUsersSeed: UserAccount[] = [
     address: "Q.12, TP.HCM",
     companyId: "company-01",
     branchId: "branch-hcm-02",
+    branchIds: ["branch-hcm-02"],
     status: "RESIGNED",
     gender: "MALE",
     createdAt: "2021-04-10T05:00:00.000Z",
@@ -113,6 +149,7 @@ export const mockUsersSeed: UserAccount[] = [
     address: "Biên Hòa, Đồng Nai",
     companyId: "company-01",
     branchId: "branch-dn-01",
+    branchIds: ["branch-dn-01", "branch-hcm-01"],
     status: "WORKING",
     gender: "FEMALE",
     createdAt: "2024-07-01T02:30:00.000Z",
@@ -131,6 +168,7 @@ export const mockUsersSeed: UserAccount[] = [
     address: "Q. Bình Thạnh, TP.HCM",
     companyId: "company-01",
     branchId: "branch-hcm-01",
+    branchIds: ["branch-hcm-01"],
     status: "WORKING",
     gender: "MALE",
     createdAt: "2023-02-14T04:40:00.000Z",
@@ -149,6 +187,7 @@ export const mockUsersSeed: UserAccount[] = [
     address: "Q. Phú Nhuận, TP.HCM",
     companyId: "company-01",
     branchId: "branch-hcm-03",
+    branchIds: ["branch-hcm-03"],
     status: "ONLEAVE",
     gender: "FEMALE",
     createdAt: "2022-10-21T07:10:00.000Z",
@@ -167,6 +206,7 @@ export const mockUsersSeed: UserAccount[] = [
     address: "Q. Tân Bình, TP.HCM",
     companyId: "company-01",
     branchId: "branch-hcm-02",
+    branchIds: ["branch-hcm-02"],
     status: "WORKING",
     gender: "MALE",
     createdAt: "2025-01-05T05:15:00.000Z",
@@ -185,6 +225,7 @@ export const mockUsersSeed: UserAccount[] = [
     address: "Q. Gò Vấp, TP.HCM",
     companyId: "company-01",
     branchId: "branch-hcm-03",
+    branchIds: ["branch-hcm-03"],
     status: "WORKING",
     gender: "FEMALE",
     createdAt: "2023-06-18T03:20:00.000Z",
@@ -203,6 +244,7 @@ export const mockUsersSeed: UserAccount[] = [
     address: "Q.10, TP.HCM",
     companyId: "company-01",
     branchId: "branch-hcm-01",
+    branchIds: ["branch-hcm-01"],
     status: "WORKING",
     gender: "MALE",
     createdAt: "2024-09-05T05:45:00.000Z",
@@ -221,6 +263,7 @@ export const mockUsersSeed: UserAccount[] = [
     address: "Q.5, TP.HCM",
     companyId: "company-01",
     branchId: "branch-hcm-02",
+    branchIds: ["branch-hcm-02"],
     status: "WORKING",
     gender: "FEMALE",
     createdAt: "2022-03-01T06:05:00.000Z",

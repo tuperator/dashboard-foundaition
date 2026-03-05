@@ -26,11 +26,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/ui/table";
-import type { UserAccount, UserStatus } from "../../model/types";
+import type { Branch, UserAccount, UserStatus } from "../../model/types";
 import { UserStatusBadge } from "./UserStatusBadge";
 
 type UserManagementTableProps = {
   users: UserAccount[];
+  branchOptions: Branch[];
   loading?: boolean;
   onEditUser: (user: UserAccount) => void;
   onOpenPassword: (user: UserAccount) => void;
@@ -40,6 +41,7 @@ type UserManagementTableProps = {
 
 export function UserManagementTable({
   users,
+  branchOptions,
   loading = false,
   onEditUser,
   onOpenPassword,
@@ -47,6 +49,7 @@ export function UserManagementTable({
   onChangeStatus,
 }: UserManagementTableProps) {
   const { t, locale } = useI18n();
+  const branchLabelById = new Map(branchOptions.map((branch) => [branch.id, branch.name]));
 
   return (
     <Table className="min-w-[980px]">
@@ -58,6 +61,7 @@ export function UserManagementTable({
           <TableHead>{t("users.table.fullName")}</TableHead>
           <TableHead>{t("users.table.email")}</TableHead>
           <TableHead>{t("users.table.roles")}</TableHead>
+          <TableHead>{t("users.table.branches")}</TableHead>
           <TableHead>{t("users.table.status")}</TableHead>
           <TableHead>{t("users.table.joinedDate")}</TableHead>
           <TableHead>{t("users.table.twoFactor")}</TableHead>
@@ -68,7 +72,7 @@ export function UserManagementTable({
         {loading ? (
           <TableRow>
             <TableCell
-              colSpan={7}
+              colSpan={8}
               className="py-10 text-center text-muted-foreground"
             >
               {t("users.table.loading")}
@@ -79,7 +83,7 @@ export function UserManagementTable({
         {!loading && users.length === 0 ? (
           <TableRow>
             <TableCell
-              colSpan={7}
+              colSpan={8}
               className="py-10 text-center text-muted-foreground"
             >
               {t("users.table.empty")}
@@ -180,6 +184,21 @@ export function UserManagementTable({
                     {user.roles.length > 2 ? (
                       <Badge variant="outline" className="h-5 rounded-full">
                         +{user.roles.length - 2}
+                      </Badge>
+                    ) : null}
+                  </div>
+                </TableCell>
+
+                <TableCell>
+                  <div className="flex max-w-[220px] flex-wrap items-center gap-1">
+                    {user.branchIds.slice(0, 2).map((branchId) => (
+                      <Badge key={branchId} variant="outline" className="h-5 rounded-full">
+                        {branchLabelById.get(branchId) || branchId}
+                      </Badge>
+                    ))}
+                    {user.branchIds.length > 2 ? (
+                      <Badge variant="outline" className="h-5 rounded-full">
+                        +{user.branchIds.length - 2}
                       </Badge>
                     ) : null}
                   </div>

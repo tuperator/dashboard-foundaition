@@ -17,10 +17,12 @@ import {
 } from "@/shared/ui/select";
 import { useUserManagement } from "../model/useUserManagement";
 import type {
+  CreateUserPayload,
   UpdateUserProfilePayload,
   UserAccount,
   UserStatus,
 } from "../model/types";
+import { CreateUserSheet } from "./components/CreateUserSheet";
 import { DeleteUserAlert } from "./components/DeleteUserAlert";
 import { UserManagementHeader } from "./components/UserManagementHeader";
 import { UserManagementTable } from "./components/UserManagementTable";
@@ -35,6 +37,7 @@ export function UserManagementPage() {
   const {
     usersQuery,
     rolesQuery,
+    branchesQuery,
     search,
     setSearch,
     roleFilter,
@@ -50,6 +53,7 @@ export function UserManagementPage() {
     total,
     totalPages,
     resetFilters,
+    createUserMutation,
     updateProfileMutation,
     updatePasswordMutation,
     updateStatusMutation,
@@ -58,7 +62,9 @@ export function UserManagementPage() {
 
   const users = usersQuery.data?.items ?? EMPTY_USERS;
   const roleOptions = rolesQuery.data || [];
+  const branchOptions = branchesQuery.data || [];
 
+  const [createOpen, setCreateOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserAccount | null>(null);
   const [passwordUser, setPasswordUser] = useState<UserAccount | null>(null);
   const [deletingUser, setDeletingUser] = useState<UserAccount | null>(null);
@@ -92,6 +98,22 @@ export function UserManagementPage() {
     } catch (error) {
       appToast.error({
         title: t("users.notice.error.updateProfile"),
+        description: resolveErrorMessage(error, t),
+      });
+    }
+  };
+
+  const handleCreateUser = async (payload: CreateUserPayload) => {
+    try {
+      const created = await createUserMutation.mutateAsync(payload);
+      setCreateOpen(false);
+      appToast.success({
+        title: tp("users.notice.created.title", { name: created.username }),
+        description: t("users.notice.created.description"),
+      });
+    } catch (error) {
+      appToast.error({
+        title: t("users.notice.error.createUser"),
         description: resolveErrorMessage(error, t),
       });
     }
@@ -202,11 +224,13 @@ export function UserManagementPage() {
             setPage(1);
           }}
           onResetFilters={resetFilters}
+          onOpenCreateUser={() => setCreateOpen(true)}
         />
 
         <div className="bg-card rounded-2xl border p-3">
           <UserManagementTable
             users={users}
+            branchOptions={branchOptions}
             loading={usersQuery.isLoading}
             onEditUser={setEditingUser}
             onOpenPassword={setPasswordUser}
@@ -265,6 +289,7 @@ export function UserManagementPage() {
         open={Boolean(editingUser)}
         user={editingUser}
         roleOptions={roleOptions}
+        branchOptions={branchOptions}
         submitting={updateProfileMutation.isPending}
         onOpenChange={(open) => {
           if (!open) {
@@ -272,6 +297,15 @@ export function UserManagementPage() {
           }
         }}
         onSubmit={handleEditProfile}
+      />
+
+      <CreateUserSheet
+        open={createOpen}
+        roleOptions={roleOptions}
+        branchOptions={branchOptions}
+        submitting={createUserMutation.isPending}
+        onOpenChange={setCreateOpen}
+        onSubmit={handleCreateUser}
       />
 
       <UserPasswordDialog
@@ -306,6 +340,7 @@ function resolveErrorMessage(
   t: (
     key:
       | "users.error.passwordPolicy"
+      | "users.error.emailExists"
       | "users.error.notFound"
       | "users.error.unknown",
   ) => string,
@@ -317,6 +352,10 @@ function resolveErrorMessage(
 
     if (error.message === "USER_NOT_FOUND") {
       return t("users.error.notFound");
+    }
+
+    if (error.message === "USER_EMAIL_EXISTS") {
+      return t("users.error.emailExists");
     }
   }
 

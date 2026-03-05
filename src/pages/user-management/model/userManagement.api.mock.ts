@@ -1,5 +1,7 @@
-import { mockRoles, mockUsersSeed } from "./mockUsers";
+import { mockBranches, mockRoles, mockUsersSeed } from "./mockUsers";
 import type {
+  Branch,
+  CreateUserPayload,
   PaginatedResult,
   UpdateUserPasswordPayload,
   UpdateUserProfilePayload,
@@ -26,6 +28,11 @@ export async function listUserRoles(): Promise<UserRole[]> {
   return structuredClone(mockRoles);
 }
 
+export async function listBranches(): Promise<Branch[]> {
+  await delay();
+  return structuredClone(mockBranches);
+}
+
 export async function listUsers(
   filters: UserListFilters,
 ): Promise<PaginatedResult<UserAccount>> {
@@ -34,11 +41,17 @@ export async function listUsers(
   const keyword = normalizeSearch(filters.search);
 
   let filtered = usersDb.filter((user) => {
+    const branchText = user.branchIds
+      .map((branchId) => mockBranches.find((branch) => branch.id === branchId)?.name || "")
+      .join(" ")
+      .toLowerCase();
+
     const matchedSearch =
       keyword.length === 0 ||
       user.username.toLowerCase().includes(keyword) ||
       user.email.toLowerCase().includes(keyword) ||
-      user.phone?.toLowerCase().includes(keyword);
+      user.phone?.toLowerCase().includes(keyword) ||
+      branchText.includes(keyword);
 
     const matchedRole =
       filters.role === "ALL" ||
@@ -84,6 +97,7 @@ export async function updateUserProfile(
   }
 
   const nextRoles = mockRoles.filter((role) => payload.roleIds.includes(role.id));
+  const normalizedBranchIds = normalizeBranchIds(payload.branchIds);
 
   usersDb[index] = {
     ...usersDb[index],
@@ -94,6 +108,8 @@ export async function updateUserProfile(
     gender: payload.gender,
     status: payload.status,
     roles: nextRoles,
+    branchIds: normalizedBranchIds,
+    branchId: normalizedBranchIds[0] || null,
     twoFactorEnabled: payload.twoFactorEnabled,
     updatedAt: new Date().toISOString(),
   };
@@ -144,4 +160,53 @@ export async function deleteUser(userId: string) {
 
   usersDb = usersDb.filter((user) => user.id !== userId);
   return { accountId: userId };
+}
+
+export async function createUser(payload: CreateUserPayload) {
+  await delay();
+
+  if (payload.password.length < 8) {
+    throw new Error("PASSWORD_POLICY_INVALID");
+  }
+
+  const emailExists = usersDb.some(
+    (user) => user.email.toLowerCase() === payload.email.trim().toLowerCase(),
+  );
+  if (emailExists) {
+    throw new Error("USER_EMAIL_EXISTS");
+  }
+
+  const nextRoles = mockRoles.filter((role) => payload.roleIds.includes(role.id));
+  const normalizedBranchIds = normalizeBranchIds(payload.branchIds);
+  const nowIso = new Date().toISOString();
+
+  const nextUser: UserAccount = {
+    id: crypto.randomUUID(),
+    username: payload.username.trim(),
+    email: payload.email.trim().toLowerCase(),
+    phone: payload.phone,
+    address: payload.address,
+    companyId: "company-01",
+    branchId: normalizedBranchIds[0] || null,
+    branchIds: normalizedBranchIds,
+    status: payload.status,
+    gender: payload.gender,
+    createdAt: nowIso,
+    updatedAt: nowIso,
+    joinedAt: nowIso,
+    lastLogin: null,
+    avatarUrl: null,
+    roles: nextRoles,
+    twoFactorEnabled: payload.twoFactorEnabled,
+  };
+
+  usersDb = [nextUser, ...usersDb];
+
+  return structuredClone(nextUser);
+}
+
+function normalizeBranchIds(branchIds: string[]) {
+  const branchSet = new Set(mockBranches.map((branch) => branch.id));
+  const unique = [...new Set(branchIds)].filter((id) => branchSet.has(id));
+  return unique;
 }

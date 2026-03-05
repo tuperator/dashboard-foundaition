@@ -1,0 +1,63 @@
+export const authMessages = {
+  vi: {
+    "auth.checkingSession": "Đang kiểm tra phiên đăng nhập...",
+    "auth.login.brand": "Tuperator",
+    "auth.login.welcomeBack": "Chào mừng trở lại",
+    "auth.login.subtitle":
+      "Nhập email và mật khẩu để truy cập vào hệ thống.",
+    "auth.login.email": "Email",
+    "auth.login.emailPlaceholder": "sellostore@company.com",
+    "auth.login.password": "Mật khẩu",
+    "auth.login.passwordPlaceholder": "Nhập mật khẩu",
+    "auth.login.showPassword": "Hiện",
+    "auth.login.hidePassword": "Ẩn",
+    "auth.login.rememberMe": "Ghi nhớ đăng nhập",
+    "auth.login.forgotPassword": "Quên mật khẩu?",
+    "auth.login.submit": "Đăng nhập",
+    "auth.login.submitting": "Đang đăng nhập...",
+    "auth.login.sso": "Đăng nhập bằng SSO",
+    "auth.login.contactAdmin":
+      "Cần quyền truy cập hệ thống? Vui lòng liên hệ quản trị viên.",
+    "auth.login.copyright": "Bản quyền © 2026 Tuperator Enterprises LTD.",
+    "auth.login.privacyPolicy": "Chính sách bảo mật",
+    "auth.login.ssoPlan": "SSO sẽ được hỗ trợ ở bản phát hành tiếp theo.",
+    "auth.hero.title": "Vận hành đội ngũ và doanh nghiệp hiệu quả.",
+    "auth.hero.subtitle":
+      "Đăng nhập để truy cập dashboard CRM và quản lý đội nhóm.",
+    "auth.validation.emailRequired": "Vui lòng nhập email.",
+    "auth.validation.emailInvalid": "Định dạng email chưa hợp lệ.",
+    "auth.validation.passwordRequired": "Vui lòng nhập mật khẩu.",
+    "auth.validation.passwordMin": "Mật khẩu tối thiểu 6 ký tự.",
+  },
+  en: {
+    "auth.checkingSession": "Checking session...",
+    "auth.login.brand": "Tuperator",
+    "auth.login.welcomeBack": "Welcome Back",
+    "auth.login.subtitle":
+      "Enter your email and password to access your account.",
+    "auth.login.email": "Email",
+    "auth.login.emailPlaceholder": "sellostore@company.com",
+    "auth.login.password": "Password",
+    "auth.login.passwordPlaceholder": "Enter your password",
+    "auth.login.showPassword": "Show",
+    "auth.login.hidePassword": "Hide",
+    "auth.login.rememberMe": "Remember Me",
+    "auth.login.forgotPassword": "Forgot your password?",
+    "auth.login.submit": "Log In",
+    "auth.login.submitting": "Logging in...",
+    "auth.login.sso": "Login by SSO",
+    "auth.login.contactAdmin":
+      "Need access to the system? Please contact your administrator.",
+    "auth.login.copyright": "Copyright © 2026 Tuperator Enterprises LTD.",
+    "auth.login.privacyPolicy": "Privacy Policy",
+    "auth.login.ssoPlan": "SSO options are planned in the next release.",
+    "auth.hero.title": "Effortlessly manage your team and operations.",
+    "auth.hero.subtitle":
+      "Log in to access your CRM dashboard and manage your team.",
+    "auth.validation.emailRequired": "Please enter your email.",
+    "auth.validation.emailInvalid": "Email format is not valid.",
+    "auth.validation.passwordRequired": "Please enter your password.",
+    "auth.validation.passwordMin":
+      "Password must have at least 6 characters.",
+  },
+} as const;

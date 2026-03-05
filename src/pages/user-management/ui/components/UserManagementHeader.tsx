@@ -30,6 +30,7 @@ type UserManagementHeaderProps = {
   onStatusFilterChange: (value: "ALL" | UserStatus) => void;
   onTwoFactorFilterChange: (value: "ALL" | "ENABLED" | "DISABLED") => void;
   onResetFilters: () => void;
+  onOpenCreateUser: () => void;
 };
 
 export function UserManagementHeader({
@@ -44,6 +45,7 @@ export function UserManagementHeader({
   onStatusFilterChange,
   onTwoFactorFilterChange,
   onResetFilters,
+  onOpenCreateUser,
 }: UserManagementHeaderProps) {
   const { t } = useI18n();
 
@@ -68,6 +70,7 @@ export function UserManagementHeader({
           <Button
             size="sm"
             className="bg-primary text-primary-foreground hover:bg-primary/85 dark:text-white"
+            onClick={onOpenCreateUser}
           >
             <HugeiconsIcon icon={UserAdd01Icon} />
             {t("users.action.addUser")}

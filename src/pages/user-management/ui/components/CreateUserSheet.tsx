@@ -16,26 +16,25 @@ import {
 import { Separator } from "@/shared/ui/separator";
 import type {
   Branch,
+  CreateUserPayload,
   Gender,
-  UpdateUserProfilePayload,
-  UserAccount,
   UserRole,
   UserStatus,
 } from "../../model/types";
 
-type UserProfileSheetProps = {
+type CreateUserSheetProps = {
   open: boolean;
-  user: UserAccount | null;
   roleOptions: UserRole[];
   branchOptions: Branch[];
   submitting?: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (payload: UpdateUserProfilePayload) => void;
+  onSubmit: (payload: CreateUserPayload) => void;
 };
 
-type ProfileFormState = {
+type CreateUserFormState = {
   username: string;
   email: string;
+  password: string;
   phone: string;
   address: string;
   gender: Gender | "UNKNOWN";
@@ -45,91 +44,42 @@ type ProfileFormState = {
   twoFactorEnabled: boolean;
 };
 
-export function UserProfileSheet({
+const INITIAL_FORM: CreateUserFormState = {
+  username: "",
+  email: "",
+  password: "",
+  phone: "",
+  address: "",
+  gender: "UNKNOWN",
+  status: "WORKING",
+  roleIds: [],
+  branchIds: [],
+  twoFactorEnabled: true,
+};
+
+export function CreateUserSheet({
   open,
-  user,
   roleOptions,
   branchOptions,
   submitting = false,
   onOpenChange,
   onSubmit,
-}: UserProfileSheetProps) {
+}: CreateUserSheetProps) {
   const { t } = useI18n();
+  const [form, setForm] = useState<CreateUserFormState>(INITIAL_FORM);
 
-  if (!user) {
-    return (
-      <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent
-          side="right"
-          className="w-[520px] max-w-[95vw] [zoom:var(--app-scale)] sm:max-w-[520px]"
-        >
-          <div className="space-y-1 border-b px-5 py-4">
-            <SheetTitle className="text-base">{t("users.profile.title")}</SheetTitle>
-            <SheetDescription>{t("users.error.notFound")}</SheetDescription>
-          </div>
-        </SheetContent>
-      </Sheet>
-    );
-  }
-
-  return (
-    <UserProfileFormContent
-      key={user.id}
-      open={open}
-      user={user}
-      roleOptions={roleOptions}
-      branchOptions={branchOptions}
-      submitting={submitting}
-      onOpenChange={onOpenChange}
-      onSubmit={onSubmit}
-    />
+  const emailValid = useMemo(
+    () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()),
+    [form.email],
   );
-}
+  const passwordValid = form.password.length >= 8;
 
-function UserProfileFormContent({
-  open,
-  user,
-  roleOptions,
-  branchOptions,
-  submitting = false,
-  onOpenChange,
-  onSubmit,
-}: {
-  open: boolean;
-  user: UserAccount;
-  roleOptions: UserRole[];
-  branchOptions: Branch[];
-  submitting?: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSubmit: (payload: UpdateUserProfilePayload) => void;
-}) {
-  const { t } = useI18n();
-
-  const initialFormState: ProfileFormState = useMemo(
-    () => ({
-      username: user.username,
-      email: user.email,
-      phone: user.phone || "",
-      address: user.address || "",
-      gender: user.gender || "UNKNOWN",
-      status: user.status,
-      roleIds: user.roles.map((role) => role.id),
-      branchIds: user.branchIds,
-      twoFactorEnabled: user.twoFactorEnabled,
-    }),
-    [user],
-  );
-
-  const [form, setForm] = useState<ProfileFormState>(initialFormState);
-
-  const canSubmit = useMemo(
-    () =>
-      form.username.trim() &&
-      form.email.trim() &&
-      form.roleIds.length > 0 &&
-      form.branchIds.length > 0,
-    [form.branchIds.length, form.email, form.roleIds.length, form.username],
-  );
+  const canSubmit =
+    form.username.trim().length > 0 &&
+    emailValid &&
+    passwordValid &&
+    form.roleIds.length > 0 &&
+    form.branchIds.length > 0;
 
   const toggleRole = (roleId: string, checked: boolean) => {
     setForm((prev) => {
@@ -157,7 +107,7 @@ function UserProfileFormContent({
       open={open}
       onOpenChange={(nextOpen) => {
         if (!nextOpen) {
-          setForm(initialFormState);
+          setForm(INITIAL_FORM);
         }
         onOpenChange(nextOpen);
       }}
@@ -168,16 +118,16 @@ function UserProfileFormContent({
       >
         <div className="flex h-full min-h-0 flex-col">
           <div className="space-y-1 border-b px-5 py-4">
-            <SheetTitle className="text-base">{t("users.profile.title")}</SheetTitle>
-            <SheetDescription>{t("users.profile.description")}</SheetDescription>
+            <SheetTitle className="text-base">{t("users.create.title")}</SheetTitle>
+            <SheetDescription>{t("users.create.description")}</SheetDescription>
           </div>
 
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5 sm:col-span-2">
-                <Label htmlFor="profile-username">{t("users.profile.fullName")}</Label>
+                <Label htmlFor="create-username">{t("users.profile.fullName")}</Label>
                 <Input
-                  id="profile-username"
+                  id="create-username"
                   value={form.username}
                   onChange={(event) =>
                     setForm((prev) => ({ ...prev, username: event.target.value }))
@@ -186,21 +136,44 @@ function UserProfileFormContent({
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="profile-email">{t("users.profile.email")}</Label>
+                <Label htmlFor="create-email">{t("users.profile.email")}</Label>
                 <Input
-                  id="profile-email"
+                  id="create-email"
                   type="email"
                   value={form.email}
                   onChange={(event) =>
                     setForm((prev) => ({ ...prev, email: event.target.value }))
                   }
                 />
+                {!emailValid && form.email.trim().length > 0 ? (
+                  <p className="text-destructive text-[11px]">
+                    {t("users.create.error.invalidEmail")}
+                  </p>
+                ) : null}
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="profile-phone">{t("users.profile.phone")}</Label>
+                <Label htmlFor="create-password">{t("users.password.new")}</Label>
                 <Input
-                  id="profile-phone"
+                  id="create-password"
+                  type="password"
+                  value={form.password}
+                  onChange={(event) =>
+                    setForm((prev) => ({ ...prev, password: event.target.value }))
+                  }
+                  placeholder={t("users.password.placeholder.new")}
+                />
+                {!passwordValid && form.password.length > 0 ? (
+                  <p className="text-destructive text-[11px]">
+                    {t("users.password.error.min8")}
+                  </p>
+                ) : null}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="create-phone">{t("users.profile.phone")}</Label>
+                <Input
+                  id="create-phone"
                   value={form.phone}
                   onChange={(event) =>
                     setForm((prev) => ({ ...prev, phone: event.target.value }))
@@ -208,10 +181,10 @@ function UserProfileFormContent({
                 />
               </div>
 
-              <div className="space-y-1.5 sm:col-span-2">
-                <Label htmlFor="profile-address">{t("users.profile.address")}</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="create-address">{t("users.profile.address")}</Label>
                 <Input
-                  id="profile-address"
+                  id="create-address"
                   value={form.address}
                   onChange={(event) =>
                     setForm((prev) => ({ ...prev, address: event.target.value }))
@@ -334,6 +307,7 @@ function UserProfileFormContent({
                 onSubmit({
                   username: form.username.trim(),
                   email: form.email.trim(),
+                  password: form.password,
                   phone: form.phone.trim() || null,
                   address: form.address.trim() || null,
                   gender: form.gender === "UNKNOWN" ? null : form.gender,
@@ -344,7 +318,7 @@ function UserProfileFormContent({
                 })
               }
             >
-              {submitting ? `${t("users.profile.save")}...` : t("users.profile.save")}
+              {submitting ? `${t("users.create.submit")}...` : t("users.create.submit")}
             </Button>
           </div>
         </div>

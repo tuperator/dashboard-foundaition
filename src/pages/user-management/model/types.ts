@@ -4,9 +4,20 @@ export type UserStatus = (typeof USER_STATUS_VALUES)[number];
 export const GENDER_VALUES = ["MALE", "FEMALE", "OTHER"] as const;
 export type Gender = (typeof GENDER_VALUES)[number];
 
+export const BRANCH_STATUS_VALUES = ["ACTIVE", "INACTIVE"] as const;
+export type BranchStatus = (typeof BRANCH_STATUS_VALUES)[number];
+
 export type UserRole = {
   id: string;
   roleName: string;
+};
+
+export type Branch = {
+  id: string;
+  name: string;
+  address: string | null;
+  companyId: string | null;
+  status: BranchStatus;
 };
 
 export type UserAccount = {
@@ -17,6 +28,7 @@ export type UserAccount = {
   address: string | null;
   companyId: string | null;
   branchId: string | null;
+  branchIds: string[];
   status: UserStatus;
   gender: Gender | null;
   createdAt: string;
@@ -52,6 +64,20 @@ export type UpdateUserProfilePayload = {
   gender: Gender | null;
   status: UserStatus;
   roleIds: string[];
+  branchIds: string[];
+  twoFactorEnabled: boolean;
+};
+
+export type CreateUserPayload = {
+  username: string;
+  email: string;
+  password: string;
+  phone: string | null;
+  address: string | null;
+  gender: Gender | null;
+  status: UserStatus;
+  roleIds: string[];
+  branchIds: string[];
   twoFactorEnabled: boolean;
 };
 

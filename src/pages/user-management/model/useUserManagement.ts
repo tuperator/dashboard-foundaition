@@ -1,7 +1,9 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  createUser,
   deleteUser,
+  listBranches,
   listUserRoles,
   listUsers,
   updateUserPassword,
@@ -9,6 +11,7 @@ import {
   updateUserStatus,
 } from "./userManagement.api.mock";
 import type {
+  CreateUserPayload,
   UpdateUserPasswordPayload,
   UpdateUserProfilePayload,
   UserStatus,
@@ -16,6 +19,7 @@ import type {
 
 const USER_LIST_QUERY_KEY = "user-management-list";
 const USER_ROLE_QUERY_KEY = "user-management-roles";
+const USER_BRANCH_QUERY_KEY = "user-management-branches";
 
 export function useUserManagement() {
   const queryClient = useQueryClient();
@@ -49,6 +53,18 @@ export function useUserManagement() {
   const rolesQuery = useQuery({
     queryKey: [USER_ROLE_QUERY_KEY],
     queryFn: listUserRoles,
+  });
+
+  const branchesQuery = useQuery({
+    queryKey: [USER_BRANCH_QUERY_KEY],
+    queryFn: listBranches,
+  });
+
+  const createUserMutation = useMutation({
+    mutationFn: (payload: CreateUserPayload) => createUser(payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: [USER_LIST_QUERY_KEY] });
+    },
   });
 
   const updateProfileMutation = useMutation({
@@ -93,6 +109,7 @@ export function useUserManagement() {
   return {
     usersQuery,
     rolesQuery,
+    branchesQuery,
     search,
     setSearch,
     roleFilter,
@@ -108,6 +125,7 @@ export function useUserManagement() {
     total,
     totalPages,
     resetFilters,
+    createUserMutation,
     updateProfileMutation,
     updatePasswordMutation,
     updateStatusMutation,
