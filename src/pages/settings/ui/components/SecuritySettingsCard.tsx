@@ -6,6 +6,7 @@ import {
   CardTitle,
 } from "@/shared/ui/card";
 import { Label } from "@/shared/ui/label";
+import { useI18n } from "@/shared/providers/i18n/I18nProvider";
 import {
   Select,
   SelectContent,
@@ -37,39 +38,43 @@ export function SecuritySettingsCard({
   onRequirePolicyAcceptedChange,
   onSessionTimeoutChange,
 }: SecuritySettingsCardProps) {
+  const { t } = useI18n();
+
   return (
     <Card id="security">
       <CardHeader>
-        <CardTitle>Security & Policy</CardTitle>
-        <CardDescription>
-          Thiết lập các lớp bảo vệ cơ bản cho người dùng và dữ liệu.
-        </CardDescription>
+        <CardTitle>{t("settings.security.title")}</CardTitle>
+        <CardDescription>{t("settings.security.description")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <SettingSwitchRow
-          title="Bắt buộc 2FA cho tài khoản quản trị"
-          description="Giảm rủi ro bị truy cập trái phép vào khu vực quản trị."
+          title={t("settings.security.enforce2fa.title")}
+          description={t("settings.security.enforce2fa.description")}
           checked={enforce2FA}
           onCheckedChange={onEnforce2FAChange}
         />
         <SettingSwitchRow
-          title="Giới hạn truy cập theo IP nội bộ"
-          description="Chỉ cho phép đăng nhập từ danh sách IP được cấp quyền."
+          title={t("settings.security.ipRestriction.title")}
+          description={t("settings.security.ipRestriction.description")}
           checked={allowIpRestriction}
           onCheckedChange={onAllowIpRestrictionChange}
         />
         <SettingSwitchRow
-          title="Bắt buộc người dùng chấp nhận chính sách mới"
-          description="Hiển thị hộp xác nhận khi có cập nhật điều khoản sử dụng."
+          title={t("settings.security.requirePolicy.title")}
+          description={t("settings.security.requirePolicy.description")}
           checked={requirePolicyAccepted}
           onCheckedChange={onRequirePolicyAcceptedChange}
         />
 
         <div className="space-y-2">
-          <Label htmlFor="session-timeout">Session timeout</Label>
+          <Label htmlFor="session-timeout">
+            {t("settings.security.sessionTimeout")}
+          </Label>
           <Select value={sessionTimeout} onValueChange={onSessionTimeoutChange}>
             <SelectTrigger id="session-timeout" className="w-full md:w-[220px]">
-              <SelectValue placeholder="Select timeout" />
+              <SelectValue
+                placeholder={t("settings.security.sessionTimeoutPlaceholder")}
+              />
             </SelectTrigger>
             <SelectContent>
               {SESSION_TIMEOUT_OPTIONS.map((option) => (

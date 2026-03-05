@@ -1,5 +1,6 @@
 import { AppShell } from "@/widgets/app-shell";
 import { useEffect, useState } from "react";
+import { useI18n } from "@/shared/providers/i18n/I18nProvider";
 import { useTheme } from "@/shared/providers/theme/ThemeProvider";
 import {
   ACCENT_STORAGE_KEY,
@@ -19,9 +20,9 @@ import {
 
 export function SettingsPage() {
   const { theme, setTheme } = useTheme();
+  const { locale, setLocale } = useI18n();
 
   const [workspaceName, setWorkspaceName] = useState("SnowUI ERP");
-  const [language, setLanguage] = useState("vi");
   const [timeZone, setTimeZone] = useState("Asia/Ho_Chi_Minh");
 
   const [enforce2FA, setEnforce2FA] = useState(true);
@@ -65,10 +66,10 @@ export function SettingsPage() {
           <div className="space-y-4">
             <GeneralSettingsCard
               workspaceName={workspaceName}
-              language={language}
+              language={locale}
               timeZone={timeZone}
               onWorkspaceNameChange={setWorkspaceName}
-              onLanguageChange={setLanguage}
+              onLanguageChange={setLocale}
               onTimeZoneChange={setTimeZone}
             />
 

@@ -1,17 +1,19 @@
 import { useMemo, useState } from "react";
 import type { CSSProperties, PropsWithChildren } from "react";
 import {
-  appShellActivities,
   appShellContacts,
-  appShellNotifications,
+  createAppShellActivities,
+  createAppShellNotifications,
 } from "../model/appShellFeedData";
-import { AppSidebar } from "./sidebar/AppSidebar";
-import { AppSidebarMobileSheet } from "./sidebar/AppSidebarMobileSheet";
+import { useI18n } from "@/shared/providers/i18n/I18nProvider";
 import { useTheme } from "@/shared/providers/theme/ThemeProvider";
 import { AppShellHeader } from "./components";
+import { AppSidebar } from "./sidebar/AppSidebar";
+import { AppSidebarMobileSheet } from "./sidebar/AppSidebarMobileSheet";
 
 export function AppShell({ children }: PropsWithChildren) {
   const { theme, toggleTheme } = useTheme();
+  const { t } = useI18n();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const layoutStyle = useMemo(
@@ -21,6 +23,9 @@ export function AppShell({ children }: PropsWithChildren) {
       }) as CSSProperties,
     [sidebarCollapsed],
   );
+
+  const notifications = useMemo(() => createAppShellNotifications(t), [t]);
+  const activities = useMemo(() => createAppShellActivities(t), [t]);
 
   return (
     <div className="bg-background text-foreground h-screen overflow-hidden transition-colors">
@@ -39,8 +44,8 @@ export function AppShell({ children }: PropsWithChildren) {
               theme={theme}
               onToggleTheme={toggleTheme}
               mobileMenu={<AppSidebarMobileSheet />}
-              notifications={appShellNotifications}
-              activities={appShellActivities}
+              notifications={notifications}
+              activities={activities}
               contacts={appShellContacts}
             />
 

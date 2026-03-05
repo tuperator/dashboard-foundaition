@@ -1,16 +1,46 @@
-export const appShellNotifications = [
-  { title: "You fixed a bug.", time: "Just now" },
-  { title: "New user registered.", time: "59 minutes ago" },
-  { title: "You fixed a bug.", time: "12 hours ago" },
-];
+import type { Translate } from "@/shared/providers/i18n/I18nProvider";
 
-export const appShellActivities = [
-  { title: "Changed the style.", time: "Just now" },
-  { title: "Released a new version.", time: "59 minutes ago" },
-  { title: "Submitted a bug.", time: "12 hours ago" },
-  { title: "Modified 4 data in Page X.", time: "Today, 11:59 AM" },
-  { title: "Deleted a page in Project X.", time: "Feb 2, 2026" },
-];
+export function createAppShellNotifications(t: Translate) {
+  return [
+    {
+      title: t("app.feed.notification.fixedBug"),
+      time: t("app.feed.time.justNow"),
+    },
+    {
+      title: t("app.feed.notification.newUserRegistered"),
+      time: t("app.feed.time.59m"),
+    },
+    {
+      title: t("app.feed.notification.fixedBug"),
+      time: t("app.feed.time.12h"),
+    },
+  ];
+}
+
+export function createAppShellActivities(t: Translate) {
+  return [
+    {
+      title: t("app.feed.activity.changedStyle"),
+      time: t("app.feed.time.justNow"),
+    },
+    {
+      title: t("app.feed.activity.releasedVersion"),
+      time: t("app.feed.time.59m"),
+    },
+    {
+      title: t("app.feed.activity.submittedBug"),
+      time: t("app.feed.time.12h"),
+    },
+    {
+      title: t("app.feed.activity.modifiedPage"),
+      time: t("app.feed.time.today1159"),
+    },
+    {
+      title: t("app.feed.activity.deletedPage"),
+      time: t("app.feed.time.feb22026"),
+    },
+  ];
+}
 
 export const appShellContacts = [
   "Natali Craig",

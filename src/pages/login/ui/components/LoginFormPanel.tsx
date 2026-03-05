@@ -3,6 +3,7 @@ import { Button } from "@/shared/ui/button";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
+import { useI18n } from "@/shared/providers/i18n/I18nProvider";
 import type { UseLoginFormResult } from "../../model/useLoginForm";
 
 type LoginFormPanelProps = {
@@ -10,6 +11,7 @@ type LoginFormPanelProps = {
 };
 
 export function LoginFormPanel({ form }: LoginFormPanelProps) {
+  const { t } = useI18n();
   const {
     register,
     control,
@@ -17,6 +19,7 @@ export function LoginFormPanel({ form }: LoginFormPanelProps) {
     showPassword,
     togglePasswordVisibility,
     isSubmitting,
+    submitError,
     formState: { errors, isValid },
   } = form;
 
@@ -27,27 +30,27 @@ export function LoginFormPanel({ form }: LoginFormPanelProps) {
           T
         </span>
         <span className="text-foreground text-lg font-semibold tracking-[-0.01em] md:text-xl">
-          Tuperator
+          {t("auth.login.brand")}
         </span>
       </div>
 
       <div className="mx-auto flex w-full max-w-[360px] flex-1 flex-col justify-center">
         <div className="mb-6 text-center">
           <h1 className="text-foreground text-[36px] leading-tight font-semibold tracking-[-0.03em] md:text-[40px]">
-            Welcome Back
+            {t("auth.login.welcomeBack")}
           </h1>
           <p className="text-muted-foreground mt-2 text-[13px] md:text-sm">
-            Enter your email and password to access your account.
+            {t("auth.login.subtitle")}
           </p>
         </div>
 
         <form onSubmit={onSubmit} className="space-y-3.5">
           <div className="space-y-1.5">
-            <Label htmlFor="identity">Email</Label>
+            <Label htmlFor="identity">{t("auth.login.email")}</Label>
             <Input
               id="identity"
               autoComplete="email"
-              placeholder="sellostore@company.com"
+              placeholder={t("auth.login.emailPlaceholder")}
               className="h-10 rounded-xl px-3 text-sm"
               {...register("identity")}
             />
@@ -57,13 +60,13 @@ export function LoginFormPanel({ form }: LoginFormPanelProps) {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t("auth.login.password")}</Label>
             <div className="relative">
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
-                placeholder="Enter your password"
+                placeholder={t("auth.login.passwordPlaceholder")}
                 className="h-10 rounded-xl px-3 pr-14 text-sm"
                 {...register("password")}
               />
@@ -72,7 +75,9 @@ export function LoginFormPanel({ form }: LoginFormPanelProps) {
                 onClick={togglePasswordVisibility}
                 className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 text-xs transition"
               >
-                {showPassword ? "Hide" : "Show"}
+                {showPassword
+                  ? t("auth.login.hidePassword")
+                  : t("auth.login.showPassword")}
               </button>
             </div>
             {errors.password ? (
@@ -90,12 +95,12 @@ export function LoginFormPanel({ form }: LoginFormPanelProps) {
                     checked={field.value}
                     onCheckedChange={(checked) => field.onChange(Boolean(checked))}
                   />
-                  Remember Me
+                  {t("auth.login.rememberMe")}
                 </label>
               )}
             />
 
-            <Label>Forgot your password ?</Label>
+            <Label>{t("auth.login.forgotPassword")}</Label>
           </div>
 
           <Button
@@ -104,8 +109,12 @@ export function LoginFormPanel({ form }: LoginFormPanelProps) {
             disabled={!isValid || isSubmitting}
             className="h-10 w-full rounded-xl text-sm font-medium"
           >
-            {isSubmitting ? "Logging in..." : "Log In"}
+            {isSubmitting ? t("auth.login.submitting") : t("auth.login.submit")}
           </Button>
+
+          {submitError ? (
+            <p className="text-destructive text-xs">{submitError}</p>
+          ) : null}
 
           <Button
             type="button"
@@ -113,22 +122,22 @@ export function LoginFormPanel({ form }: LoginFormPanelProps) {
             disabled
             className="h-10 w-full rounded-xl text-sm"
           >
-            Login by SSO
+            {t("auth.login.sso")}
             <span className="text-muted-foreground ml-1 text-[10px]">
-              Coming soon
+              {t("common.comingSoon")}
             </span>
           </Button>
         </form>
 
         <p className="text-muted-foreground mt-4 text-center text-sm">
-          Need access to the system? Please contact your administrator.
+          {t("auth.login.contactAdmin")}
         </p>
       </div>
 
       <div className="text-muted-foreground mt-6 flex items-center justify-between text-xs">
-        <span>Copyright © 2026 Tuperator Enterprises LTD.</span>
+        <span>{t("auth.login.copyright")}</span>
         <button type="button" className="hover:text-foreground transition">
-          Privacy Policy
+          {t("auth.login.privacyPolicy")}
         </button>
       </div>
     </section>

@@ -12,6 +12,7 @@ import {
   SheetTitle,
 } from "@/shared/ui/sheet";
 import { cn } from "@/shared/lib/utils";
+import { useI18n } from "@/shared/providers/i18n/I18nProvider";
 
 type FeedItem = {
   title: string;
@@ -44,6 +45,7 @@ export function AppShellNotificationSheet({
   activities,
   contacts,
 }: AppShellNotificationSheetProps) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
 
   const notificationData = useMemo(
@@ -59,7 +61,7 @@ export function AppShellNotificationSheet({
     <>
       <button
         type="button"
-        aria-label="Toggle notifications sheet"
+        aria-label={t("app.header.aria.toggleNotifications")}
         aria-expanded={open}
         onClick={() => setOpen((prev) => !prev)}
         className={cn(
@@ -80,10 +82,10 @@ export function AppShellNotificationSheet({
         >
           <div className="h-full overflow-y-auto px-5 pt-6 pb-5">
             <SheetTitle className="mb-4 text-lg font-medium tracking-[-0.01em]">
-              Notifications
+              {t("app.notifications.title")}
             </SheetTitle>
             <SheetDescription className="sr-only">
-              Recent notifications, activities, and contacts.
+              {t("app.notifications.description")}
             </SheetDescription>
 
             <div className="space-y-3">
@@ -106,7 +108,7 @@ export function AppShellNotificationSheet({
 
             <section className="mt-7">
               <h3 className="text-foreground mb-3 text-xl leading-7">
-                Activities
+                {t("app.notifications.activities")}
               </h3>
               <div className="space-y-3">
                 {activities.map((item, index) => (
@@ -140,7 +142,7 @@ export function AppShellNotificationSheet({
 
             <section className="mt-7">
               <h3 className="text-foreground mb-3 text-xl leading-7">
-                Contacts
+                {t("app.notifications.contacts")}
               </h3>
               <div className="space-y-3">
                 {contacts.map((name, index) => (

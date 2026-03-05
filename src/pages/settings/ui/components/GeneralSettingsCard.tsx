@@ -6,7 +6,9 @@ import {
   CardTitle,
 } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
+import type { Locale } from "@/shared/i18n/messages";
 import { Label } from "@/shared/ui/label";
+import { useI18n } from "@/shared/providers/i18n/I18nProvider";
 import {
   Select,
   SelectContent,
@@ -21,10 +23,10 @@ import {
 
 type GeneralSettingsCardProps = {
   workspaceName: string;
-  language: string;
+  language: Locale;
   timeZone: string;
   onWorkspaceNameChange: (value: string) => void;
-  onLanguageChange: (value: string) => void;
+  onLanguageChange: (value: Locale) => void;
   onTimeZoneChange: (value: string) => void;
 };
 
@@ -36,17 +38,17 @@ export function GeneralSettingsCard({
   onLanguageChange,
   onTimeZoneChange,
 }: GeneralSettingsCardProps) {
+  const { t } = useI18n();
+
   return (
     <Card id="general">
       <CardHeader>
-        <CardTitle>General Settings</CardTitle>
-        <CardDescription>
-          Cấu hình thông tin vận hành mặc định cho doanh nghiệp.
-        </CardDescription>
+        <CardTitle>{t("settings.general.title")}</CardTitle>
+        <CardDescription>{t("settings.general.description")}</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="workspace-name">Workspace name</Label>
+          <Label htmlFor="workspace-name">{t("settings.general.workspaceName")}</Label>
           <Input
             id="workspace-name"
             value={workspaceName}
@@ -55,10 +57,13 @@ export function GeneralSettingsCard({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="language">Language</Label>
-          <Select value={language} onValueChange={onLanguageChange}>
+          <Label htmlFor="language">{t("settings.general.language")}</Label>
+          <Select
+            value={language}
+            onValueChange={(value) => onLanguageChange(value as Locale)}
+          >
             <SelectTrigger id="language" className="w-full">
-              <SelectValue placeholder="Select language" />
+              <SelectValue placeholder={t("settings.general.languagePlaceholder")} />
             </SelectTrigger>
             <SelectContent>
               {LANGUAGE_OPTIONS.map((option) => (
@@ -71,10 +76,10 @@ export function GeneralSettingsCard({
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="timezone">Timezone</Label>
+          <Label htmlFor="timezone">{t("settings.general.timezone")}</Label>
           <Select value={timeZone} onValueChange={onTimeZoneChange}>
             <SelectTrigger id="timezone" className="w-full">
-              <SelectValue placeholder="Select timezone" />
+              <SelectValue placeholder={t("settings.general.timezonePlaceholder")} />
             </SelectTrigger>
             <SelectContent>
               {TIME_ZONE_OPTIONS.map((option) => (

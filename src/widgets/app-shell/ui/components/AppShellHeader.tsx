@@ -11,6 +11,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { appRoutes } from "@/shared/constants/routes";
 import { cn } from "@/shared/lib/utils";
+import { useI18n } from "@/shared/providers/i18n/I18nProvider";
 import { AppShellNotificationSheet } from "./AppShellNotificationSheet";
 
 type FeedItem = {
@@ -38,9 +39,14 @@ export function AppShellHeader({
   contacts,
 }: AppShellHeaderProps) {
   const location = useLocation();
+  const { t } = useI18n();
   const isSettingsPage = location.pathname.startsWith(appRoutes.settings);
-  const breadcrumbRoot = isSettingsPage ? "System" : "Dashboards";
-  const breadcrumbPage = isSettingsPage ? "Settings" : "Default";
+  const breadcrumbRoot = isSettingsPage
+    ? t("app.header.breadcrumb.system")
+    : t("app.header.breadcrumb.dashboards");
+  const breadcrumbPage = isSettingsPage
+    ? t("app.header.breadcrumb.settings")
+    : t("app.header.breadcrumb.default");
 
   return (
     <header className="border-border/90 bg-card shrink-0 border-b px-3 py-2.5 shadow-[0_1px_0_rgba(16,24,40,0.03)] md:px-5 md:py-3">
@@ -63,13 +69,13 @@ export function AppShellHeader({
         <div className="flex items-center gap-1.5">
           <div className="border-border bg-background text-foreground/65 hidden h-7 w-[168px] items-center rounded-lg border px-2 md:flex">
             <HugeiconsIcon icon={SearchIcon} className="mr-1.5 size-3.5" />
-            <span className="text-xs">Search</span>
+            <span className="text-xs">{t("common.search")}</span>
             <span className="ml-auto text-xs">/</span>
           </div>
 
           <button
             type="button"
-            aria-label="Toggle theme"
+            aria-label={t("app.header.aria.toggleTheme")}
             onClick={onToggleTheme}
             className="text-foreground/65 hover:bg-muted hover:text-foreground grid h-7 w-7 place-content-center rounded-md transition"
           >
@@ -81,14 +87,17 @@ export function AppShellHeader({
           <HeaderIcon
             icon={SettingsIcon}
             to={appRoutes.settings}
-            ariaLabel="Open settings page"
+            ariaLabel={t("app.header.aria.openSettings")}
           />
           <AppShellNotificationSheet
             notifications={notifications}
             activities={activities}
             contacts={contacts}
           />
-          <HeaderIcon icon={UserIcon} ariaLabel="Open user account" />
+          <HeaderIcon
+            icon={UserIcon}
+            ariaLabel={t("app.header.aria.openUserAccount")}
+          />
         </div>
       </div>
     </header>

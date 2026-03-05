@@ -4,6 +4,7 @@ import { LoginPage } from "@/pages/login";
 import { NotFoundPage } from "@/pages/not-found";
 import { SettingsPage } from "@/pages/settings";
 import { appRoutes } from "@/shared/constants/routes";
+import { RequireAuth } from "./RequireAuth";
 
 const router = createBrowserRouter([
   {
@@ -12,11 +13,19 @@ const router = createBrowserRouter([
   },
   {
     path: appRoutes.dashboard,
-    element: <DashboardPage />,
+    element: (
+      <RequireAuth>
+        <DashboardPage />
+      </RequireAuth>
+    ),
   },
   {
     path: appRoutes.settings,
-    element: <SettingsPage />,
+    element: (
+      <RequireAuth>
+        <SettingsPage />
+      </RequireAuth>
+    ),
   },
   {
     path: "*",

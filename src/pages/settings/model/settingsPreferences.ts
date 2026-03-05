@@ -23,8 +23,7 @@ export const SETTINGS_SECTION_LINKS = [
 export const LANGUAGE_OPTIONS = [
   { value: "vi", label: "Tiếng Việt" },
   { value: "en", label: "English" },
-  { value: "ja", label: "日本語" },
-] as const;
+] as const satisfies ReadonlyArray<{ value: Locale; label: string }>;
 
 export const TIME_ZONE_OPTIONS = [
   { value: "Asia/Ho_Chi_Minh", label: "Asia/Ho_Chi_Minh (GMT+7)" },
@@ -71,3 +70,4 @@ export function nearestViewSize(value: number) {
     Math.abs(current - value) < Math.abs(closest - value) ? current : closest,
   );
 }
+import type { Locale } from "@/shared/i18n/messages";

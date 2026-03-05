@@ -9,6 +9,7 @@ import {
 } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
+import { useI18n } from "@/shared/providers/i18n/I18nProvider";
 import { RadioGroup, RadioGroupItem } from "@/shared/ui/radio-group";
 import { Slider } from "@/shared/ui/slider";
 import {
@@ -41,17 +42,17 @@ export function AppearanceSettingsCard({
   onCompactDensityChange,
   onResetAppearance,
 }: AppearanceSettingsCardProps) {
+  const { t } = useI18n();
+
   return (
     <Card id="appearance">
       <CardHeader>
-        <CardTitle>Appearance</CardTitle>
-        <CardDescription>
-          Tùy chỉnh giao diện làm việc: theme, scale hiển thị và màu nhấn chính.
-        </CardDescription>
+        <CardTitle>{t("settings.appearance.title")}</CardTitle>
+        <CardDescription>{t("settings.appearance.description")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
         <div className="space-y-3">
-          <Label>Theme default</Label>
+          <Label>{t("settings.appearance.themeDefault")}</Label>
           <RadioGroup
             value={theme}
             onValueChange={(value) => onThemeChange(value as "light" | "dark")}
@@ -59,18 +60,18 @@ export function AppearanceSettingsCard({
           >
             <label className="flex items-center gap-2 rounded-md border border-border bg-input/30 px-3 py-2">
               <RadioGroupItem value="light" />
-              <span className="text-sm">Light</span>
+              <span className="text-sm">{t("common.light")}</span>
             </label>
             <label className="flex items-center gap-2 rounded-md border border-border bg-input/30 px-3 py-2">
               <RadioGroupItem value="dark" />
-              <span className="text-sm">Dark</span>
+              <span className="text-sm">{t("common.dark")}</span>
             </label>
           </RadioGroup>
         </div>
 
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <Label>View scale</Label>
+            <Label>{t("settings.appearance.viewScale")}</Label>
             <Badge variant="outline">{viewSize}%</Badge>
           </div>
           <Slider
@@ -96,7 +97,7 @@ export function AppearanceSettingsCard({
         </div>
 
         <div className="space-y-3">
-          <Label>Màu nhấn hệ thống (accent)</Label>
+          <Label>{t("settings.appearance.accent")}</Label>
           <div className="flex flex-wrap items-center gap-2">
             {ACCENT_COLORS.map((color) => (
               <button
@@ -123,15 +124,15 @@ export function AppearanceSettingsCard({
         </div>
 
         <SettingSwitchRow
-          title="Compact density"
-          description="Giảm khoảng cách giữa các block để tăng mật độ hiển thị."
+          title={t("settings.appearance.compactDensity.title")}
+          description={t("settings.appearance.compactDensity.description")}
           checked={compactDensity}
           onCheckedChange={onCompactDensityChange}
         />
 
         <div className="flex justify-end">
           <Button type="button" variant="outline" onClick={onResetAppearance}>
-            Reset appearance
+            {t("settings.appearance.reset")}
           </Button>
         </div>
       </CardContent>
