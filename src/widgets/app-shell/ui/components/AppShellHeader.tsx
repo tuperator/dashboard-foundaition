@@ -7,12 +7,12 @@ import {
   SearchIcon,
   SettingsIcon,
   SunIcon,
-  UserIcon,
 } from "@hugeicons/core-free-icons";
 import { appRoutes } from "@/shared/constants/routes";
 import { cn } from "@/shared/lib/utils";
 import { useI18n } from "@/shared/providers/i18n/I18nProvider";
 import { AppShellNotificationSheet } from "./AppShellNotificationSheet";
+import { AppShellUserMenu } from "./AppShellUserMenu";
 
 type FeedItem = {
   title: string;
@@ -94,10 +94,7 @@ export function AppShellHeader({
             activities={activities}
             contacts={contacts}
           />
-          <HeaderIcon
-            icon={UserIcon}
-            ariaLabel={t("app.header.aria.openUserAccount")}
-          />
+          <AppShellUserMenu ariaLabel={t("app.header.aria.openUserAccount")} />
         </div>
       </div>
     </header>

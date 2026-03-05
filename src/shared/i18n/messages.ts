@@ -91,6 +91,18 @@ export const TRANSLATIONS = {
       "Danh sách thông báo, hoạt động và liên hệ gần đây.",
     "app.notifications.activities": "Hoạt động",
     "app.notifications.contacts": "Liên hệ",
+    "app.userMenu.signedInAs": "Đăng nhập với",
+    "app.userMenu.profileSettings": "Thông tin tài khoản",
+    "app.userMenu.securitySettings": "Bảo mật tài khoản",
+    "app.userMenu.appearanceSettings": "Tùy chỉnh giao diện",
+    "app.userMenu.helpSupport": "Trợ giúp & hỗ trợ",
+    "app.userMenu.logout": "Đăng xuất",
+    "app.userMenu.guest": "Người dùng",
+    "app.userMenu.logoutConfirmTitle": "Xác nhận đăng xuất",
+    "app.userMenu.logoutConfirmDescription":
+      "Bạn có chắc muốn đăng xuất khỏi hệ thống không?",
+    "app.userMenu.logoutConfirmCancel": "Hủy",
+    "app.userMenu.logoutConfirmAction": "Đăng xuất",
 
     "settings.header.title": "Cài đặt hệ thống",
     "settings.header.description":
@@ -228,6 +240,18 @@ export const TRANSLATIONS = {
       "Recent notifications, activities, and contacts.",
     "app.notifications.activities": "Activities",
     "app.notifications.contacts": "Contacts",
+    "app.userMenu.signedInAs": "Signed in as",
+    "app.userMenu.profileSettings": "Profile settings",
+    "app.userMenu.securitySettings": "Security settings",
+    "app.userMenu.appearanceSettings": "Appearance settings",
+    "app.userMenu.helpSupport": "Help & support",
+    "app.userMenu.logout": "Log out",
+    "app.userMenu.guest": "User",
+    "app.userMenu.logoutConfirmTitle": "Confirm logout",
+    "app.userMenu.logoutConfirmDescription":
+      "Are you sure you want to log out of the system?",
+    "app.userMenu.logoutConfirmCancel": "Cancel",
+    "app.userMenu.logoutConfirmAction": "Log out",
 
     "settings.header.title": "System Settings",
     "settings.header.description":
