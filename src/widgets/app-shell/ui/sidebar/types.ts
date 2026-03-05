@@ -1,24 +1,34 @@
+import type { TranslationKey } from "@/shared/i18n/messages";
+
 export type SidebarAction = {
-  label: string;
+  labelKey: TranslationKey;
   destructive?: boolean;
 };
 
 export type SidebarSimpleItem = {
-  label: string;
+  labelKey: TranslationKey;
   kind: "simple";
+  to: string;
+  matchMode?: "exact" | "prefix";
+};
+
+export type SidebarChildItem = {
+  labelKey: TranslationKey;
+  to: string;
 };
 
 export type SidebarMenuItem = {
-  label: string;
+  labelKey: TranslationKey;
   icon?: unknown;
-  active?: boolean;
+  to?: string;
+  matchMode?: "exact" | "prefix";
   expandable?: boolean;
   expanded?: boolean;
-  children?: string[];
+  children?: SidebarChildItem[];
   actions?: SidebarAction[];
 };
 
 export type SidebarSection = {
-  title: string;
+  titleKey: TranslationKey;
   items: SidebarMenuItem[];
 };

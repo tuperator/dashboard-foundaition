@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";
 import { cn } from "@/shared/lib/utils";
+import { useI18n } from "@/shared/providers/i18n/I18nProvider";
 import type { SidebarAction } from "../types";
 
 type SidebarActionMenuProps = {
@@ -15,6 +16,8 @@ type SidebarActionMenuProps = {
 };
 
 export function SidebarActionMenu({ actions = [] }: SidebarActionMenuProps) {
+  const { t } = useI18n();
+
   if (!actions.length) {
     return null;
   }
@@ -31,19 +34,19 @@ export function SidebarActionMenu({ actions = [] }: SidebarActionMenuProps) {
             strokeWidth={2}
             className="size-[18px]"
           />
-          <span className="sr-only">Open item actions</span>
+          <span className="sr-only">{t("sidebar.actions.openItemMenu")}</span>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" side="right" className="w-40 rounded-lg">
         {actions.map((action, index) => (
-          <div key={action.label}>
+          <div key={action.labelKey}>
             {index > 0 && action.destructive ? <DropdownMenuSeparator /> : null}
             <DropdownMenuItem
               className={cn(
                 action.destructive && "text-red-600 focus:text-red-600",
               )}
             >
-              {action.label}
+              {t(action.labelKey)}
             </DropdownMenuItem>
           </div>
         ))}

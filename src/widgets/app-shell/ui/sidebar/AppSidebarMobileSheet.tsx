@@ -8,6 +8,7 @@ import {
   SheetTitle,
 } from "@/shared/ui/sheet";
 import { cn } from "@/shared/lib/utils";
+import { useI18n } from "@/shared/providers/i18n/I18nProvider";
 import {
   sidebarFavorites,
   sidebarProfileName,
@@ -23,13 +24,14 @@ import {
 } from "./components";
 
 export function AppSidebarMobileSheet() {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
 
   return (
     <>
       <button
         type="button"
-        aria-label="Open navigation menu"
+        aria-label={t("sidebar.mobile.title")}
         aria-expanded={open}
         onClick={() => setOpen(true)}
         className={cn(
@@ -45,9 +47,9 @@ export function AppSidebarMobileSheet() {
           side="left"
           className="w-[280px] max-w-[88vw] border-r border-[color:var(--sb-border)] bg-[var(--sb-bg)] p-0 sm:max-w-[280px]"
         >
-          <SheetTitle className="sr-only">Navigation menu</SheetTitle>
+          <SheetTitle className="sr-only">{t("sidebar.mobile.title")}</SheetTitle>
           <SheetDescription className="sr-only">
-            Browse dashboard sections and pages.
+            {t("sidebar.mobile.description")}
           </SheetDescription>
           <div className="flex h-full min-h-0 flex-col">
             <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4">

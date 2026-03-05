@@ -1,4 +1,4 @@
-import { useTheme } from "next-themes";
+import type { CSSProperties } from "react";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -8,13 +8,14 @@ import {
   MultiplicationSignCircleIcon,
   Loading03Icon,
 } from "@hugeicons/core-free-icons";
+import { useTheme } from "@/shared/providers/theme/ThemeProvider";
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme();
+  const { theme } = useTheme();
 
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      theme={theme}
       className="toaster group"
       icons={{
         success: (
@@ -59,7 +60,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
           "--border-radius": "var(--radius)",
-        } as React.CSSProperties
+        } as CSSProperties
       }
       toastOptions={{
         classNames: {

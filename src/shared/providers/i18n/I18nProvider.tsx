@@ -3,6 +3,7 @@ import {
   LOCALE_STORAGE_KEY,
   isLocale,
   translate,
+  translateWithParams,
   type Locale,
   type TranslationKey,
 } from "@/shared/i18n/messages";
@@ -12,11 +13,16 @@ import {
 } from "@/shared/i18n/store";
 
 export type Translate = (key: TranslationKey) => string;
+export type TranslateWithParams = (
+  key: TranslationKey,
+  params: Record<string, string | number>,
+) => string;
 
 type I18nContextValue = {
   locale: Locale;
   setLocale: (locale: Locale) => void;
   t: Translate;
+  tp: TranslateWithParams;
 };
 
 const I18nContext = React.createContext<I18nContextValue | null>(null);
@@ -46,14 +52,19 @@ export function I18nProvider({ children }: React.PropsWithChildren) {
     (key) => translate(locale, key),
     [locale],
   );
+  const tp = React.useCallback<TranslateWithParams>(
+    (key, params) => translateWithParams(locale, key, params),
+    [locale],
+  );
 
   const value = React.useMemo(
     () => ({
       locale,
       setLocale,
       t,
+      tp,
     }),
-    [locale, setLocale, t],
+    [locale, setLocale, t, tp],
   );
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;

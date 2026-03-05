@@ -7,6 +7,7 @@ import {
   ProfileIcon,
   SecurityLockIcon,
   SettingsIcon,
+  UserGroupIcon,
   UserIcon,
 } from "@hugeicons/core-free-icons";
 import { appRoutes } from "@/shared/constants/routes";
@@ -89,6 +90,11 @@ export function AppShellUserMenu({ ariaLabel }: AppShellUserMenuProps) {
         <DropdownMenuItem onSelect={() => openSettingsSection("general")}>
           <HugeiconsIcon icon={ProfileIcon} className="size-4" />
           {t("app.userMenu.profileSettings")}
+        </DropdownMenuItem>
+
+        <DropdownMenuItem onSelect={() => navigate(appRoutes.users)}>
+          <HugeiconsIcon icon={UserGroupIcon} className="size-4" />
+          {t("app.userMenu.userManagement")}
         </DropdownMenuItem>
 
         <DropdownMenuItem onSelect={() => openSettingsSection("security")}>

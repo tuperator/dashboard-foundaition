@@ -41,12 +41,41 @@ export function AppShellHeader({
   const location = useLocation();
   const { t } = useI18n();
   const isSettingsPage = location.pathname.startsWith(appRoutes.settings);
-  const breadcrumbRoot = isSettingsPage
-    ? t("app.header.breadcrumb.system")
-    : t("app.header.breadcrumb.dashboards");
-  const breadcrumbPage = isSettingsPage
-    ? t("app.header.breadcrumb.settings")
-    : t("app.header.breadcrumb.default");
+  const isUsersPage = location.pathname.startsWith(appRoutes.users);
+  const isTasksPage = location.pathname.startsWith(appRoutes.tasksOverview);
+  const isTaskBoardPage = location.pathname.startsWith(appRoutes.tasksBoard);
+  const isTaskCalendarPage = location.pathname.startsWith(appRoutes.tasksCalendar);
+  const isTaskBacklogPage = location.pathname.startsWith(appRoutes.tasksBacklog);
+  const isRoleGroupsPage = location.pathname.startsWith(appRoutes.roleGroups);
+  const isBranchesPage = location.pathname.startsWith(appRoutes.branches);
+  const isCompanyPage = location.pathname.startsWith(appRoutes.companyInfo);
+
+  const breadcrumbRoot =
+    isUsersPage || isRoleGroupsPage || isBranchesPage || isCompanyPage || isSettingsPage
+      ? t("app.header.breadcrumb.system")
+      : isTasksPage
+        ? t("app.header.breadcrumb.tasks")
+        : t("app.header.breadcrumb.dashboards");
+
+  const breadcrumbPage = isUsersPage
+    ? t("app.header.breadcrumb.users")
+    : isRoleGroupsPage
+      ? t("app.header.breadcrumb.roleGroups")
+      : isBranchesPage
+        ? t("app.header.breadcrumb.branches")
+        : isCompanyPage
+          ? t("app.header.breadcrumb.company")
+          : isSettingsPage
+            ? t("app.header.breadcrumb.settings")
+            : isTasksPage
+              ? isTaskBoardPage
+                ? t("tasks.board.title")
+                : isTaskCalendarPage
+                  ? t("tasks.calendar.title")
+                  : isTaskBacklogPage
+                    ? t("tasks.backlog.title")
+                    : t("app.header.breadcrumb.tasks")
+              : t("app.header.breadcrumb.default");
 
   return (
     <header className="border-border/90 bg-card shrink-0 border-b px-3 py-2.5 shadow-[0_1px_0_rgba(16,24,40,0.03)] md:px-5 md:py-3">

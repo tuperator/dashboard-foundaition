@@ -1,14 +1,11 @@
 import {
-  CreditCardIcon,
-  File01Icon,
-  FileIcon,
-  FolderIcon,
   FolderOpenIcon,
   LayoutIcon,
-  MailIcon,
-  NotificationIcon,
+  SettingsIcon,
+  UserGroupIcon,
   UserIcon,
 } from "@hugeicons/core-free-icons";
+import { appRoutes } from "@/shared/constants/routes";
 import type {
   SidebarAction,
   SidebarSection,
@@ -17,94 +14,101 @@ import type {
 
 export const sidebarProfileName = "ByeWind";
 
-export const sidebarTabs = ["Favorites", "Recently"] as const;
+export const sidebarTabs = ["sidebar.tabs.favorites", "sidebar.tabs.recently"] as const;
 
 export const defaultActions: SidebarAction[] = [
-  { label: "Open" },
-  { label: "Share" },
-  { label: "Edit" },
-  { label: "Delete", destructive: true },
+  { labelKey: "sidebar.actions.open" },
+  { labelKey: "sidebar.actions.share" },
+  { labelKey: "sidebar.actions.edit" },
+  { labelKey: "sidebar.actions.delete", destructive: true },
 ];
 
 export const sidebarFavorites: SidebarSimpleItem[] = [
-  { label: "Overview", kind: "simple" },
-  { label: "Projects", kind: "simple" },
+  {
+    labelKey: "sidebar.item.overview",
+    kind: "simple",
+    to: appRoutes.dashboard,
+    matchMode: "exact",
+  },
+  {
+    labelKey: "sidebar.item.userManagement",
+    kind: "simple",
+    to: appRoutes.users,
+    matchMode: "prefix",
+  },
 ];
 
 export const sidebarSections: SidebarSection[] = [
   {
-    title: "Dashboards",
+    titleKey: "sidebar.section.main",
     items: [
       {
-        label: "Default",
+        labelKey: "sidebar.item.overview",
         icon: LayoutIcon,
-        active: true,
-        actions: defaultActions,
-      },
-      {
-        label: "eCommerce",
-        icon: FolderOpenIcon,
-        expandable: true,
-        actions: defaultActions,
-      },
-      {
-        label: "Projects",
-        icon: FolderIcon,
-        expandable: true,
-        actions: defaultActions,
-      },
-      {
-        label: "Online Courses",
-        icon: FileIcon,
-        expandable: true,
+        to: appRoutes.dashboard,
+        matchMode: "exact",
         actions: defaultActions,
       },
     ],
   },
   {
-    title: "Pages",
+    titleKey: "sidebar.section.operations",
     items: [
       {
-        label: "User Profile",
-        icon: UserIcon,
+        labelKey: "sidebar.item.taskManager",
+        icon: FolderOpenIcon,
         expanded: true,
         children: [
-          "Overview",
-          "Projects",
-          "Campaigns",
-          "Documents",
-          "Followers",
+          { labelKey: "sidebar.item.taskOverview", to: appRoutes.tasksOverview },
+          { labelKey: "sidebar.item.taskBoard", to: appRoutes.tasksBoard },
+          { labelKey: "sidebar.item.taskCalendar", to: appRoutes.tasksCalendar },
+          { labelKey: "sidebar.item.taskBacklog", to: appRoutes.tasksBacklog },
         ],
         actions: defaultActions,
       },
+    ],
+  },
+  {
+    titleKey: "sidebar.section.organization",
+    items: [
       {
-        label: "Account",
-        icon: CreditCardIcon,
-        expandable: true,
+        labelKey: "sidebar.item.userManagement",
+        icon: UserGroupIcon,
+        to: appRoutes.users,
+        matchMode: "prefix",
         actions: defaultActions,
       },
       {
-        label: "Corporate",
+        labelKey: "sidebar.item.roleGroups",
         icon: UserIcon,
-        expandable: true,
+        to: appRoutes.roleGroups,
+        matchMode: "prefix",
         actions: defaultActions,
       },
       {
-        label: "Blog",
-        icon: File01Icon,
-        expandable: true,
+        labelKey: "sidebar.item.branches",
+        icon: LayoutIcon,
+        to: appRoutes.branches,
+        matchMode: "prefix",
         actions: defaultActions,
       },
       {
-        label: "Social",
-        icon: NotificationIcon,
-        expandable: true,
+        labelKey: "sidebar.item.companyInfo",
+        icon: FolderOpenIcon,
+        to: appRoutes.companyInfo,
+        matchMode: "prefix",
         actions: defaultActions,
       },
+    ],
+  },
+  {
+    titleKey: "sidebar.section.system",
+    items: [
       {
-        label: "Messages",
-        icon: MailIcon,
-        expandable: true,
+        labelKey: "sidebar.item.settings",
+        icon: SettingsIcon,
+        to: appRoutes.settings,
+        matchMode: "prefix",
         actions: defaultActions,
       },
     ],

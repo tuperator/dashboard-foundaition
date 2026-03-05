@@ -1,7 +1,9 @@
 import type { ComponentProps } from "react";
 import { useMemo } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
+import type { TranslationKey } from "@/shared/i18n/messages";
 import {
   sidebarFavorites,
   sidebarProfileName,
@@ -22,6 +24,7 @@ import {
   TooltipTrigger,
 } from "@/shared/ui/tooltip";
 import { cn } from "@/shared/lib/utils";
+import { useI18n } from "@/shared/providers/i18n/I18nProvider";
 
 type IconType = ComponentProps<typeof HugeiconsIcon>["icon"];
 
@@ -31,15 +34,17 @@ type AppSidebarProps = {
 };
 
 export function AppSidebar({ collapsed, onToggleCollapsed }: AppSidebarProps) {
+  const { t } = useI18n();
   const collapsedItems = useMemo(
     () =>
       sidebarSections
         .flatMap((section) => section.items)
         .filter((item) => Boolean(item.icon))
         .map((item) => ({
-          label: item.label,
+          labelKey: item.labelKey,
           icon: item.icon as IconType,
-          active: Boolean(item.active),
+          to: item.to || item.children?.[0]?.to || "",
+          matchMode: item.matchMode,
         })),
     [],
   );
@@ -57,6 +62,7 @@ export function AppSidebar({ collapsed, onToggleCollapsed }: AppSidebarProps) {
             <div className="motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-95 motion-safe:duration-200">
               <CollapsedSidebarContent
                 items={collapsedItems}
+                translate={t}
                 onToggleCollapsed={onToggleCollapsed}
               />
             </div>
@@ -84,11 +90,20 @@ export function AppSidebar({ collapsed, onToggleCollapsed }: AppSidebarProps) {
 
 function CollapsedSidebarContent({
   items,
+  translate,
   onToggleCollapsed,
 }: {
-  items: { label: string; icon: IconType; active: boolean }[];
+  items: {
+    labelKey: TranslationKey;
+    icon: IconType;
+    to: string;
+    matchMode?: "exact" | "prefix";
+  }[];
+  translate: (key: TranslationKey) => string;
   onToggleCollapsed: () => void;
 }) {
+  const location = useLocation();
+
   return (
     <TooltipProvider delayDuration={100}>
       <div className="flex h-full flex-col">
@@ -98,13 +113,18 @@ function CollapsedSidebarContent({
 
         <div className="mx-auto w-full max-w-[40px] space-y-1.5">
           {items.map((item) => (
-            <Tooltip key={item.label}>
+            <Tooltip key={item.labelKey}>
               <TooltipTrigger asChild>
-                <button
-                  type="button"
+                <NavLink
+                  to={item.to || "#"}
+                  end={item.matchMode !== "prefix"}
                   className={cn(
                     "grid h-10 w-10 place-content-center rounded-xl text-[var(--sb-rail-icon)] transition",
-                    item.active
+                    isCollapsedItemActive(
+                      location.pathname,
+                      item.to,
+                      item.matchMode,
+                    )
                       ? "bg-[var(--sb-rail-active-bg)] text-[var(--sb-rail-active-icon)]"
                       : "hover:bg-[var(--sb-rail-hover)]",
                   )}
@@ -114,14 +134,14 @@ function CollapsedSidebarContent({
                     strokeWidth={2}
                     className="size-5"
                   />
-                </button>
+                </NavLink>
               </TooltipTrigger>
               <TooltipContent
                 side="right"
                 sideOffset={8}
                 className="rounded-xl px-3 py-1.5 text-xs font-medium [--tooltip-bg:#111827] [--tooltip-fg:#ffffff]"
               >
-                {item.label}
+                {translate(item.labelKey)}
               </TooltipContent>
             </Tooltip>
           ))}
@@ -129,6 +149,39 @@ function CollapsedSidebarContent({
       </div>
     </TooltipProvider>
   );
+}
+
+function isCollapsedItemActive(
+  pathname: string,
+  to: string,
+  matchMode: "exact" | "prefix" = "exact",
+) {
+  if (!to) {
+    return false;
+  }
+
+  const normalizedPath = normalizePath(pathname);
+  const normalizedTo = normalizePath(to);
+
+  if (normalizedTo === "/") {
+    return normalizedPath === "/";
+  }
+
+  if (matchMode === "prefix") {
+    return (
+      normalizedPath === normalizedTo ||
+      normalizedPath.startsWith(`${normalizedTo}/`)
+    );
+  }
+
+  return normalizedPath === normalizedTo;
+}
+
+function normalizePath(value: string) {
+  if (!value || value === "/") {
+    return "/";
+  }
+  return value.endsWith("/") ? value.slice(0, -1) : value;
 }
 
 function ToggleButton({
