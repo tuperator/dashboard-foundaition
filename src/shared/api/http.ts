@@ -3,6 +3,7 @@ import { AxiosError, AxiosHeaders } from "axios";
 import type { InternalAxiosRequestConfig } from "axios";
 import { clearAuthSession, getAuthSession, saveAuthSession } from "@/shared/lib/auth-session";
 import { API_BASE_URL, API_KEY } from "./config";
+import { API_ENDPOINTS } from "./endpoints";
 import { getApiErrorMessage } from "./error-messages";
 
 declare module "axios" {
@@ -63,7 +64,7 @@ type ApiClientErrorParams = {
   backendMessage?: string;
 };
 
-const REFRESH_TOKEN_ENDPOINT = "/api/v1/auth/refresh-token";
+const REFRESH_TOKEN_ENDPOINT = API_ENDPOINTS.auth.refreshToken;
 
 export class ApiClientError extends Error {
   status: number;

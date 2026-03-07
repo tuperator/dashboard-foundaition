@@ -5,7 +5,6 @@ import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { useI18n } from "@/shared/providers/i18n/I18nProvider";
-import { Switch } from "@/shared/ui/switch";
 import {
   Select,
   SelectContent,
@@ -19,8 +18,17 @@ import type {
   Gender,
   UpdateUserProfilePayload,
   UserAccount,
+  UserUnknownGender,
+  UserUnassignedBranch,
   UserRole,
-  UserStatus,
+} from "../../model/types";
+import {
+  USER_SHEET_CONTENT_CLASS,
+  USER_UNASSIGNED_BRANCH,
+} from "../../model/constants";
+import {
+  USER_UNKNOWN_GENDER_VALUE,
+  USER_UNASSIGNED_BRANCH_VALUE,
 } from "../../model/types";
 
 type UserProfileSheetProps = {
@@ -38,11 +46,9 @@ type ProfileFormState = {
   email: string;
   phone: string;
   address: string;
-  gender: Gender | "UNKNOWN";
-  status: UserStatus;
+  gender: Gender | UserUnknownGender;
   roleIds: string[];
-  branchId: string | "UNASSIGNED";
-  twoFactorEnabled: boolean;
+  branchId: string | UserUnassignedBranch;
 };
 
 export function UserProfileSheet({
@@ -61,7 +67,7 @@ export function UserProfileSheet({
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent
           side="right"
-          className="w-[520px] max-w-[95vw] [zoom:var(--app-scale)] sm:max-w-[520px]"
+          className={USER_SHEET_CONTENT_CLASS}
         >
           <div className="space-y-1 border-b px-5 py-4">
             <SheetTitle className="text-base">{t("users.profile.title")}</SheetTitle>
@@ -111,11 +117,9 @@ function UserProfileFormContent({
       email: user.email,
       phone: user.phone || "",
       address: user.address || "",
-      gender: user.gender || "UNKNOWN",
-      status: user.status,
+      gender: user.gender || USER_UNKNOWN_GENDER_VALUE,
       roleIds: user.roles.map((role) => role.id),
-      branchId: user.branchId || "UNASSIGNED",
-      twoFactorEnabled: user.twoFactorEnabled,
+      branchId: user.branchId || USER_UNASSIGNED_BRANCH_VALUE,
     }),
     [user],
   );
@@ -126,8 +130,20 @@ function UserProfileFormContent({
     () =>
       form.username.trim() &&
       form.email.trim() &&
+      form.phone.trim() &&
+      form.address.trim() &&
+      form.gender !== USER_UNKNOWN_GENDER_VALUE &&
+      form.branchId !== USER_UNASSIGNED_BRANCH &&
       form.roleIds.length > 0,
-    [form.email, form.roleIds.length, form.username],
+    [
+      form.address,
+      form.branchId,
+      form.email,
+      form.gender,
+      form.phone,
+      form.roleIds.length,
+      form.username,
+    ],
   );
 
   const toggleRole = (roleId: string, checked: boolean) => {
@@ -151,7 +167,7 @@ function UserProfileFormContent({
     >
       <SheetContent
         side="right"
-        className="w-[520px] max-w-[95vw] [zoom:var(--app-scale)] sm:max-w-[520px]"
+        className={USER_SHEET_CONTENT_CLASS}
       >
         <div className="flex h-full min-h-0 flex-col">
           <div className="space-y-1 border-b px-5 py-4">
@@ -211,14 +227,17 @@ function UserProfileFormContent({
                 <Select
                   value={form.gender}
                   onValueChange={(value) =>
-                    setForm((prev) => ({ ...prev, gender: value as Gender | "UNKNOWN" }))
+                    setForm((prev) => ({
+                      ...prev,
+                      gender: value as Gender | UserUnknownGender,
+                    }))
                   }
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="UNKNOWN">
+                    <SelectItem value={USER_UNKNOWN_GENDER_VALUE}>
                       {t("users.profile.gender.unknown")}
                     </SelectItem>
                     <SelectItem value="MALE">{t("users.profile.gender.male")}</SelectItem>
@@ -233,20 +252,28 @@ function UserProfileFormContent({
               </div>
 
               <div className="space-y-1.5">
-                <Label>{t("users.profile.status")}</Label>
+                <Label>{t("users.profile.branches")}</Label>
                 <Select
-                  value={form.status}
-                  onValueChange={(value) =>
-                    setForm((prev) => ({ ...prev, status: value as UserStatus }))
-                  }
-                >
+                  value={form.branchId}
+                onValueChange={(value) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    branchId: value as string | UserUnassignedBranch,
+                  }))
+                }
+              >
                   <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="WORKING">{t("users.status.working")}</SelectItem>
-                    <SelectItem value="ONLEAVE">{t("users.status.onLeave")}</SelectItem>
-                    <SelectItem value="RESIGNED">{t("users.status.resigned")}</SelectItem>
+                    <SelectItem value={USER_UNASSIGNED_BRANCH}>
+                      {t("users.branch.selectPlaceholder")}
+                    </SelectItem>
+                    {branchOptions.map((branch) => (
+                      <SelectItem key={branch.id} value={branch.id}>
+                        {branch.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -271,51 +298,9 @@ function UserProfileFormContent({
 
             <Separator />
 
-            <div className="space-y-2">
-              <Label>{t("users.profile.branches")}</Label>
-              <Select
-                value={form.branchId}
-                onValueChange={(value) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    branchId: value as string | "UNASSIGNED",
-                  }))
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="UNASSIGNED">
-                    {t("users.branch.selectPlaceholder")}
-                  </SelectItem>
-                  {branchOptions.map((branch) => (
-                    <SelectItem key={branch.id} value={branch.id}>
-                      {branch.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Separator />
-
-            <div className="flex items-center justify-between gap-3 rounded-xl border bg-input/20 px-3 py-2">
-              <div className="space-y-0.5">
-                <p className="text-sm font-medium">
-                  {t("users.profile.twoFactor.title")}
-                </p>
-                <p className="text-muted-foreground text-xs">
-                  {t("users.profile.twoFactor.description")}
-                </p>
-              </div>
-              <Switch
-                checked={form.twoFactorEnabled}
-                onCheckedChange={(checked) =>
-                  setForm((prev) => ({ ...prev, twoFactorEnabled: checked }))
-                }
-              />
-            </div>
+            <p className="text-muted-foreground text-xs">
+              {t("users.profile.statusReadonlyHint")}
+            </p>
           </div>
 
           <div className="mt-auto flex items-center justify-end gap-2 border-t px-5 py-4">
@@ -328,14 +313,13 @@ function UserProfileFormContent({
                 onSubmit({
                   username: form.username.trim(),
                   email: form.email.trim(),
-                  phone: form.phone.trim() || null,
-                  address: form.address.trim() || null,
-                  gender: form.gender === "UNKNOWN" ? null : form.gender,
-                  status: form.status,
+                  phone: form.phone.trim(),
+                  address: form.address.trim(),
+                  gender:
+                    form.gender === USER_UNKNOWN_GENDER_VALUE ? null : form.gender,
                   roleIds: form.roleIds,
                   branchId:
-                    form.branchId === "UNASSIGNED" ? null : form.branchId,
-                  twoFactorEnabled: form.twoFactorEnabled,
+                    form.branchId === USER_UNASSIGNED_BRANCH ? null : form.branchId,
                 })
               }
             >

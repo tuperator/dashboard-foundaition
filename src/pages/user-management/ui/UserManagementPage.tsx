@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { ApiClientError } from "@/shared/api/http";
 import { AppShell } from "@/widgets/app-shell";
 import { useI18n } from "@/shared/providers/i18n/I18nProvider";
 import { useAppToast } from "@/shared/providers/toast/ToastProvider";
@@ -15,6 +16,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
+import {
+  USER_DEFAULT_PAGE,
+  USER_MAX_VISIBLE_PAGES,
+  USER_PAGE_SIZE_OPTIONS,
+} from "../model/constants";
 import { useUserManagement } from "../model/useUserManagement";
 import type {
   CreateUserPayload,
@@ -23,7 +29,6 @@ import type {
   UserStatus,
 } from "../model/types";
 import { CreateUserSheet } from "./components/CreateUserSheet";
-import { DeleteUserAlert } from "./components/DeleteUserAlert";
 import { UserManagementHeader } from "./components/UserManagementHeader";
 import { UserManagementTable } from "./components/UserManagementTable";
 import { UserPasswordDialog } from "./components/UserPasswordDialog";
@@ -57,7 +62,6 @@ export function UserManagementPage() {
     updateProfileMutation,
     updatePasswordMutation,
     updateStatusMutation,
-    deleteUserMutation,
   } = useUserManagement();
 
   const users = usersQuery.data?.items ?? EMPTY_USERS;
@@ -67,11 +71,13 @@ export function UserManagementPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserAccount | null>(null);
   const [passwordUser, setPasswordUser] = useState<UserAccount | null>(null);
-  const [deletingUser, setDeletingUser] = useState<UserAccount | null>(null);
 
   const pages = useMemo(
     () =>
-      Array.from({ length: totalPages }, (_, index) => index + 1).slice(0, 7),
+      Array.from({ length: totalPages }, (_, index) => index + 1).slice(
+        0,
+        USER_MAX_VISIBLE_PAGES,
+      ),
     [totalPages],
   );
 
@@ -174,29 +180,6 @@ export function UserManagementPage() {
     }
   };
 
-  const handleDeleteUser = async () => {
-    if (!deletingUser) {
-      return;
-    }
-
-    try {
-      const deletedName = deletingUser.username;
-      await deleteUserMutation.mutateAsync(deletingUser.id);
-      setDeletingUser(null);
-      appToast.success({
-        title: t("users.notice.userDeleted.title"),
-        description: tp("users.notice.userDeleted.description", {
-          name: deletedName,
-        }),
-      });
-    } catch (error) {
-      appToast.error({
-        title: t("users.notice.error.deleteUser"),
-        description: resolveErrorMessage(error, t),
-      });
-    }
-  };
-
   return (
     <AppShell>
       <section className="space-y-4">
@@ -209,19 +192,19 @@ export function UserManagementPage() {
           roleOptions={roleOptions}
           onSearchChange={(value) => {
             setSearch(value);
-            setPage(1);
+            setPage(USER_DEFAULT_PAGE);
           }}
           onRoleFilterChange={(value) => {
             setRoleFilter(value);
-            setPage(1);
+            setPage(USER_DEFAULT_PAGE);
           }}
           onStatusFilterChange={(value) => {
             setStatusFilter(value);
-            setPage(1);
+            setPage(USER_DEFAULT_PAGE);
           }}
           onTwoFactorFilterChange={(value) => {
             setTwoFactorFilter(value);
-            setPage(1);
+            setPage(USER_DEFAULT_PAGE);
           }}
           onResetFilters={resetFilters}
           onOpenCreateUser={() => setCreateOpen(true)}
@@ -234,7 +217,6 @@ export function UserManagementPage() {
             loading={usersQuery.isLoading}
             onEditUser={setEditingUser}
             onOpenPassword={setPasswordUser}
-            onDeleteUser={setDeletingUser}
             onChangeStatus={handleChangeStatus}
           />
 
@@ -245,16 +227,18 @@ export function UserManagementPage() {
                 value={String(pageSize)}
                 onValueChange={(value) => {
                   setPageSize(Number(value));
-                  setPage(1);
+                  setPage(USER_DEFAULT_PAGE);
                 }}
               >
                 <SelectTrigger size="sm" className="w-[88px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="15">15</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
+                  {USER_PAGE_SIZE_OPTIONS.map((value) => (
+                    <SelectItem key={value} value={String(value)}>
+                      {value}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <span>
@@ -319,44 +303,20 @@ export function UserManagementPage() {
         }}
         onSubmit={handleUpdatePassword}
       />
-
-      <DeleteUserAlert
-        open={Boolean(deletingUser)}
-        user={deletingUser}
-        submitting={deleteUserMutation.isPending}
-        onOpenChange={(open) => {
-          if (!open) {
-            setDeletingUser(null);
-          }
-        }}
-        onConfirm={handleDeleteUser}
-      />
     </AppShell>
   );
 }
 
 function resolveErrorMessage(
   error: unknown,
-  t: (
-    key:
-      | "users.error.passwordPolicy"
-      | "users.error.emailExists"
-      | "users.error.notFound"
-      | "users.error.unknown",
-  ) => string,
+  t: (key: "users.error.unknown") => string,
 ) {
-  if (error instanceof Error) {
-    if (error.message === "PASSWORD_POLICY_INVALID") {
-      return t("users.error.passwordPolicy");
-    }
+  if (error instanceof ApiClientError) {
+    return error.message;
+  }
 
-    if (error.message === "USER_NOT_FOUND") {
-      return t("users.error.notFound");
-    }
-
-    if (error.message === "USER_EMAIL_EXISTS") {
-      return t("users.error.emailExists");
-    }
+  if (error instanceof Error && error.message) {
+    return error.message;
   }
 
   return t("users.error.unknown");

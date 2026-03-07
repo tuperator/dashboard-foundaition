@@ -4,8 +4,26 @@ export type UserStatus = (typeof USER_STATUS_VALUES)[number];
 export const GENDER_VALUES = ["MALE", "FEMALE", "OTHER"] as const;
 export type Gender = (typeof GENDER_VALUES)[number];
 
+export const USER_UNKNOWN_GENDER_VALUE = "UNKNOWN" as const;
+export type UserUnknownGender = typeof USER_UNKNOWN_GENDER_VALUE;
+
 export const BRANCH_STATUS_VALUES = ["ACTIVE", "INACTIVE"] as const;
 export type BranchStatus = (typeof BRANCH_STATUS_VALUES)[number];
+
+export const USER_FILTER_ALL_VALUE = "ALL" as const;
+export type UserFilterAll = typeof USER_FILTER_ALL_VALUE;
+
+export const USER_TWO_FACTOR_FILTER_VALUES = [
+  "ALL",
+  "ENABLED",
+  "DISABLED",
+] as const;
+export type UserTwoFactorFilter = (typeof USER_TWO_FACTOR_FILTER_VALUES)[number];
+
+export const USER_UNASSIGNED_BRANCH_VALUE = "UNASSIGNED" as const;
+export type UserUnassignedBranch = typeof USER_UNASSIGNED_BRANCH_VALUE;
+
+export type UserStatusFilter = UserFilterAll | UserStatus;
 
 export type UserRole = {
   id: string;
@@ -44,8 +62,8 @@ export type UserListFilters = {
   pageSize: number;
   search: string;
   role: string;
-  status: "ALL" | UserStatus;
-  twoFactor: "ALL" | "ENABLED" | "DISABLED";
+  status: UserStatusFilter;
+  twoFactor: UserTwoFactorFilter;
 };
 
 export type PaginatedResult<TData> = {
@@ -58,21 +76,19 @@ export type PaginatedResult<TData> = {
 export type UpdateUserProfilePayload = {
   username: string;
   email: string;
-  phone: string | null;
-  address: string | null;
+  phone: string;
+  address: string;
   gender: Gender | null;
-  status: UserStatus;
-  roleIds: string[];
   branchId: string | null;
-  twoFactorEnabled: boolean;
+  roleIds: string[];
 };
 
 export type CreateUserPayload = {
   username: string;
   email: string;
   password: string;
-  phone: string | null;
-  address: string | null;
+  phone: string;
+  address: string;
   gender: Gender | null;
   status: UserStatus;
   roleIds: string[];

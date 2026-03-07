@@ -61,6 +61,8 @@ export const usersMessages = {
     "users.profile.twoFactor.title": "Xác thực 2 lớp",
     "users.profile.twoFactor.description":
       "Bật xác thực hai lớp cho tài khoản người dùng.",
+    "users.profile.statusReadonlyHint":
+      "Đổi trạng thái user bằng menu Action tại bảng danh sách.",
     "users.profile.save": "Lưu hồ sơ",
     "users.password.title": "Cập nhật mật khẩu",
     "users.password.description": "Thiết lập mật khẩu mới cho {name}.",
@@ -170,6 +172,8 @@ export const usersMessages = {
     "users.profile.twoFactor.title": "2FA authentication",
     "users.profile.twoFactor.description":
       "Enable two-factor authentication for this account.",
+    "users.profile.statusReadonlyHint":
+      "Change user status from the action menu in the table.",
     "users.profile.save": "Save profile",
     "users.password.title": "Update password",
     "users.password.description": "Set a new password for {name}.",

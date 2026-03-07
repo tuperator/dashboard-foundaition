@@ -1,4 +1,5 @@
 import { API_KEY } from "./config";
+import { API_ENDPOINTS } from "./endpoints";
 import { apiClient } from "./http";
 import type { ApiEnvelope } from "./http";
 
@@ -14,8 +15,8 @@ export type AuthTokenData = {
   roles: string[];
 };
 
-export const LOGIN_ENDPOINT = "/api/v1/auth/login";
-export const REFRESH_TOKEN_ENDPOINT = "/api/v1/auth/refresh-token";
+export const LOGIN_ENDPOINT = API_ENDPOINTS.auth.login;
+export const REFRESH_TOKEN_ENDPOINT = API_ENDPOINTS.auth.refreshToken;
 
 export async function login(payload: { email: string; password: string }) {
   const response = await apiClient.post<ApiEnvelope<AuthTokenData>>(

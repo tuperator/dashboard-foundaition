@@ -1,37 +1,40 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  createUser,
-  deleteUser,
-  listBranches,
-  listUserRoles,
-  listUsers,
+  createUserInCompany,
+  getMyProfile,
+  listBranchesByCompany,
+  listRoles,
+  listUsersByCompany,
   updateUserPassword,
   updateUserProfile,
   updateUserStatus,
-} from "./userManagement.api.mock";
+} from "./userManagement.api";
+import {
+  USER_DEFAULT_PAGE,
+  USER_DEFAULT_PAGE_SIZE,
+  USER_FILTER_ALL,
+  USER_MANAGEMENT_QUERY_KEYS,
+} from "./constants";
 import type {
   CreateUserPayload,
+  UserTwoFactorFilter,
   UpdateUserPasswordPayload,
   UpdateUserProfilePayload,
+  UserStatusFilter,
   UserStatus,
 } from "./types";
-
-const USER_LIST_QUERY_KEY = "user-management-list";
-const USER_ROLE_QUERY_KEY = "user-management-roles";
-const USER_BRANCH_QUERY_KEY = "user-management-branches";
 
 export function useUserManagement() {
   const queryClient = useQueryClient();
 
   const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState("ALL");
-  const [statusFilter, setStatusFilter] = useState<"ALL" | UserStatus>("ALL");
-  const [twoFactorFilter, setTwoFactorFilter] = useState<
-    "ALL" | "ENABLED" | "DISABLED"
-  >("ALL");
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(15);
+  const [roleFilter, setRoleFilter] = useState<string>(USER_FILTER_ALL);
+  const [statusFilter, setStatusFilter] = useState<UserStatusFilter>(USER_FILTER_ALL);
+  const [twoFactorFilter, setTwoFactorFilter] =
+    useState<UserTwoFactorFilter>(USER_FILTER_ALL);
+  const [page, setPage] = useState(USER_DEFAULT_PAGE);
+  const [pageSize, setPageSize] = useState(USER_DEFAULT_PAGE_SIZE);
 
   const filters = useMemo(
     () => ({
@@ -45,25 +48,41 @@ export function useUserManagement() {
     [page, pageSize, roleFilter, search, statusFilter, twoFactorFilter],
   );
 
+  const myProfileQuery = useQuery({
+    queryKey: [USER_MANAGEMENT_QUERY_KEYS.me],
+    queryFn: getMyProfile,
+  });
+
+  const companyId = myProfileQuery.data?.companyId || null;
+
   const usersQuery = useQuery({
-    queryKey: [USER_LIST_QUERY_KEY, filters],
-    queryFn: () => listUsers(filters),
+    queryKey: [USER_MANAGEMENT_QUERY_KEYS.list, companyId, filters],
+    queryFn: () =>
+      listUsersByCompany({
+        companyId: companyId as string,
+        filters,
+      }),
+    enabled: Boolean(companyId),
   });
 
   const rolesQuery = useQuery({
-    queryKey: [USER_ROLE_QUERY_KEY],
-    queryFn: listUserRoles,
+    queryKey: [USER_MANAGEMENT_QUERY_KEYS.roles],
+    queryFn: listRoles,
+    enabled: myProfileQuery.isSuccess,
   });
 
   const branchesQuery = useQuery({
-    queryKey: [USER_BRANCH_QUERY_KEY],
-    queryFn: listBranches,
+    queryKey: [USER_MANAGEMENT_QUERY_KEYS.branches, companyId],
+    queryFn: () => listBranchesByCompany(companyId as string),
+    enabled: Boolean(companyId),
   });
 
   const createUserMutation = useMutation({
-    mutationFn: (payload: CreateUserPayload) => createUser(payload),
+    mutationFn: (payload: CreateUserPayload) =>
+      createUserInCompany(companyId as string, payload),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: [USER_LIST_QUERY_KEY] });
+      void queryClient.invalidateQueries({ queryKey: [USER_MANAGEMENT_QUERY_KEYS.list] });
+      void queryClient.invalidateQueries({ queryKey: [USER_MANAGEMENT_QUERY_KEYS.roles] });
     },
   });
 
@@ -71,7 +90,7 @@ export function useUserManagement() {
     mutationFn: (args: { userId: string; payload: UpdateUserProfilePayload }) =>
       updateUserProfile(args.userId, args.payload),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: [USER_LIST_QUERY_KEY] });
+      void queryClient.invalidateQueries({ queryKey: [USER_MANAGEMENT_QUERY_KEYS.list] });
     },
   });
 
@@ -84,29 +103,25 @@ export function useUserManagement() {
     mutationFn: (args: { userId: string; status: UserStatus }) =>
       updateUserStatus(args.userId, args.status),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: [USER_LIST_QUERY_KEY] });
-    },
-  });
-
-  const deleteUserMutation = useMutation({
-    mutationFn: (userId: string) => deleteUser(userId),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: [USER_LIST_QUERY_KEY] });
+      void queryClient.invalidateQueries({ queryKey: [USER_MANAGEMENT_QUERY_KEYS.list] });
     },
   });
 
   const total = usersQuery.data?.total ?? 0;
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const totalPages =
+    usersQuery.data?.totalPages ?? Math.max(1, Math.ceil(total / pageSize));
 
   const resetFilters = () => {
     setSearch("");
-    setRoleFilter("ALL");
-    setStatusFilter("ALL");
-    setTwoFactorFilter("ALL");
-    setPage(1);
+    setRoleFilter(USER_FILTER_ALL);
+    setStatusFilter(USER_FILTER_ALL);
+    setTwoFactorFilter(USER_FILTER_ALL);
+    setPage(USER_DEFAULT_PAGE);
   };
 
   return {
+    myProfileQuery,
+    companyId,
     usersQuery,
     rolesQuery,
     branchesQuery,
@@ -129,6 +144,5 @@ export function useUserManagement() {
     updateProfileMutation,
     updatePasswordMutation,
     updateStatusMutation,
-    deleteUserMutation,
   };
 }

@@ -1,6 +1,5 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  Delete02Icon,
   Edit01Icon,
   MoreHorizontalCircle01Icon,
   LockPasswordIcon,
@@ -12,7 +11,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -26,7 +24,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/ui/table";
+import {
+  USER_ACTION_MENU_CLASS,
+  USER_ACTION_STATUS_SUB_MENU_CLASS,
+  USER_ROLE_VISIBLE_BADGES,
+  USER_TABLE_COLUMN_COUNT,
+  USER_TABLE_MIN_WIDTH_CLASS,
+} from "../../model/constants";
 import type { Branch, UserAccount, UserStatus } from "../../model/types";
+import { USER_STATUS_VALUES } from "../../model/types";
 import { UserStatusBadge } from "./UserStatusBadge";
 
 type UserManagementTableProps = {
@@ -35,7 +41,6 @@ type UserManagementTableProps = {
   loading?: boolean;
   onEditUser: (user: UserAccount) => void;
   onOpenPassword: (user: UserAccount) => void;
-  onDeleteUser: (user: UserAccount) => void;
   onChangeStatus: (user: UserAccount, status: UserStatus) => void;
 };
 
@@ -45,14 +50,13 @@ export function UserManagementTable({
   loading = false,
   onEditUser,
   onOpenPassword,
-  onDeleteUser,
   onChangeStatus,
 }: UserManagementTableProps) {
   const { t, locale } = useI18n();
   const branchLabelById = new Map(branchOptions.map((branch) => [branch.id, branch.name]));
 
   return (
-    <Table className="min-w-[980px]">
+    <Table className={USER_TABLE_MIN_WIDTH_CLASS}>
       <TableHeader>
         <TableRow className="bg-muted/25">
           <TableHead className="w-[56px]">
@@ -72,7 +76,7 @@ export function UserManagementTable({
         {loading ? (
           <TableRow>
             <TableCell
-              colSpan={8}
+              colSpan={USER_TABLE_COLUMN_COUNT}
               className="py-10 text-center text-muted-foreground"
             >
               {t("users.table.loading")}
@@ -83,7 +87,7 @@ export function UserManagementTable({
         {!loading && users.length === 0 ? (
           <TableRow>
             <TableCell
-              colSpan={8}
+              colSpan={USER_TABLE_COLUMN_COUNT}
               className="py-10 text-center text-muted-foreground"
             >
               {t("users.table.empty")}
@@ -111,7 +115,7 @@ export function UserManagementTable({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       align="start"
-                      className="w-44 rounded-lg [zoom:var(--app-scale)]"
+                      className={USER_ACTION_MENU_CLASS}
                     >
                       <DropdownMenuItem onClick={() => onEditUser(user)}>
                         <HugeiconsIcon icon={Edit01Icon} className="size-3.5" />
@@ -125,32 +129,21 @@ export function UserManagementTable({
                         <DropdownMenuSubTrigger>
                           {t("users.table.action.changeStatus")}
                         </DropdownMenuSubTrigger>
-                        <DropdownMenuSubContent className="w-40 rounded-lg [zoom:var(--app-scale)]">
-                          <DropdownMenuItem
-                            onClick={() => onChangeStatus(user, "WORKING")}
-                          >
-                            {t("users.status.working")}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => onChangeStatus(user, "ONLEAVE")}
-                          >
-                            {t("users.status.onLeave")}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => onChangeStatus(user, "RESIGNED")}
-                          >
-                            {t("users.status.resigned")}
-                          </DropdownMenuItem>
+                        <DropdownMenuSubContent className={USER_ACTION_STATUS_SUB_MENU_CLASS}>
+                          {USER_STATUS_VALUES.map((status) => (
+                            <DropdownMenuItem
+                              key={status}
+                              onClick={() => onChangeStatus(user, status)}
+                            >
+                              {status === "WORKING"
+                                ? t("users.status.working")
+                                : status === "ONLEAVE"
+                                  ? t("users.status.onLeave")
+                                  : t("users.status.resigned")}
+                            </DropdownMenuItem>
+                          ))}
                         </DropdownMenuSubContent>
                       </DropdownMenuSub>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        variant="destructive"
-                        onClick={() => onDeleteUser(user)}
-                      >
-                        <HugeiconsIcon icon={Delete02Icon} className="size-3.5" />
-                        {t("users.table.action.delete")}
-                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -172,7 +165,7 @@ export function UserManagementTable({
 
                 <TableCell>
                   <div className="flex max-w-[220px] flex-wrap items-center gap-1">
-                    {user.roles.slice(0, 2).map((role) => (
+                    {user.roles.slice(0, USER_ROLE_VISIBLE_BADGES).map((role) => (
                       <Badge
                         key={role.id}
                         variant="outline"
@@ -181,9 +174,9 @@ export function UserManagementTable({
                         {role.roleName}
                       </Badge>
                     ))}
-                    {user.roles.length > 2 ? (
+                    {user.roles.length > USER_ROLE_VISIBLE_BADGES ? (
                       <Badge variant="outline" className="h-5 rounded-full">
-                        +{user.roles.length - 2}
+                        +{user.roles.length - USER_ROLE_VISIBLE_BADGES}
                       </Badge>
                     ) : null}
                   </div>

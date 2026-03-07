@@ -18,8 +18,22 @@ import type {
   Branch,
   CreateUserPayload,
   Gender,
+  UserUnknownGender,
+  UserUnassignedBranch,
   UserRole,
   UserStatus,
+} from "../../model/types";
+import {
+  USER_DEFAULT_CREATE_STATUS,
+  USER_FORM_EMAIL_REGEX,
+  USER_PASSWORD_MIN_LENGTH,
+  USER_SHEET_CONTENT_CLASS,
+  USER_UNASSIGNED_BRANCH,
+} from "../../model/constants";
+import {
+  USER_STATUS_VALUES,
+  USER_UNKNOWN_GENDER_VALUE,
+  USER_UNASSIGNED_BRANCH_VALUE,
 } from "../../model/types";
 
 type CreateUserSheetProps = {
@@ -37,10 +51,10 @@ type CreateUserFormState = {
   password: string;
   phone: string;
   address: string;
-  gender: Gender | "UNKNOWN";
+  gender: Gender | UserUnknownGender;
   status: UserStatus;
   roleIds: string[];
-  branchId: string | "UNASSIGNED";
+  branchId: string | UserUnassignedBranch;
   twoFactorEnabled: boolean;
 };
 
@@ -50,10 +64,10 @@ const INITIAL_FORM: CreateUserFormState = {
   password: "",
   phone: "",
   address: "",
-  gender: "UNKNOWN",
-  status: "WORKING",
+  gender: USER_UNKNOWN_GENDER_VALUE,
+  status: USER_DEFAULT_CREATE_STATUS,
   roleIds: [],
-  branchId: "UNASSIGNED",
+  branchId: USER_UNASSIGNED_BRANCH_VALUE,
   twoFactorEnabled: true,
 };
 
@@ -69,17 +83,20 @@ export function CreateUserSheet({
   const [form, setForm] = useState<CreateUserFormState>(INITIAL_FORM);
 
   const emailValid = useMemo(
-    () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()),
+    () => USER_FORM_EMAIL_REGEX.test(form.email.trim()),
     [form.email],
   );
-  const passwordValid = form.password.length >= 8;
+  const passwordValid = form.password.length >= USER_PASSWORD_MIN_LENGTH;
 
   const canSubmit =
     form.username.trim().length > 0 &&
     emailValid &&
     passwordValid &&
+    form.phone.trim().length > 0 &&
+    form.address.trim().length > 0 &&
+    form.gender !== USER_UNKNOWN_GENDER_VALUE &&
     form.roleIds.length > 0 &&
-    form.branchId !== "UNASSIGNED";
+    form.branchId !== USER_UNASSIGNED_BRANCH;
 
   const toggleRole = (roleId: string, checked: boolean) => {
     setForm((prev) => {
@@ -102,7 +119,7 @@ export function CreateUserSheet({
     >
       <SheetContent
         side="right"
-        className="w-[520px] max-w-[95vw] [zoom:var(--app-scale)] sm:max-w-[520px]"
+        className={USER_SHEET_CONTENT_CLASS}
       >
         <div className="flex h-full min-h-0 flex-col">
           <div className="space-y-1 border-b px-5 py-4">
@@ -185,14 +202,17 @@ export function CreateUserSheet({
                 <Select
                   value={form.gender}
                   onValueChange={(value) =>
-                    setForm((prev) => ({ ...prev, gender: value as Gender | "UNKNOWN" }))
+                    setForm((prev) => ({
+                      ...prev,
+                      gender: value as Gender | UserUnknownGender,
+                    }))
                   }
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="UNKNOWN">
+                    <SelectItem value={USER_UNKNOWN_GENDER_VALUE}>
                       {t("users.profile.gender.unknown")}
                     </SelectItem>
                     <SelectItem value="MALE">{t("users.profile.gender.male")}</SelectItem>
@@ -218,9 +238,15 @@ export function CreateUserSheet({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="WORKING">{t("users.status.working")}</SelectItem>
-                    <SelectItem value="ONLEAVE">{t("users.status.onLeave")}</SelectItem>
-                    <SelectItem value="RESIGNED">{t("users.status.resigned")}</SelectItem>
+                    {USER_STATUS_VALUES.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {status === "WORKING"
+                          ? t("users.status.working")
+                          : status === "ONLEAVE"
+                            ? t("users.status.onLeave")
+                            : t("users.status.resigned")}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -252,7 +278,7 @@ export function CreateUserSheet({
                 onValueChange={(value) =>
                   setForm((prev) => ({
                     ...prev,
-                    branchId: value as string | "UNASSIGNED",
+                    branchId: value as string | UserUnassignedBranch,
                   }))
                 }
               >
@@ -260,7 +286,7 @@ export function CreateUserSheet({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="UNASSIGNED">
+                  <SelectItem value={USER_UNASSIGNED_BRANCH}>
                     {t("users.branch.selectPlaceholder")}
                   </SelectItem>
                   {branchOptions.map((branch) => (
@@ -303,13 +329,14 @@ export function CreateUserSheet({
                   username: form.username.trim(),
                   email: form.email.trim(),
                   password: form.password,
-                  phone: form.phone.trim() || null,
-                  address: form.address.trim() || null,
-                  gender: form.gender === "UNKNOWN" ? null : form.gender,
+                  phone: form.phone.trim(),
+                  address: form.address.trim(),
+                  gender:
+                    form.gender === USER_UNKNOWN_GENDER_VALUE ? null : form.gender,
                   status: form.status,
                   roleIds: form.roleIds,
                   branchId:
-                    form.branchId === "UNASSIGNED" ? null : form.branchId,
+                    form.branchId === USER_UNASSIGNED_BRANCH ? null : form.branchId,
                   twoFactorEnabled: form.twoFactorEnabled,
                 })
               }

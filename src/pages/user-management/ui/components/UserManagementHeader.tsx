@@ -16,19 +16,27 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { Badge } from "@/shared/ui/badge";
-import type { UserRole, UserStatus } from "../../model/types";
+import type { UserRole } from "../../model/types";
+import {
+  USER_FILTER_ALL,
+} from "../../model/constants";
+import {
+  USER_STATUS_VALUES,
+  type UserStatusFilter,
+  type UserTwoFactorFilter,
+} from "../../model/types";
 
 type UserManagementHeaderProps = {
   totalUsers: number;
   search: string;
   roleFilter: string;
-  statusFilter: "ALL" | UserStatus;
-  twoFactorFilter: "ALL" | "ENABLED" | "DISABLED";
+  statusFilter: UserStatusFilter;
+  twoFactorFilter: UserTwoFactorFilter;
   roleOptions: UserRole[];
   onSearchChange: (value: string) => void;
   onRoleFilterChange: (value: string) => void;
-  onStatusFilterChange: (value: "ALL" | UserStatus) => void;
-  onTwoFactorFilterChange: (value: "ALL" | "ENABLED" | "DISABLED") => void;
+  onStatusFilterChange: (value: UserStatusFilter) => void;
+  onTwoFactorFilterChange: (value: UserTwoFactorFilter) => void;
   onResetFilters: () => void;
   onOpenCreateUser: () => void;
 };
@@ -109,8 +117,8 @@ export function UserManagementHeader({
             <SelectTrigger className="w-full">
               <SelectValue placeholder={t("users.filter.role")} />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">{t("users.filter.allRoles")}</SelectItem>
+          <SelectContent>
+              <SelectItem value={USER_FILTER_ALL}>{t("users.filter.allRoles")}</SelectItem>
               {roleOptions.map((role) => (
                 <SelectItem key={role.id} value={role.id}>
                   {role.roleName}
@@ -121,30 +129,36 @@ export function UserManagementHeader({
 
           <Select
             value={statusFilter}
-            onValueChange={(value) => onStatusFilterChange(value as "ALL" | UserStatus)}
+            onValueChange={(value) => onStatusFilterChange(value as UserStatusFilter)}
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder={t("users.filter.status")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL">{t("users.filter.allStatus")}</SelectItem>
-              <SelectItem value="WORKING">{t("users.status.working")}</SelectItem>
-              <SelectItem value="ONLEAVE">{t("users.status.onLeave")}</SelectItem>
-              <SelectItem value="RESIGNED">{t("users.status.resigned")}</SelectItem>
+              <SelectItem value={USER_FILTER_ALL}>{t("users.filter.allStatus")}</SelectItem>
+              {USER_STATUS_VALUES.map((status) => (
+                <SelectItem key={status} value={status}>
+                  {status === "WORKING"
+                    ? t("users.status.working")
+                    : status === "ONLEAVE"
+                      ? t("users.status.onLeave")
+                      : t("users.status.resigned")}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
           <Select
             value={twoFactorFilter}
             onValueChange={(value) =>
-              onTwoFactorFilterChange(value as "ALL" | "ENABLED" | "DISABLED")
+              onTwoFactorFilterChange(value as UserTwoFactorFilter)
             }
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder={t("users.filter.twoFactor")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL">{t("users.filter.twoFactorAll")}</SelectItem>
+              <SelectItem value={USER_FILTER_ALL}>{t("users.filter.twoFactorAll")}</SelectItem>
               <SelectItem value="ENABLED">{t("users.filter.twoFactorEnabled")}</SelectItem>
               <SelectItem value="DISABLED">{t("users.filter.twoFactorDisabled")}</SelectItem>
             </SelectContent>
