@@ -55,7 +55,9 @@ export const usersMessages = {
     "users.profile.gender.other": "Khác",
     "users.profile.status": "Trạng thái",
     "users.profile.roles": "Vai trò (chọn nhiều)",
-    "users.profile.branches": "Chi nhánh (chọn nhiều)",
+    "users.profile.branches": "Chi nhánh",
+    "users.branch.selectPlaceholder": "Chọn chi nhánh",
+    "users.branch.unassigned": "Chưa gán",
     "users.profile.twoFactor.title": "Xác thực 2 lớp",
     "users.profile.twoFactor.description":
       "Bật xác thực hai lớp cho tài khoản người dùng.",
@@ -162,7 +164,9 @@ export const usersMessages = {
     "users.profile.gender.other": "Other",
     "users.profile.status": "Status",
     "users.profile.roles": "Roles (multi-select)",
-    "users.profile.branches": "Branches (multi-select)",
+    "users.profile.branches": "Branch",
+    "users.branch.selectPlaceholder": "Select branch",
+    "users.branch.unassigned": "Unassigned",
     "users.profile.twoFactor.title": "2FA authentication",
     "users.profile.twoFactor.description":
       "Enable two-factor authentication for this account.",

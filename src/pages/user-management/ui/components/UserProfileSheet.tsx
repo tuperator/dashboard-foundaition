@@ -41,7 +41,7 @@ type ProfileFormState = {
   gender: Gender | "UNKNOWN";
   status: UserStatus;
   roleIds: string[];
-  branchIds: string[];
+  branchId: string | "UNASSIGNED";
   twoFactorEnabled: boolean;
 };
 
@@ -114,7 +114,7 @@ function UserProfileFormContent({
       gender: user.gender || "UNKNOWN",
       status: user.status,
       roleIds: user.roles.map((role) => role.id),
-      branchIds: user.branchIds,
+      branchId: user.branchId || "UNASSIGNED",
       twoFactorEnabled: user.twoFactorEnabled,
     }),
     [user],
@@ -126,9 +126,8 @@ function UserProfileFormContent({
     () =>
       form.username.trim() &&
       form.email.trim() &&
-      form.roleIds.length > 0 &&
-      form.branchIds.length > 0,
-    [form.branchIds.length, form.email, form.roleIds.length, form.username],
+      form.roleIds.length > 0,
+    [form.email, form.roleIds.length, form.username],
   );
 
   const toggleRole = (roleId: string, checked: boolean) => {
@@ -137,18 +136,6 @@ function UserProfileFormContent({
         return { ...prev, roleIds: [...prev.roleIds, roleId] };
       }
       return { ...prev, roleIds: prev.roleIds.filter((id) => id !== roleId) };
-    });
-  };
-
-  const toggleBranch = (branchId: string, checked: boolean) => {
-    setForm((prev) => {
-      if (checked) {
-        return { ...prev, branchIds: [...prev.branchIds, branchId] };
-      }
-      return {
-        ...prev,
-        branchIds: prev.branchIds.filter((id) => id !== branchId),
-      };
     });
   };
 
@@ -286,22 +273,29 @@ function UserProfileFormContent({
 
             <div className="space-y-2">
               <Label>{t("users.profile.branches")}</Label>
-              <div className="grid gap-2 rounded-xl border bg-input/20 p-3">
-                {branchOptions.map((branch) => (
-                  <label
-                    key={branch.id}
-                    className="inline-flex items-center justify-between gap-2 text-xs"
-                  >
-                    <span>{branch.name}</span>
-                    <Checkbox
-                      checked={form.branchIds.includes(branch.id)}
-                      onCheckedChange={(checked) =>
-                        toggleBranch(branch.id, Boolean(checked))
-                      }
-                    />
-                  </label>
-                ))}
-              </div>
+              <Select
+                value={form.branchId}
+                onValueChange={(value) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    branchId: value as string | "UNASSIGNED",
+                  }))
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="UNASSIGNED">
+                    {t("users.branch.selectPlaceholder")}
+                  </SelectItem>
+                  {branchOptions.map((branch) => (
+                    <SelectItem key={branch.id} value={branch.id}>
+                      {branch.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <Separator />
@@ -339,7 +333,8 @@ function UserProfileFormContent({
                   gender: form.gender === "UNKNOWN" ? null : form.gender,
                   status: form.status,
                   roleIds: form.roleIds,
-                  branchIds: form.branchIds,
+                  branchId:
+                    form.branchId === "UNASSIGNED" ? null : form.branchId,
                   twoFactorEnabled: form.twoFactorEnabled,
                 })
               }

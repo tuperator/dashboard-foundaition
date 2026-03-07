@@ -190,18 +190,15 @@ export function UserManagementTable({
                 </TableCell>
 
                 <TableCell>
-                  <div className="flex max-w-[220px] flex-wrap items-center gap-1">
-                    {user.branchIds.slice(0, 2).map((branchId) => (
-                      <Badge key={branchId} variant="outline" className="h-5 rounded-full">
-                        {branchLabelById.get(branchId) || branchId}
-                      </Badge>
-                    ))}
-                    {user.branchIds.length > 2 ? (
-                      <Badge variant="outline" className="h-5 rounded-full">
-                        +{user.branchIds.length - 2}
-                      </Badge>
-                    ) : null}
-                  </div>
+                  {user.branchId ? (
+                    <Badge variant="outline" className="h-5 rounded-full">
+                      {branchLabelById.get(user.branchId) || user.branchId}
+                    </Badge>
+                  ) : (
+                    <span className="text-muted-foreground text-xs">
+                      {t("users.branch.unassigned")}
+                    </span>
+                  )}
                 </TableCell>
 
                 <TableCell>

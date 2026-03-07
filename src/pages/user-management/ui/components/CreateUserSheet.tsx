@@ -40,7 +40,7 @@ type CreateUserFormState = {
   gender: Gender | "UNKNOWN";
   status: UserStatus;
   roleIds: string[];
-  branchIds: string[];
+  branchId: string | "UNASSIGNED";
   twoFactorEnabled: boolean;
 };
 
@@ -53,7 +53,7 @@ const INITIAL_FORM: CreateUserFormState = {
   gender: "UNKNOWN",
   status: "WORKING",
   roleIds: [],
-  branchIds: [],
+  branchId: "UNASSIGNED",
   twoFactorEnabled: true,
 };
 
@@ -79,7 +79,7 @@ export function CreateUserSheet({
     emailValid &&
     passwordValid &&
     form.roleIds.length > 0 &&
-    form.branchIds.length > 0;
+    form.branchId !== "UNASSIGNED";
 
   const toggleRole = (roleId: string, checked: boolean) => {
     setForm((prev) => {
@@ -87,18 +87,6 @@ export function CreateUserSheet({
         return { ...prev, roleIds: [...prev.roleIds, roleId] };
       }
       return { ...prev, roleIds: prev.roleIds.filter((id) => id !== roleId) };
-    });
-  };
-
-  const toggleBranch = (branchId: string, checked: boolean) => {
-    setForm((prev) => {
-      if (checked) {
-        return { ...prev, branchIds: [...prev.branchIds, branchId] };
-      }
-      return {
-        ...prev,
-        branchIds: prev.branchIds.filter((id) => id !== branchId),
-      };
     });
   };
 
@@ -259,22 +247,29 @@ export function CreateUserSheet({
 
             <div className="space-y-2">
               <Label>{t("users.profile.branches")}</Label>
-              <div className="grid gap-2 rounded-xl border bg-input/20 p-3">
-                {branchOptions.map((branch) => (
-                  <label
-                    key={branch.id}
-                    className="inline-flex items-center justify-between gap-2 text-xs"
-                  >
-                    <span>{branch.name}</span>
-                    <Checkbox
-                      checked={form.branchIds.includes(branch.id)}
-                      onCheckedChange={(checked) =>
-                        toggleBranch(branch.id, Boolean(checked))
-                      }
-                    />
-                  </label>
-                ))}
-              </div>
+              <Select
+                value={form.branchId}
+                onValueChange={(value) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    branchId: value as string | "UNASSIGNED",
+                  }))
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="UNASSIGNED">
+                    {t("users.branch.selectPlaceholder")}
+                  </SelectItem>
+                  {branchOptions.map((branch) => (
+                    <SelectItem key={branch.id} value={branch.id}>
+                      {branch.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <Separator />
@@ -313,7 +308,8 @@ export function CreateUserSheet({
                   gender: form.gender === "UNKNOWN" ? null : form.gender,
                   status: form.status,
                   roleIds: form.roleIds,
-                  branchIds: form.branchIds,
+                  branchId:
+                    form.branchId === "UNASSIGNED" ? null : form.branchId,
                   twoFactorEnabled: form.twoFactorEnabled,
                 })
               }

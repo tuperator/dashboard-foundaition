@@ -28,7 +28,6 @@ export type UserAccount = {
   address: string | null;
   companyId: string | null;
   branchId: string | null;
-  branchIds: string[];
   status: UserStatus;
   gender: Gender | null;
   createdAt: string;
@@ -64,7 +63,7 @@ export type UpdateUserProfilePayload = {
   gender: Gender | null;
   status: UserStatus;
   roleIds: string[];
-  branchIds: string[];
+  branchId: string | null;
   twoFactorEnabled: boolean;
 };
 
@@ -77,7 +76,7 @@ export type CreateUserPayload = {
   gender: Gender | null;
   status: UserStatus;
   roleIds: string[];
-  branchIds: string[];
+  branchId: string | null;
   twoFactorEnabled: boolean;
 };
 

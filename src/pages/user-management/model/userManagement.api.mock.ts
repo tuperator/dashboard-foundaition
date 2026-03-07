@@ -41,10 +41,9 @@ export async function listUsers(
   const keyword = normalizeSearch(filters.search);
 
   let filtered = usersDb.filter((user) => {
-    const branchText = user.branchIds
-      .map((branchId) => mockBranches.find((branch) => branch.id === branchId)?.name || "")
-      .join(" ")
-      .toLowerCase();
+    const branchText = (
+      mockBranches.find((branch) => branch.id === user.branchId)?.name || ""
+    ).toLowerCase();
 
     const matchedSearch =
       keyword.length === 0 ||
@@ -97,7 +96,7 @@ export async function updateUserProfile(
   }
 
   const nextRoles = mockRoles.filter((role) => payload.roleIds.includes(role.id));
-  const normalizedBranchIds = normalizeBranchIds(payload.branchIds);
+  const normalizedBranchId = normalizeBranchId(payload.branchId);
 
   usersDb[index] = {
     ...usersDb[index],
@@ -108,8 +107,7 @@ export async function updateUserProfile(
     gender: payload.gender,
     status: payload.status,
     roles: nextRoles,
-    branchIds: normalizedBranchIds,
-    branchId: normalizedBranchIds[0] || null,
+    branchId: normalizedBranchId,
     twoFactorEnabled: payload.twoFactorEnabled,
     updatedAt: new Date().toISOString(),
   };
@@ -177,7 +175,7 @@ export async function createUser(payload: CreateUserPayload) {
   }
 
   const nextRoles = mockRoles.filter((role) => payload.roleIds.includes(role.id));
-  const normalizedBranchIds = normalizeBranchIds(payload.branchIds);
+  const normalizedBranchId = normalizeBranchId(payload.branchId);
   const nowIso = new Date().toISOString();
 
   const nextUser: UserAccount = {
@@ -187,8 +185,7 @@ export async function createUser(payload: CreateUserPayload) {
     phone: payload.phone,
     address: payload.address,
     companyId: "company-01",
-    branchId: normalizedBranchIds[0] || null,
-    branchIds: normalizedBranchIds,
+    branchId: normalizedBranchId,
     status: payload.status,
     gender: payload.gender,
     createdAt: nowIso,
@@ -205,8 +202,10 @@ export async function createUser(payload: CreateUserPayload) {
   return structuredClone(nextUser);
 }
 
-function normalizeBranchIds(branchIds: string[]) {
+function normalizeBranchId(branchId: string | null) {
+  if (!branchId) {
+    return null;
+  }
   const branchSet = new Set(mockBranches.map((branch) => branch.id));
-  const unique = [...new Set(branchIds)].filter((id) => branchSet.has(id));
-  return unique;
+  return branchSet.has(branchId) ? branchId : null;
 }
