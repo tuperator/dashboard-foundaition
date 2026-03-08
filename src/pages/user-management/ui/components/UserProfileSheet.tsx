@@ -1,5 +1,10 @@
 import { useMemo, useState } from "react";
-import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/shared/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+} from "@/shared/ui/sheet";
 import { Label } from "@/shared/ui/label";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
@@ -65,12 +70,11 @@ export function UserProfileSheet({
   if (!user) {
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent
-          side="right"
-          className={USER_SHEET_CONTENT_CLASS}
-        >
+        <SheetContent side="right" className={USER_SHEET_CONTENT_CLASS}>
           <div className="space-y-1 border-b px-5 py-4">
-            <SheetTitle className="text-base">{t("users.profile.title")}</SheetTitle>
+            <SheetTitle className="text-base">
+              {t("users.profile.title")}
+            </SheetTitle>
             <SheetDescription>{t("users.error.notFound")}</SheetDescription>
           </div>
         </SheetContent>
@@ -165,31 +169,39 @@ function UserProfileFormContent({
         onOpenChange(nextOpen);
       }}
     >
-      <SheetContent
-        side="right"
-        className={USER_SHEET_CONTENT_CLASS}
-      >
+      <SheetContent side="right" className={USER_SHEET_CONTENT_CLASS}>
         <div className="flex h-full min-h-0 flex-col">
           <div className="space-y-1 border-b px-5 py-4">
-            <SheetTitle className="text-base">{t("users.profile.title")}</SheetTitle>
-            <SheetDescription>{t("users.profile.description")}</SheetDescription>
+            <SheetTitle className="text-base">
+              {t("users.profile.title")}
+            </SheetTitle>
+            <SheetDescription>
+              {t("users.profile.description")}
+            </SheetDescription>
           </div>
 
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5 sm:col-span-2">
-                <Label htmlFor="profile-username">{t("users.profile.fullName")}</Label>
+                <Label htmlFor="profile-username">
+                  {t("users.profile.fullName")}
+                </Label>
                 <Input
                   id="profile-username"
                   value={form.username}
                   onChange={(event) =>
-                    setForm((prev) => ({ ...prev, username: event.target.value }))
+                    setForm((prev) => ({
+                      ...prev,
+                      username: event.target.value,
+                    }))
                   }
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="profile-email">{t("users.profile.email")}</Label>
+                <Label htmlFor="profile-email">
+                  {t("users.profile.email")}
+                </Label>
                 <Input
                   id="profile-email"
                   type="email"
@@ -201,7 +213,9 @@ function UserProfileFormContent({
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="profile-phone">{t("users.profile.phone")}</Label>
+                <Label htmlFor="profile-phone">
+                  {t("users.profile.phone")}
+                </Label>
                 <Input
                   id="profile-phone"
                   value={form.phone}
@@ -212,12 +226,17 @@ function UserProfileFormContent({
               </div>
 
               <div className="space-y-1.5 sm:col-span-2">
-                <Label htmlFor="profile-address">{t("users.profile.address")}</Label>
+                <Label htmlFor="profile-address">
+                  {t("users.profile.address")}
+                </Label>
                 <Input
                   id="profile-address"
                   value={form.address}
                   onChange={(event) =>
-                    setForm((prev) => ({ ...prev, address: event.target.value }))
+                    setForm((prev) => ({
+                      ...prev,
+                      address: event.target.value,
+                    }))
                   }
                 />
               </div>
@@ -240,7 +259,9 @@ function UserProfileFormContent({
                     <SelectItem value={USER_UNKNOWN_GENDER_VALUE}>
                       {t("users.profile.gender.unknown")}
                     </SelectItem>
-                    <SelectItem value="MALE">{t("users.profile.gender.male")}</SelectItem>
+                    <SelectItem value="MALE">
+                      {t("users.profile.gender.male")}
+                    </SelectItem>
                     <SelectItem value="FEMALE">
                       {t("users.profile.gender.female")}
                     </SelectItem>
@@ -255,13 +276,13 @@ function UserProfileFormContent({
                 <Label>{t("users.profile.branches")}</Label>
                 <Select
                   value={form.branchId}
-                onValueChange={(value) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    branchId: value as string | UserUnassignedBranch,
-                  }))
-                }
-              >
+                  onValueChange={(value) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      branchId: value as string | UserUnassignedBranch,
+                    }))
+                  }
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
@@ -283,12 +304,17 @@ function UserProfileFormContent({
 
             <div className="space-y-2">
               <Label>{t("users.profile.roles")}</Label>
-              <div className="grid gap-2 rounded-xl border bg-input/20 p-3">
+              <div className="bg-input/20 grid gap-2 rounded-xl border p-3">
                 {roleOptions.map((role) => (
-                  <label key={role.id} className="inline-flex items-center gap-2 text-xs">
+                  <label
+                    key={role.id}
+                    className="inline-flex items-center gap-2 text-xs"
+                  >
                     <Checkbox
                       checked={form.roleIds.includes(role.id)}
-                      onCheckedChange={(checked) => toggleRole(role.id, Boolean(checked))}
+                      onCheckedChange={(checked) =>
+                        toggleRole(role.id, Boolean(checked))
+                      }
                     />
                     {role.roleName}
                   </label>
@@ -316,14 +342,20 @@ function UserProfileFormContent({
                   phone: form.phone.trim(),
                   address: form.address.trim(),
                   gender:
-                    form.gender === USER_UNKNOWN_GENDER_VALUE ? null : form.gender,
+                    form.gender === USER_UNKNOWN_GENDER_VALUE
+                      ? null
+                      : form.gender,
                   roleIds: form.roleIds,
                   branchId:
-                    form.branchId === USER_UNASSIGNED_BRANCH ? null : form.branchId,
+                    form.branchId === USER_UNASSIGNED_BRANCH
+                      ? null
+                      : form.branchId,
                 })
               }
             >
-              {submitting ? `${t("users.profile.save")}...` : t("users.profile.save")}
+              {submitting
+                ? `${t("users.profile.save")}...`
+                : t("users.profile.save")}
             </Button>
           </div>
         </div>

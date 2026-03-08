@@ -17,6 +17,8 @@ export const apiMessages = {
       "Email hoặc số điện thoại đã tồn tại trong hệ thống.",
     "api.error.BRANCH_NOT_FOUND":
       "Chi nhánh không hợp lệ hoặc đã ngừng hoạt động.",
+    "api.error.BRANCH_MANAGEMENT_FORBIDDEN":
+      "Bạn không có quyền quản lý chi nhánh.",
     "api.error.ROLE_NOT_FOUND": "Vai trò không hợp lệ.",
     "api.error.VALIDATION_ERROR":
       "Dữ liệu gửi lên chưa đúng định dạng. Vui lòng kiểm tra lại.",
@@ -68,6 +70,8 @@ export const apiMessages = {
       "Email or phone number already exists.",
     "api.error.BRANCH_NOT_FOUND":
       "Branch is invalid or no longer active.",
+    "api.error.BRANCH_MANAGEMENT_FORBIDDEN":
+      "You do not have permission to manage branches.",
     "api.error.ROLE_NOT_FOUND": "Role is invalid.",
     "api.error.VALIDATION_ERROR":
       "Submitted data format is invalid. Please review and try again.",
