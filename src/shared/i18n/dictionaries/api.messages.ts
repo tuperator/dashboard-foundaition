@@ -19,6 +19,12 @@ export const apiMessages = {
       "Chi nhánh không hợp lệ hoặc đã ngừng hoạt động.",
     "api.error.BRANCH_MANAGEMENT_FORBIDDEN":
       "Bạn không có quyền quản lý chi nhánh.",
+    "api.error.COMPANY_PROFILE_NOT_FOUND":
+      "Không tìm thấy thông tin công ty hiện tại.",
+    "api.error.COMPANY_PROFILE_UPDATE_FORBIDDEN":
+      "Bạn không có quyền cập nhật hồ sơ công ty.",
+    "api.error.COMPANY_CODE_ALREADY_EXISTS":
+      "Mã công ty đã tồn tại trong hệ thống.",
     "api.error.ROLE_NOT_FOUND": "Vai trò không hợp lệ.",
     "api.error.VALIDATION_ERROR":
       "Dữ liệu gửi lên chưa đúng định dạng. Vui lòng kiểm tra lại.",
@@ -72,6 +78,12 @@ export const apiMessages = {
       "Branch is invalid or no longer active.",
     "api.error.BRANCH_MANAGEMENT_FORBIDDEN":
       "You do not have permission to manage branches.",
+    "api.error.COMPANY_PROFILE_NOT_FOUND":
+      "Current company profile was not found.",
+    "api.error.COMPANY_PROFILE_UPDATE_FORBIDDEN":
+      "You do not have permission to update company profile.",
+    "api.error.COMPANY_CODE_ALREADY_EXISTS":
+      "Company code already exists in the system.",
     "api.error.ROLE_NOT_FOUND": "Role is invalid.",
     "api.error.VALIDATION_ERROR":
       "Submitted data format is invalid. Please review and try again.",

@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { BranchManagementPage } from "@/pages/branch-management";
+import { CompanyManagementPage } from "@/pages/company-management";
 import { DashboardPage } from "@/pages/dashboard";
 import { LoginPage } from "@/pages/login";
 import { ManagementPlaceholderPage } from "@/pages/management-placeholder";
@@ -103,10 +104,7 @@ const router = createBrowserRouter([
     path: appRoutes.companyInfo,
     element: (
       <RequireAuth>
-        <ManagementPlaceholderPage
-          titleKey="company.title"
-          descriptionKey="company.description"
-        />
+        <CompanyManagementPage />
       </RequireAuth>
     ),
   },

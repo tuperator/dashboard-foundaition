@@ -18,4 +18,7 @@ export const API_ENDPOINTS = {
     byId: (branchId: string) => `/api/v1/branches/${branchId}`,
     status: (branchId: string) => `/api/v1/branches/${branchId}/status`,
   },
+  companies: {
+    me: "/api/v1/companies/me",
+  },
 } as const;
