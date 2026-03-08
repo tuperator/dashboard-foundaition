@@ -4,6 +4,7 @@ export { authMessages } from "./auth.messages";
 export { branchesMessages } from "./branches.messages";
 export { commonMessages } from "./common.messages";
 export { managementMessages } from "./management.messages";
+export { rolesMessages } from "./roles.messages";
 export { settingsMessages } from "./settings.messages";
 export { sidebarMessages } from "./sidebar.messages";
 export { usersMessages } from "./users.messages";

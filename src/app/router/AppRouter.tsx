@@ -4,6 +4,7 @@ import { DashboardPage } from "@/pages/dashboard";
 import { LoginPage } from "@/pages/login";
 import { ManagementPlaceholderPage } from "@/pages/management-placeholder";
 import { NotFoundPage } from "@/pages/not-found";
+import { RoleManagementPage } from "@/pages/role-management";
 import { SettingsPage } from "@/pages/settings";
 import { UserManagementPage } from "@/pages/user-management";
 import { appRoutes } from "@/shared/constants/routes";
@@ -86,10 +87,7 @@ const router = createBrowserRouter([
     path: appRoutes.roleGroups,
     element: (
       <RequireAuth>
-        <ManagementPlaceholderPage
-          titleKey="roles.title"
-          descriptionKey="roles.description"
-        />
+        <RoleManagementPage />
       </RequireAuth>
     ),
   },

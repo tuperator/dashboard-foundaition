@@ -1,4 +1,5 @@
 import { API_ENDPOINTS } from "@/shared/api/endpoints";
+import { listRoles as listRolesApi } from "@/shared/api/roles";
 import { apiClient } from "@/shared/api/http";
 import type { Branch, BranchStatus, CreateUserPayload, PaginatedResult, UpdateUserPasswordPayload, UpdateUserProfilePayload, UserAccount, UserListFilters, UserRole, UserStatus } from "./types";
 import { USER_FILTER_ALL } from "./constants";
@@ -46,10 +47,6 @@ type BackendBranchItem = {
 
 type BackendBranchesResponse = {
   items: BackendBranchItem[];
-};
-
-type BackendRolesResponse = {
-  items: BackendUserRole[];
 };
 
 type ListUsersByCompanyParams = {
@@ -123,15 +120,7 @@ export async function listBranchesByCompany(companyId: string): Promise<Branch[]
 }
 
 export async function listRoles(): Promise<UserRole[]> {
-  const response = await apiClient.get<BackendRolesResponse>(API_ENDPOINTS.roles.list);
-  return response.data.items
-    .map((role) => ({
-      id: role.id,
-      roleName: role.roleName,
-    }))
-    .sort((a, b) =>
-    a.roleName.localeCompare(b.roleName),
-  );
+  return listRolesApi();
 }
 
 export async function createUserInCompany(companyId: string, payload: CreateUserPayload) {
