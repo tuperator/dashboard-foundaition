@@ -88,15 +88,13 @@ export function TaskPriorityManagerDialog({
     setEditor(null);
   };
 
-  const codeError =
-    editor && !editor.code.trim() ? "Code is required" : "";
-  const nameError =
-    editor && !editor.name.trim() ? "Name is required" : "";
+  const codeError = editor && !editor.code.trim() ? "Code is required" : "";
+  const nameError = editor && !editor.name.trim() ? "Name is required" : "";
   const canSave = editor && !codeError && !nameError;
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-lg [zoom:var(--app-scale)]">
+      <DialogContent className="[zoom:var(--app-scale)] sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{t("tasks.projectDetails.priorityManager")}</DialogTitle>
           <DialogDescription>
@@ -117,16 +115,18 @@ export function TaskPriorityManagerDialog({
               )}
             >
               <div className="flex items-center gap-3">
-                <span className="text-muted-foreground text-xs font-mono w-4 text-center">
+                <span className="text-muted-foreground w-4 text-center font-mono text-xs">
                   {priority.order}
                 </span>
                 <div
-                  className="size-3.5 rounded-full shrink-0 ring-1 ring-border"
+                  className="ring-border size-3.5 shrink-0 rounded-full ring-1"
                   style={{ backgroundColor: priority.color }}
                 />
                 <div>
-                  <p className="font-medium leading-tight text-sm">{priority.name}</p>
-                  <p className="text-muted-foreground text-xs font-mono">
+                  <p className="text-sm leading-tight font-medium">
+                    {priority.name}
+                  </p>
+                  <p className="text-muted-foreground font-mono text-xs">
                     {priority.code}
                   </p>
                 </div>
@@ -165,14 +165,14 @@ export function TaskPriorityManagerDialog({
         <Separator />
         {/* Editor form */}
         {editor ? (
-          <div className="rounded-md border border-border bg-card p-3 space-y-3">
+          <div className="border-border bg-card space-y-3 rounded-md border p-3">
             <p className="text-sm font-semibold">
               {editor.mode === "create"
                 ? t("tasks.projectDetails.priorityCreate")
                 : t("tasks.projectDetails.priorityEdit")}
             </p>
 
-            <div className="grid gap-3 sm:grid-cols-2 ">
+            <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="priority-code">
                   {t("tasks.projectDetails.priorityCode")}
@@ -180,7 +180,9 @@ export function TaskPriorityManagerDialog({
                 <Input
                   id="priority-code"
                   value={editor.code}
-                  onChange={(e) => setEditor({ ...editor, code: e.target.value })}
+                  onChange={(e) =>
+                    setEditor({ ...editor, code: e.target.value })
+                  }
                   placeholder="HIGH"
                 />
                 {codeError && (
@@ -195,7 +197,9 @@ export function TaskPriorityManagerDialog({
                 <Input
                   id="priority-name"
                   value={editor.name}
-                  onChange={(e) => setEditor({ ...editor, name: e.target.value })}
+                  onChange={(e) =>
+                    setEditor({ ...editor, name: e.target.value })
+                  }
                   placeholder="High"
                 />
                 {nameError && (
@@ -208,15 +212,17 @@ export function TaskPriorityManagerDialog({
                   {t("tasks.projectDetails.priorityColor")}
                 </Label>
                 {/* Wrapper styled like Input to keep consistent border/bg */}
-                <div className="flex h-9 w-full items-center gap-2 rounded-md border border-input bg-background px-3 py-1 shadow-sm">
+                <div className="border-input bg-background flex h-9 w-full items-center gap-2 rounded-md border px-3 py-1 shadow-sm">
                   <Input
                     id="priority-color"
                     type="color"
                     value={editor.color}
-                    onChange={(e) => setEditor({ ...editor, color: e.target.value })}
+                    onChange={(e) =>
+                      setEditor({ ...editor, color: e.target.value })
+                    }
                     className="h-5 w-5 shrink-0 cursor-pointer border-none bg-transparent p-0 shadow-none outline-none"
                   />
-                  <span className="text-xs font-mono text-muted-foreground">
+                  <span className="text-muted-foreground font-mono text-xs">
                     {editor.color.toUpperCase()}
                   </span>
                 </div>
@@ -231,14 +237,21 @@ export function TaskPriorityManagerDialog({
                   type="number"
                   value={editor.order}
                   onChange={(e) =>
-                    setEditor({ ...editor, order: parseInt(e.target.value) || 0 })
+                    setEditor({
+                      ...editor,
+                      order: parseInt(e.target.value) || 0,
+                    })
                   }
                 />
               </div>
             </div>
 
             <div className="flex justify-end gap-2 pt-1">
-              <Button variant="outline" size="sm" onClick={() => setEditor(null)}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setEditor(null)}
+              >
                 {t("tasks.common.none")}
               </Button>
               <Button size="sm" disabled={!canSave} onClick={handleSave}>
@@ -255,7 +268,10 @@ export function TaskPriorityManagerDialog({
               setEditor({ ...EMPTY_EDITOR, order: priorities.length + 1 })
             }
           >
-            <HugeiconsIcon icon={AddCircleHalfDotIcon} className="mr-2 size-4" />
+            <HugeiconsIcon
+              icon={AddCircleHalfDotIcon}
+              className="mr-2 size-4"
+            />
             {t("tasks.projectDetails.priorityCreate")}
           </Button>
         )}
