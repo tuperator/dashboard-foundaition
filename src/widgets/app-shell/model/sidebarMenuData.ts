@@ -55,15 +55,20 @@ export const sidebarSections: SidebarSection[] = [
     titleKey: "sidebar.section.operations",
     items: [
       {
-        labelKey: "sidebar.item.taskManager",
+        labelKey: "sidebar.item.taskManagement",
         icon: FolderOpenIcon,
-        expanded: true,
+        expandable: true,
         children: [
-          { labelKey: "sidebar.item.taskOverview", to: appRoutes.tasksOverview },
-          { labelKey: "sidebar.item.taskBoard", to: appRoutes.tasksBoard },
-          { labelKey: "sidebar.item.taskCalendar", to: appRoutes.tasksCalendar },
-          { labelKey: "sidebar.item.taskBacklog", to: appRoutes.tasksBacklog },
+          {
+            labelKey: "sidebar.item.workSpace",
+            to: appRoutes.tasksProjects,
+          },
+          {
+            labelKey: "sidebar.item.workflow",
+            to: appRoutes.tasksWorkflows,
+          },
         ],
+        matchMode: "prefix",
         actions: defaultActions,
       },
     ],

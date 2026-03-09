@@ -8,4 +8,5 @@ export { managementMessages } from "./management.messages";
 export { rolesMessages } from "./roles.messages";
 export { settingsMessages } from "./settings.messages";
 export { sidebarMessages } from "./sidebar.messages";
+export { taskManagerMessages } from "./task-manager.messages";
 export { usersMessages } from "./users.messages";

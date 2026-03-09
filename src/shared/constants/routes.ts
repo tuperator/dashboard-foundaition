@@ -4,10 +4,14 @@ export const appRoutes = {
   settings: "/settings",
   users: "/users",
   tasksOverview: "/tasks",
-  tasksBoard: "/tasks/board",
-  tasksCalendar: "/tasks/calendar",
-  tasksBacklog: "/tasks/backlog",
+  tasksProjects: "/tasks/projects",
+  tasksWorkflows: "/tasks/workflows",
+  tasksProjectDetails: "/tasks/projects/:projectId",
   roleGroups: "/role-groups",
   branches: "/branches",
   companyInfo: "/company",
 } as const;
+
+export function getTaskProjectDetailsRoute(projectId: string) {
+  return `/tasks/projects/${projectId}`;
+}

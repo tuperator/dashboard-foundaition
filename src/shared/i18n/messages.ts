@@ -9,6 +9,7 @@ import {
   rolesMessages,
   settingsMessages,
   sidebarMessages,
+  taskManagerMessages,
   usersMessages,
 } from "./dictionaries";
 
@@ -29,6 +30,7 @@ const VI_MESSAGES = {
   ...sidebarMessages.vi,
   ...usersMessages.vi,
   ...managementMessages.vi,
+  ...taskManagerMessages.vi,
 };
 
 const EN_MESSAGES: Record<keyof typeof VI_MESSAGES, string> = {
@@ -43,6 +45,7 @@ const EN_MESSAGES: Record<keyof typeof VI_MESSAGES, string> = {
   ...sidebarMessages.en,
   ...usersMessages.en,
   ...managementMessages.en,
+  ...taskManagerMessages.en,
 };
 
 export const TRANSLATIONS = {

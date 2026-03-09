@@ -3,12 +3,18 @@ export const managementMessages = {
     "tasks.title": "Task manager",
     "tasks.description":
       "Theo dõi công việc, tiến độ xử lý và phối hợp giữa các nhóm.",
+    "tasks.projects.title": "Work space",
+    "tasks.projects.description":
+      "Quản lý danh sách project/workspace, lọc nhanh và truy cập chi tiết từng project.",
+    "tasks.projectDetails.title": "Chi tiết project",
+    "tasks.projectDetails.description":
+      "Tổng quan project, cấu hình vận hành, phân quyền và điều hướng tới quản lý task.",
     "tasks.board.title": "Task board",
     "tasks.board.description":
       "Quản lý task theo luồng Kanban và trạng thái thực thi.",
-    "tasks.calendar.title": "Lịch công việc",
+    "tasks.calendar.title": "Workflow",
     "tasks.calendar.description":
-      "Theo dõi deadline, lịch hẹn và milestone theo thời gian.",
+      "Thiết kế workflow, quản lý status và cấu hình luồng cho từng project.",
     "tasks.backlog.title": "Backlog",
     "tasks.backlog.description":
       "Ưu tiên các hạng mục tồn đọng trước khi đưa vào sprint.",
@@ -26,12 +32,18 @@ export const managementMessages = {
     "tasks.title": "Task manager",
     "tasks.description":
       "Track work items, progress and cross-team collaboration.",
+    "tasks.projects.title": "Work space",
+    "tasks.projects.description":
+      "Manage project/workspace list, apply filters, and open project detail quickly.",
+    "tasks.projectDetails.title": "Project details",
+    "tasks.projectDetails.description":
+      "Project overview, settings, permissions, and task workspace navigation.",
     "tasks.board.title": "Task board",
     "tasks.board.description":
       "Manage work items in a Kanban-style execution flow.",
-    "tasks.calendar.title": "Task calendar",
+    "tasks.calendar.title": "Workflow",
     "tasks.calendar.description":
-      "Monitor deadlines, schedules, and milestones over time.",
+      "Design workflow, manage statuses, and customize flow per project.",
     "tasks.backlog.title": "Backlog",
     "tasks.backlog.description":
       "Prioritize pending items before moving them into a sprint.",

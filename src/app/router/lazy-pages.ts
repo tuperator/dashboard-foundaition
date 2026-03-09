@@ -18,6 +18,24 @@ export const UserManagementPage = lazy(() =>
   })),
 );
 
+export const TaskProjectsPage = lazy(() =>
+  import("@/pages/task-manager").then((module) => ({
+    default: module.TaskProjectsPage,
+  })),
+);
+
+export const TaskProjectDetailsPage = lazy(() =>
+  import("@/pages/task-manager").then((module) => ({
+    default: module.TaskProjectDetailsPage,
+  })),
+);
+
+export const TaskWorkflowManagerPage = lazy(() =>
+  import("@/pages/task-manager").then((module) => ({
+    default: module.TaskWorkflowManagerPage,
+  })),
+);
+
 export const RoleManagementPage = lazy(() =>
   import("@/pages/role-management").then((module) => ({
     default: module.RoleManagementPage,
@@ -33,12 +51,6 @@ export const BranchManagementPage = lazy(() =>
 export const CompanyManagementPage = lazy(() =>
   import("@/pages/company-management").then((module) => ({
     default: module.CompanyManagementPage,
-  })),
-);
-
-export const ManagementPlaceholderPage = lazy(() =>
-  import("@/pages/management-placeholder").then((module) => ({
-    default: module.ManagementPlaceholderPage,
   })),
 );
 

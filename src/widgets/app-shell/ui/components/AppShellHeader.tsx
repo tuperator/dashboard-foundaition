@@ -43,9 +43,9 @@ export function AppShellHeader({
   const isSettingsPage = location.pathname.startsWith(appRoutes.settings);
   const isUsersPage = location.pathname.startsWith(appRoutes.users);
   const isTasksPage = location.pathname.startsWith(appRoutes.tasksOverview);
-  const isTaskBoardPage = location.pathname.startsWith(appRoutes.tasksBoard);
-  const isTaskCalendarPage = location.pathname.startsWith(appRoutes.tasksCalendar);
-  const isTaskBacklogPage = location.pathname.startsWith(appRoutes.tasksBacklog);
+  const isTaskProjectsPage = location.pathname.startsWith(appRoutes.tasksProjects);
+  const isTaskProjectDetailsPage =
+    /^\/tasks\/projects\/[^/]+$/.test(location.pathname);
   const isRoleGroupsPage = location.pathname.startsWith(appRoutes.roleGroups);
   const isBranchesPage = location.pathname.startsWith(appRoutes.branches);
   const isCompanyPage = location.pathname.startsWith(appRoutes.companyInfo);
@@ -68,13 +68,11 @@ export function AppShellHeader({
           : isSettingsPage
             ? t("app.header.breadcrumb.settings")
             : isTasksPage
-              ? isTaskBoardPage
-                ? t("tasks.board.title")
-                : isTaskCalendarPage
-                  ? t("tasks.calendar.title")
-                  : isTaskBacklogPage
-                    ? t("tasks.backlog.title")
-                    : t("app.header.breadcrumb.tasks")
+              ? isTaskProjectDetailsPage
+                ? t("tasks.projectDetails.title")
+                : isTaskProjectsPage
+                  ? t("tasks.projects.title")
+                  : t("tasks.title")
               : t("app.header.breadcrumb.default");
 
   return (
