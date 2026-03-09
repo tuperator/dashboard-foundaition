@@ -19,9 +19,9 @@ import {
 } from "@/shared/ui/select";
 import { Textarea } from "@/shared/ui/textarea";
 import {
-  TASK_PRIORITY_VALUES,
   type TaskItem,
   type TaskPriority,
+  type TaskPriorityItem,
   type TaskProject,
 } from "../../model/types";
 
@@ -34,6 +34,7 @@ type TaskDialogProps = {
   lockProjectId?: string;
   members: string[];
   statusOptions: string[];
+  taskPriorities: TaskPriorityItem[];
   onOpenChange: (open: boolean) => void;
   onSubmit: (payload: {
     title: string;
@@ -72,6 +73,7 @@ export function TaskDialog({
   lockProjectId,
   members,
   statusOptions,
+  taskPriorities,
   onOpenChange,
   onSubmit,
 }: TaskDialogProps) {
@@ -82,6 +84,7 @@ export function TaskDialog({
       lockProjectId,
       projects,
       statusOptions,
+      taskPriorities,
     ),
   );
 
@@ -207,9 +210,15 @@ export function TaskDialog({
                   <SelectValue placeholder="Priority" />
                 </SelectTrigger>
                 <SelectContent>
-                  {TASK_PRIORITY_VALUES.map((priority) => (
-                    <SelectItem key={priority} value={priority}>
-                      {priority}
+                  {taskPriorities.map((priority) => (
+                    <SelectItem key={priority.code} value={priority.code}>
+                      <span className="flex items-center gap-2">
+                        <span
+                          className="size-2 rounded-full"
+                          style={{ backgroundColor: priority.color }}
+                        />
+                        {priority.name}
+                      </span>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -266,6 +275,7 @@ function getInitialFormState(
   lockProjectId: string | undefined,
   projects: TaskProject[],
   statusOptions: string[],
+  taskPriorities: TaskPriorityItem[],
 ): FormState {
   if (task) {
     return {
@@ -282,5 +292,6 @@ function getInitialFormState(
     ...EMPTY_STATE,
     projectId: lockProjectId || defaultProjectId || projects[0]?.id || "",
     status: statusOptions[0] || "TODO",
+    priority: taskPriorities[Math.floor(taskPriorities.length / 2)]?.code || "MEDIUM",
   };
 }

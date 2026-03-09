@@ -7,6 +7,30 @@ export const DEFAULT_WORKFLOW = ["TODO", "IN_PROGRESS", "REVIEW", "DONE"];
 const DEFAULT_WORKFLOW_TEMPLATE_ID = "workflow-default";
 const CRM_WORKFLOW_TEMPLATE_ID = "workflow-crm";
 
+export const DEFAULT_TASK_PRIORITIES = [
+  {
+    id: "priority-low",
+    code: "LOW",
+    name: "Low",
+    color: "#3B82F6", // Blue
+    order: 1,
+  },
+  {
+    id: "priority-medium",
+    code: "MEDIUM",
+    name: "Medium",
+    color: "#F59E0B", // Orange/Yellow
+    order: 2,
+  },
+  {
+    id: "priority-high",
+    code: "HIGH",
+    name: "High",
+    color: "#EF4444", // Red
+    order: 3,
+  },
+];
+
 export const TASK_MANAGER_DEFAULT_STORE: TaskManagerStore = {
   projects: [
     {
@@ -280,6 +304,7 @@ export const TASK_MANAGER_DEFAULT_STORE: TaskManagerStore = {
     },
   },
   selectedProjectId: "proj-erp-core",
+  taskPriorities: DEFAULT_TASK_PRIORITIES,
 };
 
 export const TASK_TABLE_MIN_WIDTH_CLASS = "min-w-[980px]";

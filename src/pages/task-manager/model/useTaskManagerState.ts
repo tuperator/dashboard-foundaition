@@ -3,6 +3,7 @@ import {
   DEFAULT_WORKFLOW,
   TASK_MANAGER_DEFAULT_STORE,
   TASK_MANAGER_STORAGE_KEY,
+  DEFAULT_TASK_PRIORITIES,
 } from "./constants";
 import type {
   CreateWorkflowPayload,
@@ -16,12 +17,15 @@ import type {
   TaskItem,
   TaskManagerStore,
   TaskPriority,
+  TaskPriorityItem,
   TaskProject,
   UpdateWorkflowPayload,
   UpdateWorkflowStatusPayload,
   UpdateProjectPayload,
   UpdateSprintPayload,
   UpdateTaskPayload,
+  CreateTaskPriorityPayload,
+  UpdateTaskPriorityPayload,
   WorkflowIssueType,
   WorkflowStatusCategory,
   WorkflowStatusItem,
@@ -38,6 +42,7 @@ function normalizeStore(
     workflowByProject?: Record<string, string[]>;
   },
 ): TaskManagerStore {
+  const taskPriorities = raw.taskPriorities || DEFAULT_TASK_PRIORITIES;
   const projects = raw.projects || [];
   const workflows = normalizeWorkflowTemplates(
     raw.workflowTemplates?.length
@@ -57,7 +62,7 @@ function normalizeStore(
   );
   const sprints = normalizeSprints(raw.sprints || []);
   const sprintIdSet = new Set(sprints.map((sprint) => sprint.id));
-  const tasks = normalizeTasks(raw.tasks || [])
+  const tasks = normalizeTasks(raw.tasks || [], taskPriorities)
     .map((task) =>
       task.sprintId && !sprintIdSet.has(task.sprintId)
         ? { ...task, sprintId: null }
@@ -77,6 +82,7 @@ function normalizeStore(
     workflowByProject,
     memberRolesByProject: raw.memberRolesByProject || {},
     selectedProjectId,
+    taskPriorities,
   };
 }
 
@@ -1117,6 +1123,83 @@ export function useTaskManagerState() {
     }));
   };
 
+  const createTaskPriority = (payload: CreateTaskPriorityPayload) => {
+    setStore((previous) => ({
+      ...previous,
+      taskPriorities: [
+        ...previous.taskPriorities,
+        {
+          id: generateId("priority"),
+          ...payload,
+        },
+      ].sort((a, b) => a.order - b.order),
+    }));
+  };
+
+  const updateTaskPriority = (
+    priorityId: string,
+    payload: UpdateTaskPriorityPayload,
+  ) => {
+    setStore((previous) => {
+      const oldPriority = previous.taskPriorities.find((p) => p.id === priorityId);
+      if (!oldPriority) return previous;
+
+      const nextPriorities = previous.taskPriorities
+        .map((p) =>
+          p.id === priorityId
+            ? { ...p, ...payload, id: priorityId }
+            : p,
+        )
+        .sort((a, b) => a.order - b.order);
+
+      // If code changed, update tasks
+      const nextTasks = previous.tasks.map((task) =>
+        task.priority === oldPriority.code
+          ? { ...task, priority: payload.code, updatedAt: new Date().toISOString() }
+          : task,
+      );
+
+      return {
+        ...previous,
+        taskPriorities: nextPriorities,
+        tasks: nextTasks,
+      };
+    });
+  };
+
+  const deleteTaskPriority = (priorityId: string) => {
+    setStore((previous) => {
+      if (previous.taskPriorities.length <= 1) return previous;
+
+      const priorityToDelete = previous.taskPriorities.find(
+        (p) => p.id === priorityId,
+      );
+      if (!priorityToDelete) return previous;
+
+      const nextPriorities = previous.taskPriorities.filter(
+        (p) => p.id !== priorityId,
+      );
+      const fallbackPriority =
+        nextPriorities.find((p) => p.code === "MEDIUM") || nextPriorities[0];
+
+      const nextTasks = previous.tasks.map((task) =>
+        task.priority === priorityToDelete.code
+          ? {
+              ...task,
+              priority: fallbackPriority.code,
+              updatedAt: new Date().toISOString(),
+            }
+          : task,
+      );
+
+      return {
+        ...previous,
+        taskPriorities: nextPriorities,
+        tasks: nextTasks,
+      };
+    });
+  };
+
   return {
     projects: store.projects,
     tasks: store.tasks,
@@ -1131,6 +1214,7 @@ export function useTaskManagerState() {
     workflowIdByProject: store.workflowIdByProject,
     workflowByProject: store.workflowByProject,
     memberRolesByProject: store.memberRolesByProject,
+    taskPriorities: store.taskPriorities,
     setSelectedProjectId,
     createProject,
     updateProject,
@@ -1160,6 +1244,9 @@ export function useTaskManagerState() {
     deleteWorkflowStatus,
     createWorkflowTransition,
     deleteWorkflowTransition,
+    createTaskPriority,
+    updateTaskPriority,
+    deleteTaskPriority,
   };
 }
 
@@ -1574,7 +1661,10 @@ function arraysEqual(left: string[], right: string[]) {
   return true;
 }
 
-function normalizeTasks(rawTasks: TaskItem[]): TaskItem[] {
+function normalizeTasks(
+  rawTasks: TaskItem[],
+  taskPriorities: TaskPriorityItem[],
+): TaskItem[] {
   const backlogCounterByProject: Record<string, number> = {};
 
   return rawTasks.map((task) => {
@@ -1585,7 +1675,7 @@ function normalizeTasks(rawTasks: TaskItem[]): TaskItem[] {
     return {
       ...task,
       status: task.status || "TODO",
-      priority: normalizePriority(task.priority),
+      priority: normalizePriority(task.priority, taskPriorities),
       sprintId: typeof task.sprintId === "string" ? task.sprintId : null,
       backlogOrder:
         typeof task.backlogOrder === "number" && task.backlogOrder > 0
@@ -1606,11 +1696,17 @@ function normalizeSprints(rawSprints: SprintItem[]): SprintItem[] {
   }));
 }
 
-function normalizePriority(priority: string): TaskPriority {
-  if (priority === "HIGH" || priority === "MEDIUM" || priority === "LOW") {
-    return priority;
+function normalizePriority(
+  priority: string,
+  taskPriorities: TaskPriorityItem[],
+): string {
+  const code = priority?.trim()?.toUpperCase() || "";
+  if (taskPriorities.some((p) => p.code === code)) {
+    return code;
   }
-  return "MEDIUM";
+  return (
+    taskPriorities[Math.floor(taskPriorities.length / 2)]?.code || "MEDIUM"
+  );
 }
 
 function normalizeSprintStatus(status: string): SprintStatus {

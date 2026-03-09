@@ -11,6 +11,7 @@ export const taskManagerMessages = {
     "tasks.common.noDescription": "Không có mô tả",
     "tasks.common.unassigned": "Chưa phân công",
     "tasks.common.backToWorkspace": "Quay lại work space",
+    "tasks.common.actions": "Thao tác",
 
     "tasks.projects.pageTitle": "Work space",
     "tasks.projects.pageDescription":
@@ -114,6 +115,13 @@ export const taskManagerMessages = {
     "tasks.projectDetails.toast.projectDeletedTitle": "Đã xóa project",
     "tasks.projectDetails.toast.projectDeletedDescription":
       "Đã xóa project {name}.",
+    "tasks.projectDetails.priorityManager": "Quản lý độ ưu tiên",
+    "tasks.projectDetails.priorityEdit": "Sửa độ ưu tiên",
+    "tasks.projectDetails.priorityCreate": "Tạo độ ưu tiên",
+    "tasks.projectDetails.priorityCode": "Mã",
+    "tasks.projectDetails.priorityName": "Tên",
+    "tasks.projectDetails.priorityColor": "Màu sắc",
+    "tasks.projectDetails.priorityOrder": "Thứ tự",
 
     "tasks.projectDetails.tab.issues": "Issues",
     "tasks.projectDetails.tab.backlog": "Backlog",
@@ -190,6 +198,7 @@ export const taskManagerMessages = {
     "tasks.common.noDescription": "No description",
     "tasks.common.unassigned": "Unassigned",
     "tasks.common.backToWorkspace": "Back to work space",
+    "tasks.common.actions": "Actions",
 
     "tasks.projects.pageTitle": "Work space",
     "tasks.projects.pageDescription":
@@ -293,6 +302,13 @@ export const taskManagerMessages = {
     "tasks.projectDetails.toast.projectDeletedTitle": "Project deleted",
     "tasks.projectDetails.toast.projectDeletedDescription":
       "Project {name} has been deleted.",
+    "tasks.projectDetails.priorityManager": "Priority Management",
+    "tasks.projectDetails.priorityEdit": "Edit Priority",
+    "tasks.projectDetails.priorityCreate": "Create Priority",
+    "tasks.projectDetails.priorityCode": "Code",
+    "tasks.projectDetails.priorityName": "Name",
+    "tasks.projectDetails.priorityColor": "Color",
+    "tasks.projectDetails.priorityOrder": "Order",
 
     "tasks.projectDetails.tab.issues": "Issues",
     "tasks.projectDetails.tab.backlog": "Backlog",

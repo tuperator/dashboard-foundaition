@@ -89,7 +89,7 @@ export function ProjectSettingsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="[zoom:var(--app-scale)] sm:max-w-3xl">
+      <DialogContent className="bg-card [zoom:var(--app-scale)] sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>Project settings</DialogTitle>
           <DialogDescription>

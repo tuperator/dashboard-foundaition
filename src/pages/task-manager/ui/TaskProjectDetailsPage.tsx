@@ -23,6 +23,7 @@ import { TaskProjectDetailsIssuesTab } from "./components/project-details/TaskPr
 import { TaskProjectDetailsBacklogTab } from "./components/project-details/TaskProjectDetailsBacklogTab";
 import { TaskProjectDetailsSprintsTab } from "./components/project-details/TaskProjectDetailsSprintsTab";
 import { TaskProjectDetailsOverviewTab } from "./components/project-details/TaskProjectDetailsOverviewTab";
+import { TaskPriorityManagerDialog } from "./components/project-details/TaskPriorityManagerDialog";
 
 type ProjectDetailsActions = Pick<
   ReturnType<typeof useTaskManagerState>,
@@ -30,6 +31,7 @@ type ProjectDetailsActions = Pick<
   | "sprints"
   | "workflowTemplates"
   | "workflowIdByProject"
+  | "taskPriorities"
   | "updateProject"
   | "deleteProject"
   | "addMember"
@@ -49,6 +51,9 @@ type ProjectDetailsActions = Pick<
   | "updateSprint"
   | "startSprint"
   | "closeSprint"
+  | "createTaskPriority"
+  | "updateTaskPriority"
+  | "deleteTaskPriority"
 >;
 
 export function TaskProjectDetailsPage() {
@@ -121,6 +126,11 @@ function ProjectDetailsContent({
       ),
     [workflowTemplate],
   );
+  const taskPriorities = actions.taskPriorities;
+  const taskPriorityByCode = useMemo(
+    () => new Map(taskPriorities.map((p) => [p.code, p])),
+    [taskPriorities],
+  );
   const projectTasks = useMemo(
     () => actions.tasks.filter((task) => task.projectId === project.id),
     [actions.tasks, project.id],
@@ -154,6 +164,7 @@ function ProjectDetailsContent({
   );
   const [issueViewMode, setIssueViewMode] = useState<"LIST" | "KANBAN">("LIST");
   const [dragTaskId, setDragTaskId] = useState<string | null>(null);
+  const [priorityManagerOpen, setPriorityManagerOpen] = useState(false);
   const [backlogSprintTarget, setBacklogSprintTarget] = useState<
     Record<string, string>
   >({});
@@ -197,8 +208,11 @@ function ProjectDetailsContent({
     }
 
     if (sortBy === "PRIORITY") {
-      const weight = { HIGH: 3, MEDIUM: 2, LOW: 1 } as const;
-      nextTasks.sort((a, b) => weight[b.priority] - weight[a.priority]);
+      nextTasks.sort((a, b) => {
+        const orderA = taskPriorityByCode.get(a.priority)?.order || 0;
+        const orderB = taskPriorityByCode.get(b.priority)?.order || 0;
+        return orderB - orderA;
+      });
       return nextTasks;
     }
 
@@ -211,6 +225,7 @@ function ProjectDetailsContent({
     search,
     sortBy,
     statusFilter,
+    taskPriorityByCode,
   ]);
 
   const backlogTasks = useMemo(
@@ -299,10 +314,12 @@ function ProjectDetailsContent({
           priorityFilter={priorityFilter}
           assigneeFilter={assigneeFilter}
           sortBy={sortBy}
+          taskPriorities={taskPriorities}
           onBack={onBack}
           onOpenEditProject={() => setEditDialogOpen(true)}
           onOpenSettings={() => setSettingsDialogOpen(true)}
           onOpenWorkflowManager={() => navigate(appRoutes.tasksWorkflows)}
+          onOpenPriorityManager={() => setPriorityManagerOpen(true)}
           onCreateIssue={() => {
             setTaskDialogMode("create");
             setEditingTask(null);
@@ -355,6 +372,8 @@ function ProjectDetailsContent({
               issueTasksByStatus={issueTasksByStatus}
               issueViewMode={issueViewMode}
               setIssueViewMode={setIssueViewMode}
+              taskPriorities={taskPriorities}
+              taskPriorityByCode={taskPriorityByCode}
               dragTaskId={dragTaskId}
               setDragTaskId={setDragTaskId}
               onTaskChangePriority={(taskId, priority) =>
@@ -492,6 +511,7 @@ function ProjectDetailsContent({
         lockProjectId={project.id}
         members={project.members}
         statusOptions={workflow}
+        taskPriorities={taskPriorities}
         onOpenChange={(open) => {
           setTaskDialogOpen(open);
           if (!open) {
@@ -546,6 +566,15 @@ function ProjectDetailsContent({
           }
           setSprintDialogOpen(false);
         }}
+      />
+
+      <TaskPriorityManagerDialog
+        open={priorityManagerOpen}
+        onOpenChange={setPriorityManagerOpen}
+        priorities={taskPriorities}
+        onCreatePriority={actions.createTaskPriority}
+        onUpdatePriority={actions.updateTaskPriority}
+        onDeletePriority={actions.deleteTaskPriority}
       />
     </AppShell>
   );

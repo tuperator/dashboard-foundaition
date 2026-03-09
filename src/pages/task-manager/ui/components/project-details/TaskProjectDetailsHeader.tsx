@@ -3,6 +3,10 @@ import {
   AddCircleHalfDotIcon,
   Search01Icon,
   Settings02Icon,
+  MoreHorizontalIcon,
+  PencilEdit01Icon,
+  Task01Icon,
+  Delete02Icon,
 } from "@hugeicons/core-free-icons";
 import { useI18n } from "@/shared/providers/i18n/I18nProvider";
 import { Badge } from "@/shared/ui/badge";
@@ -16,8 +20,15 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import {
-  TASK_PRIORITY_VALUES,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/shared/ui/dropdown-menu";
+import {
   type TaskPriority,
+  type TaskPriorityItem,
   type TaskProject,
 } from "../../../model/types";
 
@@ -29,10 +40,12 @@ type TaskProjectDetailsHeaderProps = {
   priorityFilter: "ALL" | TaskPriority;
   assigneeFilter: string;
   sortBy: "LATEST" | "PRIORITY" | "BACKLOG_ORDER";
+  taskPriorities: TaskPriorityItem[];
   onBack: () => void;
   onOpenEditProject: () => void;
   onOpenSettings: () => void;
   onOpenWorkflowManager: () => void;
+  onOpenPriorityManager: () => void;
   onCreateIssue: () => void;
   onDeleteProject: () => void;
   onSearchChange: (value: string) => void;
@@ -50,10 +63,12 @@ export function TaskProjectDetailsHeader({
   priorityFilter,
   assigneeFilter,
   sortBy,
+  taskPriorities,
   onBack,
   onOpenEditProject,
   onOpenSettings,
   onOpenWorkflowManager,
+  onOpenPriorityManager,
   onCreateIssue,
   onDeleteProject,
   onSearchChange,
@@ -93,23 +108,48 @@ export function TaskProjectDetailsHeader({
           <Badge className="bg-primary/10 text-primary h-6 rounded-full">
             {project.type}
           </Badge>
-          <Button variant="outline" size="sm" onClick={onOpenEditProject}>
-            {t("tasks.common.edit")}
-          </Button>
-          <Button variant="outline" size="sm" onClick={onOpenSettings}>
-            <HugeiconsIcon icon={Settings02Icon} />
-            {t("tasks.projectDetails.settings")}
-          </Button>
-          <Button variant="outline" size="sm" onClick={onOpenWorkflowManager}>
-            {t("tasks.projectDetails.workflowManager")}
-          </Button>
-          <Button size="sm" onClick={onCreateIssue}>
-            <HugeiconsIcon icon={AddCircleHalfDotIcon} />
-            {t("tasks.projectDetails.newIssue")}
-          </Button>
-          <Button variant="destructive" size="sm" onClick={onDeleteProject}>
-            {t("tasks.common.delete")}
-          </Button>
+
+          <div className="flex items-center gap-2 sm:ml-auto">
+            <Button size="sm" onClick={onCreateIssue}>
+              <HugeiconsIcon icon={AddCircleHalfDotIcon} />
+              {t("tasks.projectDetails.newIssue")}
+            </Button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <HugeiconsIcon icon={MoreHorizontalIcon} />
+                  {t("tasks.common.actions")}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={onOpenEditProject}>
+                  <HugeiconsIcon icon={PencilEdit01Icon} className="mr-2 size-4" />
+                  {t("tasks.common.edit")}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={onOpenWorkflowManager}>
+                  <HugeiconsIcon icon={Task01Icon} className="mr-2 size-4" />
+                  {t("tasks.projectDetails.workflowManager")}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={onOpenPriorityManager}>
+                  <HugeiconsIcon icon={AddCircleHalfDotIcon} className="mr-2 size-4" />
+                  {t("tasks.projectDetails.priorityManager")}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={onOpenSettings}>
+                  <HugeiconsIcon icon={Settings02Icon} className="mr-2 size-4" />
+                  {t("tasks.projectDetails.settings")}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={onDeleteProject}
+                >
+                  <HugeiconsIcon icon={Delete02Icon} className="mr-2 size-4" />
+                  {t("tasks.common.delete")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
 
@@ -156,9 +196,9 @@ export function TaskProjectDetailsHeader({
             <SelectItem value="ALL">
               {t("tasks.projectDetails.allPriority")}
             </SelectItem>
-            {TASK_PRIORITY_VALUES.map((priority) => (
-              <SelectItem key={priority} value={priority}>
-                {priority}
+            {taskPriorities.map((priority) => (
+              <SelectItem key={priority.code} value={priority.code}>
+                {priority.name}
               </SelectItem>
             ))}
           </SelectContent>

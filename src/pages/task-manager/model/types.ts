@@ -18,7 +18,15 @@ export const TASK_STATUS_VALUES = [
 export type TaskStatus = (typeof TASK_STATUS_VALUES)[number];
 
 export const TASK_PRIORITY_VALUES = ["LOW", "MEDIUM", "HIGH"] as const;
-export type TaskPriority = (typeof TASK_PRIORITY_VALUES)[number];
+export type TaskPriority = string;
+
+export type TaskPriorityItem = {
+  id: string;
+  code: string;
+  name: string;
+  color: string;
+  order: number;
+};
 
 export const SPRINT_STATUS_VALUES = ["PLANNED", "ACTIVE", "CLOSED"] as const;
 export type SprintStatus = (typeof SPRINT_STATUS_VALUES)[number];
@@ -141,6 +149,8 @@ export type UpdateWorkflowPayload = Pick<
 
 export type CreateWorkflowStatusPayload = Omit<WorkflowStatusItem, "id">;
 export type UpdateWorkflowStatusPayload = Omit<WorkflowStatusItem, "id">;
+export type CreateTaskPriorityPayload = Omit<TaskPriorityItem, "id">;
+export type UpdateTaskPriorityPayload = Omit<TaskPriorityItem, "id">;
 
 export type TaskManagerStore = {
   projects: TaskProject[];
@@ -151,4 +161,5 @@ export type TaskManagerStore = {
   workflowByProject: Record<string, string[]>;
   memberRolesByProject: Record<string, Record<string, ProjectMemberRole>>;
   selectedProjectId: string | null;
+  taskPriorities: TaskPriorityItem[];
 };

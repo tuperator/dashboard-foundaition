@@ -20,9 +20,9 @@ import {
 import { cn } from "@/shared/lib/utils";
 import { TASK_TABLE_MIN_WIDTH_CLASS } from "../../../model/constants";
 import {
-  TASK_PRIORITY_VALUES,
   type TaskItem,
   type TaskPriority,
+  type TaskPriorityItem,
   type TaskProject,
   type SprintItem,
 } from "../../../model/types";
@@ -39,6 +39,8 @@ export interface TaskProjectDetailsIssuesTabProps {
   issueTasksByStatus: Map<string, TaskItem[]>;
   issueViewMode: ViewMode;
   setIssueViewMode: Dispatch<SetStateAction<ViewMode>>;
+  taskPriorities: TaskPriorityItem[];
+  taskPriorityByCode: Map<string, TaskPriorityItem>;
   dragTaskId: string | null;
   setDragTaskId: Dispatch<SetStateAction<string | null>>;
   onTaskChangePriority: (taskId: string, priority: TaskPriority) => void;
@@ -58,6 +60,8 @@ export function TaskProjectDetailsIssuesTab({
   issueTasksByStatus,
   issueViewMode,
   setIssueViewMode,
+  taskPriorities,
+  taskPriorityByCode,
   dragTaskId,
   setDragTaskId,
   onTaskChangePriority,
@@ -83,12 +87,19 @@ export function TaskProjectDetailsIssuesTab({
     }).format(date);
   };
 
-  const priorityBadgeClassName = (priority: TaskPriority) => {
-    if (priority === "HIGH")
-      return "h-5 rounded-full bg-red-100 px-2 text-[10px] text-red-700 dark:bg-red-900/40 dark:text-red-200";
-    if (priority === "MEDIUM")
-      return "h-5 rounded-full bg-amber-100 px-2 text-[10px] text-amber-700 dark:bg-amber-900/40 dark:text-amber-200";
-    return "h-5 rounded-full bg-sky-100 px-2 text-[10px] text-sky-700 dark:bg-sky-900/40 dark:text-sky-200";
+  const getPriorityStyle = (priorityCode: string) => {
+    const item = taskPriorityByCode.get(priorityCode);
+    const color = item?.color || "#6B7280";
+    return {
+      borderColor: color,
+      backgroundColor: `${color}14`,
+      color: color,
+    };
+  };
+
+  const priorityBadgeClassName = () => {
+    // Left for fallback mostly if needed in KANBAN view
+    return "h-5 rounded-full px-2 text-[10px] border";
   };
 
   return (
@@ -163,13 +174,22 @@ export function TaskProjectDetailsIssuesTab({
                         onTaskChangePriority(task.id, value as TaskPriority)
                       }
                     >
-                      <SelectTrigger className="w-[130px]">
+                      <SelectTrigger
+                        className="w-[130px] border hover:bg-muted font-medium"
+                        style={getPriorityStyle(task.priority)}
+                      >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {TASK_PRIORITY_VALUES.map((priority) => (
-                          <SelectItem key={priority} value={priority}>
-                            {priority}
+                        {taskPriorities.map((priority) => (
+                          <SelectItem key={priority.code} value={priority.code}>
+                            <span className="flex items-center gap-2">
+                              <span
+                                className="size-2 rounded-full"
+                                style={{ backgroundColor: priority.color }}
+                              />
+                              {priority.name}
+                            </span>
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -321,7 +341,8 @@ export function TaskProjectDetailsIssuesTab({
                       </p>
                       <div className="mt-2 flex items-center justify-between gap-2">
                         <Badge
-                          className={priorityBadgeClassName(task.priority)}
+                          className={cn(priorityBadgeClassName(), "font-medium")}
+                          style={getPriorityStyle(task.priority)}
                         >
                           {task.priority}
                         </Badge>
