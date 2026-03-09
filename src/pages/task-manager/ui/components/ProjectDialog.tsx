@@ -18,7 +18,11 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { Textarea } from "@/shared/ui/textarea";
-import { PROJECT_TYPE_VALUES, type ProjectType, type TaskProject } from "../../model/types";
+import {
+  PROJECT_TYPE_VALUES,
+  type ProjectType,
+  type TaskProject,
+} from "../../model/types";
 
 type ProjectDialogProps = {
   open: boolean;
@@ -60,10 +64,15 @@ export function ProjectDialog({
   onOpenChange,
   onSubmit,
 }: ProjectDialogProps) {
-  const [form, setForm] = useState<FormState>(() => getInitialFormState(project));
+  const [form, setForm] = useState<FormState>(() =>
+    getInitialFormState(project),
+  );
 
   const canSubmit = useMemo(
-    () => form.name.trim().length > 0 && form.key.trim().length > 0 && form.owner.trim().length > 0,
+    () =>
+      form.name.trim().length > 0 &&
+      form.key.trim().length > 0 &&
+      form.owner.trim().length > 0,
     [form.key, form.name, form.owner],
   );
 
@@ -85,7 +94,9 @@ export function ProjectDialog({
             <Input
               id="project-name"
               value={form.name}
-              onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, name: event.target.value }))
+              }
               placeholder="ERP Core Platform"
             />
           </div>
@@ -97,7 +108,10 @@ export function ProjectDialog({
                 id="project-key"
                 value={form.key}
                 onChange={(event) =>
-                  setForm((prev) => ({ ...prev, key: event.target.value.toUpperCase() }))
+                  setForm((prev) => ({
+                    ...prev,
+                    key: event.target.value.toUpperCase(),
+                  }))
                 }
                 placeholder="ERP"
               />
@@ -130,7 +144,9 @@ export function ProjectDialog({
             <Input
               id="project-owner"
               value={form.owner}
-              onChange={(event) => setForm((prev) => ({ ...prev, owner: event.target.value }))}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, owner: event.target.value }))
+              }
               placeholder="Toan Le"
             />
           </div>
@@ -140,7 +156,9 @@ export function ProjectDialog({
             <Input
               id="project-members"
               value={form.members}
-              onChange={(event) => setForm((prev) => ({ ...prev, members: event.target.value }))}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, members: event.target.value }))
+              }
               placeholder="Toan Le, Linh Tran, Minh Nguyen"
             />
           </div>
@@ -151,7 +169,10 @@ export function ProjectDialog({
               id="project-description"
               value={form.description}
               onChange={(event) =>
-                setForm((prev) => ({ ...prev, description: event.target.value }))
+                setForm((prev) => ({
+                  ...prev,
+                  description: event.target.value,
+                }))
               }
               placeholder="Project description..."
               className="min-h-[76px]"

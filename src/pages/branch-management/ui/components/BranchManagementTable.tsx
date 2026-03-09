@@ -68,7 +68,7 @@ export function BranchManagementTable({
           <TableRow>
             <TableCell
               colSpan={BRANCH_TABLE_COLUMN_COUNT}
-              className="py-10 text-center text-muted-foreground"
+              className="text-muted-foreground py-10 text-center"
             >
               {t("branch.table.loading")}
             </TableCell>
@@ -79,7 +79,7 @@ export function BranchManagementTable({
           <TableRow>
             <TableCell
               colSpan={BRANCH_TABLE_COLUMN_COUNT}
-              className="py-10 text-center text-muted-foreground"
+              className="text-muted-foreground py-10 text-center"
             >
               {t("branch.table.empty")}
             </TableCell>
@@ -103,7 +103,10 @@ export function BranchManagementTable({
                         />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className={BRANCH_ACTION_MENU_CLASS}>
+                    <DropdownMenuContent
+                      align="start"
+                      className={BRANCH_ACTION_MENU_CLASS}
+                    >
                       <DropdownMenuItem onClick={() => onEdit(branch)}>
                         <HugeiconsIcon icon={Edit01Icon} className="size-3.5" />
                         {t("branch.menu.edit")}
@@ -112,7 +115,9 @@ export function BranchManagementTable({
                         <DropdownMenuSubTrigger>
                           {t("branch.menu.changeStatus")}
                         </DropdownMenuSubTrigger>
-                        <DropdownMenuSubContent className={BRANCH_STATUS_SUB_MENU_CLASS}>
+                        <DropdownMenuSubContent
+                          className={BRANCH_STATUS_SUB_MENU_CLASS}
+                        >
                           {BRANCH_STATUS_VALUES.map((status) => (
                             <DropdownMenuItem
                               key={status}
@@ -132,7 +137,9 @@ export function BranchManagementTable({
                 </TableCell>
 
                 <TableCell>
-                  <span className="font-medium text-foreground">{branch.name}</span>
+                  <span className="text-foreground font-medium">
+                    {branch.name}
+                  </span>
                 </TableCell>
 
                 <TableCell>
@@ -151,8 +158,12 @@ export function BranchManagementTable({
                   </span>
                 </TableCell>
 
-                <TableCell>{formatDateTime(branch.createdAt, locale)}</TableCell>
-                <TableCell>{formatDateTime(branch.updatedAt, locale)}</TableCell>
+                <TableCell>
+                  {formatDateTime(branch.createdAt, locale)}
+                </TableCell>
+                <TableCell>
+                  {formatDateTime(branch.updatedAt, locale)}
+                </TableCell>
               </TableRow>
             ))
           : null}

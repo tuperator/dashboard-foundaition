@@ -40,7 +40,7 @@ export function RoleManagementTable({
           <TableRow>
             <TableCell
               colSpan={ROLE_TABLE_COLUMN_COUNT}
-              className="py-10 text-center text-muted-foreground"
+              className="text-muted-foreground py-10 text-center"
             >
               {t("role.table.loading")}
             </TableCell>
@@ -51,7 +51,7 @@ export function RoleManagementTable({
           <TableRow>
             <TableCell
               colSpan={ROLE_TABLE_COLUMN_COUNT}
-              className="py-10 text-center text-muted-foreground"
+              className="text-muted-foreground py-10 text-center"
             >
               {t("role.table.empty")}
             </TableCell>
@@ -62,10 +62,14 @@ export function RoleManagementTable({
           ? roles.map((role) => (
               <TableRow key={role.id}>
                 <TableCell>
-                  <span className="font-medium text-foreground">{role.roleName}</span>
+                  <span className="text-foreground font-medium">
+                    {role.roleName}
+                  </span>
                 </TableCell>
                 <TableCell>
-                  <code className="text-muted-foreground text-[11px]">{role.id}</code>
+                  <code className="text-muted-foreground text-[11px]">
+                    {role.id}
+                  </code>
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline" className="h-5 rounded-full px-2">

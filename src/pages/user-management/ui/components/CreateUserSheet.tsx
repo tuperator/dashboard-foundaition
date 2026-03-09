@@ -1,5 +1,10 @@
 import { useMemo, useState } from "react";
-import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/shared/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+} from "@/shared/ui/sheet";
 import { Label } from "@/shared/ui/label";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
@@ -117,25 +122,29 @@ export function CreateUserSheet({
         onOpenChange(nextOpen);
       }}
     >
-      <SheetContent
-        side="right"
-        className={USER_SHEET_CONTENT_CLASS}
-      >
+      <SheetContent side="right" className={USER_SHEET_CONTENT_CLASS}>
         <div className="flex h-full min-h-0 flex-col">
           <div className="space-y-1 border-b px-5 py-4">
-            <SheetTitle className="text-base">{t("users.create.title")}</SheetTitle>
+            <SheetTitle className="text-base">
+              {t("users.create.title")}
+            </SheetTitle>
             <SheetDescription>{t("users.create.description")}</SheetDescription>
           </div>
 
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-4">
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5 sm:col-span-2">
-                <Label htmlFor="create-username">{t("users.profile.fullName")}</Label>
+                <Label htmlFor="create-username">
+                  {t("users.profile.fullName")}
+                </Label>
                 <Input
                   id="create-username"
                   value={form.username}
                   onChange={(event) =>
-                    setForm((prev) => ({ ...prev, username: event.target.value }))
+                    setForm((prev) => ({
+                      ...prev,
+                      username: event.target.value,
+                    }))
                   }
                 />
               </div>
@@ -158,13 +167,18 @@ export function CreateUserSheet({
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="create-password">{t("users.password.new")}</Label>
+                <Label htmlFor="create-password">
+                  {t("users.password.new")}
+                </Label>
                 <Input
                   id="create-password"
                   type="password"
                   value={form.password}
                   onChange={(event) =>
-                    setForm((prev) => ({ ...prev, password: event.target.value }))
+                    setForm((prev) => ({
+                      ...prev,
+                      password: event.target.value,
+                    }))
                   }
                   placeholder={t("users.password.placeholder.new")}
                 />
@@ -187,12 +201,17 @@ export function CreateUserSheet({
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="create-address">{t("users.profile.address")}</Label>
+                <Label htmlFor="create-address">
+                  {t("users.profile.address")}
+                </Label>
                 <Input
                   id="create-address"
                   value={form.address}
                   onChange={(event) =>
-                    setForm((prev) => ({ ...prev, address: event.target.value }))
+                    setForm((prev) => ({
+                      ...prev,
+                      address: event.target.value,
+                    }))
                   }
                 />
               </div>
@@ -215,7 +234,9 @@ export function CreateUserSheet({
                     <SelectItem value={USER_UNKNOWN_GENDER_VALUE}>
                       {t("users.profile.gender.unknown")}
                     </SelectItem>
-                    <SelectItem value="MALE">{t("users.profile.gender.male")}</SelectItem>
+                    <SelectItem value="MALE">
+                      {t("users.profile.gender.male")}
+                    </SelectItem>
                     <SelectItem value="FEMALE">
                       {t("users.profile.gender.female")}
                     </SelectItem>
@@ -231,7 +252,10 @@ export function CreateUserSheet({
                 <Select
                   value={form.status}
                   onValueChange={(value) =>
-                    setForm((prev) => ({ ...prev, status: value as UserStatus }))
+                    setForm((prev) => ({
+                      ...prev,
+                      status: value as UserStatus,
+                    }))
                   }
                 >
                   <SelectTrigger className="w-full">
@@ -256,12 +280,17 @@ export function CreateUserSheet({
 
             <div className="space-y-2">
               <Label>{t("users.profile.roles")}</Label>
-              <div className="grid gap-2 rounded-xl border bg-input/20 p-3">
+              <div className="bg-input/20 grid gap-2 rounded-xl border p-3">
                 {roleOptions.map((role) => (
-                  <label key={role.id} className="inline-flex items-center gap-2 text-xs">
+                  <label
+                    key={role.id}
+                    className="inline-flex items-center gap-2 text-xs"
+                  >
                     <Checkbox
                       checked={form.roleIds.includes(role.id)}
-                      onCheckedChange={(checked) => toggleRole(role.id, Boolean(checked))}
+                      onCheckedChange={(checked) =>
+                        toggleRole(role.id, Boolean(checked))
+                      }
                     />
                     {role.roleName}
                   </label>
@@ -300,7 +329,7 @@ export function CreateUserSheet({
 
             <Separator />
 
-            <div className="flex items-center justify-between gap-3 rounded-xl border bg-input/20 px-3 py-2">
+            <div className="bg-input/20 flex items-center justify-between gap-3 rounded-xl border px-3 py-2">
               <div className="space-y-0.5">
                 <p className="text-sm font-medium">
                   {t("users.profile.twoFactor.title")}
@@ -332,16 +361,22 @@ export function CreateUserSheet({
                   phone: form.phone.trim(),
                   address: form.address.trim(),
                   gender:
-                    form.gender === USER_UNKNOWN_GENDER_VALUE ? null : form.gender,
+                    form.gender === USER_UNKNOWN_GENDER_VALUE
+                      ? null
+                      : form.gender,
                   status: form.status,
                   roleIds: form.roleIds,
                   branchId:
-                    form.branchId === USER_UNASSIGNED_BRANCH ? null : form.branchId,
+                    form.branchId === USER_UNASSIGNED_BRANCH
+                      ? null
+                      : form.branchId,
                   twoFactorEnabled: form.twoFactorEnabled,
                 })
               }
             >
-              {submitting ? `${t("users.create.submit")}...` : t("users.create.submit")}
+              {submitting
+                ? `${t("users.create.submit")}...`
+                : t("users.create.submit")}
             </Button>
           </div>
         </div>

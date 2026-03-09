@@ -11,7 +11,9 @@ type BackendRolesResponse = {
 };
 
 export async function listRoles() {
-  const response = await apiClient.get<BackendRolesResponse>(API_ENDPOINTS.roles.list);
+  const response = await apiClient.get<BackendRolesResponse>(
+    API_ENDPOINTS.roles.list,
+  );
 
   return response.data.items
     .map((role) => ({

@@ -50,7 +50,9 @@ export function AppShellUserMenu({ ariaLabel }: AppShellUserMenuProps) {
   const displayName = session?.username || t("app.userMenu.guest");
   const email = session?.email || "";
 
-  const openSettingsSection = (section: "general" | "security" | "appearance") => {
+  const openSettingsSection = (
+    section: "general" | "security" | "appearance",
+  ) => {
     navigate(`${appRoutes.settings}#${section}`);
   };
 
@@ -65,7 +67,10 @@ export function AppShellUserMenu({ ariaLabel }: AppShellUserMenuProps) {
         <button
           type="button"
           aria-label={ariaLabel}
-          className={cn(triggerBaseClassName, open && "bg-muted text-foreground")}
+          className={cn(
+            triggerBaseClassName,
+            open && "bg-muted text-foreground",
+          )}
         >
           <HugeiconsIcon icon={UserIcon} className="size-4" />
         </button>
@@ -77,7 +82,9 @@ export function AppShellUserMenu({ ariaLabel }: AppShellUserMenuProps) {
         className="w-56 rounded-xl p-1.5 [zoom:var(--app-scale)]"
       >
         <DropdownMenuLabel className="px-2 py-2">
-          <p className="text-foreground text-sm font-medium leading-5">{displayName}</p>
+          <p className="text-foreground text-sm leading-5 font-medium">
+            {displayName}
+          </p>
           {email ? (
             <p className="text-muted-foreground text-[11px] leading-4">
               {t("app.userMenu.signedInAs")}: {email}
@@ -131,7 +138,9 @@ export function AppShellUserMenu({ ariaLabel }: AppShellUserMenuProps) {
           className="[zoom:var(--app-scale)] data-[size=sm]:max-w-60"
         >
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("app.userMenu.logoutConfirmTitle")}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t("app.userMenu.logoutConfirmTitle")}
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {t("app.userMenu.logoutConfirmDescription")}
             </AlertDialogDescription>

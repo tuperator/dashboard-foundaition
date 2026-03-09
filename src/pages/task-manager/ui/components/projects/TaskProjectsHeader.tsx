@@ -42,13 +42,13 @@ export function TaskProjectsHeader({
   const { t } = useI18n();
 
   return (
-    <header className="rounded-2xl border bg-card p-4">
+    <header className="bg-card rounded-2xl border p-4">
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-foreground">
+          <h1 className="text-foreground text-xl font-semibold">
             {t("tasks.projects.pageTitle")}
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="text-muted-foreground mt-1 text-sm">
             {t("tasks.projects.pageDescription")}
           </p>
         </div>
@@ -58,11 +58,11 @@ export function TaskProjectsHeader({
         </Button>
       </div>
 
-      <div className="grid gap-2 xl:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,180px))]">
-        <div className="relative">
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="relative flex-1 min-w-[200px]">
           <HugeiconsIcon
             icon={Search01Icon}
-            className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground"
+            className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2"
           />
           <Input
             value={search}
@@ -74,13 +74,17 @@ export function TaskProjectsHeader({
 
         <Select
           value={typeFilter}
-          onValueChange={(value) => onTypeFilterChange(value as typeof typeFilter)}
+          onValueChange={(value) =>
+            onTypeFilterChange(value as typeof typeFilter)
+          }
         >
-          <SelectTrigger>
+          <SelectTrigger className="w-full sm:w-auto sm:min-w-[150px]">
             <SelectValue placeholder={t("tasks.projects.filter.projectType")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">{t("tasks.projects.filter.allTypes")}</SelectItem>
+            <SelectItem value="ALL">
+              {t("tasks.projects.filter.allTypes")}
+            </SelectItem>
             {PROJECT_TYPE_VALUES.map((type) => (
               <SelectItem key={type} value={type}>
                 {type}
@@ -90,11 +94,13 @@ export function TaskProjectsHeader({
         </Select>
 
         <Select value={ownerFilter} onValueChange={onOwnerFilterChange}>
-          <SelectTrigger>
+          <SelectTrigger className="w-full sm:w-auto sm:min-w-[150px]">
             <SelectValue placeholder={t("tasks.projects.filter.owner")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">{t("tasks.projects.filter.allOwners")}</SelectItem>
+            <SelectItem value="ALL">
+              {t("tasks.projects.filter.allOwners")}
+            </SelectItem>
             {ownerOptions.map((owner) => (
               <SelectItem key={owner} value={owner}>
                 {owner}
@@ -103,14 +109,23 @@ export function TaskProjectsHeader({
           </SelectContent>
         </Select>
 
-        <Select value={sortBy} onValueChange={(value) => onSortChange(value as SortMode)}>
-          <SelectTrigger>
+        <Select
+          value={sortBy}
+          onValueChange={(value) => onSortChange(value as SortMode)}
+        >
+          <SelectTrigger className="w-full sm:w-auto sm:min-w-[150px]">
             <SelectValue placeholder={t("tasks.projects.filter.sortBy")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="UPDATED">{t("tasks.projects.sort.latestUpdated")}</SelectItem>
-            <SelectItem value="NAME">{t("tasks.projects.sort.name")}</SelectItem>
-            <SelectItem value="PROGRESS">{t("tasks.projects.sort.progress")}</SelectItem>
+            <SelectItem value="UPDATED">
+              {t("tasks.projects.sort.latestUpdated")}
+            </SelectItem>
+            <SelectItem value="NAME">
+              {t("tasks.projects.sort.name")}
+            </SelectItem>
+            <SelectItem value="PROGRESS">
+              {t("tasks.projects.sort.progress")}
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>

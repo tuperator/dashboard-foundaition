@@ -27,11 +27,15 @@ type BackendBranchListResponse = {
 };
 
 export async function getCurrentProfile() {
-  const response = await apiClient.get<BackendMyProfile>(API_ENDPOINTS.users.me);
+  const response = await apiClient.get<BackendMyProfile>(
+    API_ENDPOINTS.users.me,
+  );
   return response.data;
 }
 
-export async function listBranchesByCompany(companyId: string): Promise<BranchItem[]> {
+export async function listBranchesByCompany(
+  companyId: string,
+): Promise<BranchItem[]> {
   const response = await apiClient.get<BackendBranchListResponse>(
     API_ENDPOINTS.branches.byCompany(companyId),
   );
@@ -39,7 +43,10 @@ export async function listBranchesByCompany(companyId: string): Promise<BranchIt
   return response.data.items.map(mapBranchItem);
 }
 
-export async function createBranch(companyId: string, payload: CreateBranchPayload) {
+export async function createBranch(
+  companyId: string,
+  payload: CreateBranchPayload,
+) {
   const response = await apiClient.post<BackendBranchItem>(
     API_ENDPOINTS.branches.byCompany(companyId),
     {
@@ -53,20 +60,32 @@ export async function createBranch(companyId: string, payload: CreateBranchPaylo
   return mapBranchItem(response.data);
 }
 
-export async function updateBranch(branchId: string, payload: UpdateBranchPayload) {
-  const response = await apiClient.put<BackendBranchItem>(API_ENDPOINTS.branches.byId(branchId), {
-    name: payload.name.trim(),
-    address: payload.address?.trim() || null,
-    agentId: payload.agentId?.trim() || null,
-  });
+export async function updateBranch(
+  branchId: string,
+  payload: UpdateBranchPayload,
+) {
+  const response = await apiClient.put<BackendBranchItem>(
+    API_ENDPOINTS.branches.byId(branchId),
+    {
+      name: payload.name.trim(),
+      address: payload.address?.trim() || null,
+      agentId: payload.agentId?.trim() || null,
+    },
+  );
 
   return mapBranchItem(response.data);
 }
 
-export async function updateBranchStatus(branchId: string, status: BranchStatus) {
-  const response = await apiClient.patch<BackendBranchItem>(API_ENDPOINTS.branches.status(branchId), {
-    status,
-  });
+export async function updateBranchStatus(
+  branchId: string,
+  status: BranchStatus,
+) {
+  const response = await apiClient.patch<BackendBranchItem>(
+    API_ENDPOINTS.branches.status(branchId),
+    {
+      status,
+    },
+  );
 
   return mapBranchItem(response.data);
 }

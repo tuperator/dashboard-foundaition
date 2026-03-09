@@ -18,7 +18,8 @@ export const USER_TWO_FACTOR_FILTER_VALUES = [
   "ENABLED",
   "DISABLED",
 ] as const;
-export type UserTwoFactorFilter = (typeof USER_TWO_FACTOR_FILTER_VALUES)[number];
+export type UserTwoFactorFilter =
+  (typeof USER_TWO_FACTOR_FILTER_VALUES)[number];
 
 export const USER_UNASSIGNED_BRANCH_VALUE = "UNASSIGNED" as const;
 export type UserUnassignedBranch = typeof USER_UNASSIGNED_BRANCH_VALUE;

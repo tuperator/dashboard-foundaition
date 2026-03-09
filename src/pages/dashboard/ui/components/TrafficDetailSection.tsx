@@ -10,10 +10,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import {
-  deviceTraffic,
-  locationTraffic,
-} from "../config/dashboardData";
+import { deviceTraffic, locationTraffic } from "../config/dashboardData";
 import {
   axisTick,
   axisTickSmall,

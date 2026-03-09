@@ -35,33 +35,38 @@ function ProfileMetaItem({
   value: string;
 }) {
   return (
-    <li className="flex items-center gap-2 rounded-lg border bg-muted/15 px-2.5 py-2">
-      <HugeiconsIcon icon={icon} className="text-muted-foreground size-3.5 shrink-0" />
+    <li className="bg-muted/15 flex items-center gap-2 rounded-lg border px-2.5 py-2">
+      <HugeiconsIcon
+        icon={icon}
+        className="text-muted-foreground size-3.5 shrink-0"
+      />
       <div className="min-w-0">
-        <p className="text-[11px] text-muted-foreground">{label}</p>
-        <p className="truncate text-xs font-medium text-foreground">{value}</p>
+        <p className="text-muted-foreground text-[11px]">{label}</p>
+        <p className="text-foreground truncate text-xs font-medium">{value}</p>
       </div>
     </li>
   );
 }
 
-export function CompanyProfileSummaryCard({ profile }: CompanyProfileSummaryCardProps) {
+export function CompanyProfileSummaryCard({
+  profile,
+}: CompanyProfileSummaryCardProps) {
   const { t, locale } = useI18n();
   const updatedAt = formatDate(profile.updatedAt, locale);
   const createdAt = formatDate(profile.createdAt, locale) ?? "-";
 
   return (
-    <Card className="rounded-2xl border bg-card">
+    <Card className="bg-card rounded-2xl border">
       <CardHeader className="border-b pb-3">
         <div className="flex items-center gap-3">
           <div className="from-primary/85 to-primary/65 text-primary-foreground flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-sm font-semibold">
             {(profile.brand || profile.name).trim().charAt(0).toUpperCase()}
           </div>
           <div className="min-w-0">
-            <CardTitle className="truncate text-sm font-semibold text-foreground">
+            <CardTitle className="text-foreground truncate text-sm font-semibold">
               {profile.name}
             </CardTitle>
-            <p className="mt-0.5 truncate text-xs text-muted-foreground">
+            <p className="text-muted-foreground mt-0.5 truncate text-xs">
               {profile.email || t("company.profile.summary.emptyValue")}
             </p>
           </div>
@@ -73,7 +78,9 @@ export function CompanyProfileSummaryCard({ profile }: CompanyProfileSummaryCard
           <ProfileMetaItem
             icon={LayoutIcon}
             label={t("company.profile.form.companyCode")}
-            value={profile.companyCode || t("company.profile.summary.emptyValue")}
+            value={
+              profile.companyCode || t("company.profile.summary.emptyValue")
+            }
           />
           <ProfileMetaItem
             icon={CreditCardIcon}
@@ -88,19 +95,21 @@ export function CompanyProfileSummaryCard({ profile }: CompanyProfileSummaryCard
           <ProfileMetaItem
             icon={MailIcon}
             label={t("company.profile.form.websiteLink")}
-            value={profile.websiteLink || t("company.profile.summary.emptyValue")}
+            value={
+              profile.websiteLink || t("company.profile.summary.emptyValue")
+            }
           />
         </ul>
 
-        <div className="space-y-2 rounded-xl border bg-muted/15 p-3">
-          <div className="text-[11px] text-muted-foreground">
+        <div className="bg-muted/15 space-y-2 rounded-xl border p-3">
+          <div className="text-muted-foreground text-[11px]">
             {t("company.profile.summary.createdAt")}
           </div>
-          <div className="text-xs font-medium text-foreground">{createdAt}</div>
-          <div className="text-[11px] text-muted-foreground">
+          <div className="text-foreground text-xs font-medium">{createdAt}</div>
+          <div className="text-muted-foreground text-[11px]">
             {t("company.profile.summary.updatedAt")}
           </div>
-          <div className="text-xs font-medium text-foreground">
+          <div className="text-foreground text-xs font-medium">
             {updatedAt || t("company.profile.summary.notUpdated")}
           </div>
         </div>

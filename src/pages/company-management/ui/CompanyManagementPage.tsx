@@ -9,7 +9,13 @@ import { CompanyProfileSummaryCard } from "./components/CompanyProfileSummaryCar
 export function CompanyManagementPage() {
   const { t } = useI18n();
   const form = useCompanyProfileForm();
-  const { profile, profileQuery, completionPercent, isComplete, refreshProfile } = form;
+  const {
+    profile,
+    profileQuery,
+    completionPercent,
+    isComplete,
+    refreshProfile,
+  } = form;
 
   return (
     <AppShell>
@@ -25,12 +31,15 @@ export function CompanyManagementPage() {
         />
 
         {profileQuery.isError ? (
-          <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3">
-            <p className="text-sm font-medium text-destructive">
+          <div className="border-destructive/30 bg-destructive/5 rounded-xl border px-4 py-3">
+            <p className="text-destructive text-sm font-medium">
               {t("company.profile.notice.error.load")}
             </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {resolveErrorMessage(profileQuery.error, t("company.profile.error.unknown"))}
+            <p className="text-muted-foreground mt-1 text-xs">
+              {resolveErrorMessage(
+                profileQuery.error,
+                t("company.profile.error.unknown"),
+              )}
             </p>
           </div>
         ) : null}
@@ -41,7 +50,7 @@ export function CompanyManagementPage() {
             <CompanyProfileForm form={form} />
           </div>
         ) : (
-          <div className="rounded-2xl border bg-card p-6 text-sm text-muted-foreground">
+          <div className="bg-card text-muted-foreground rounded-2xl border p-6 text-sm">
             {profileQuery.isLoading
               ? t("company.profile.state.loading")
               : t("company.profile.state.empty")}

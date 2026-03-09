@@ -47,7 +47,9 @@ export function AppSidebarMobileSheet() {
           side="left"
           className="w-[280px] max-w-[88vw] border-r border-[color:var(--sb-border)] bg-[var(--sb-bg)] p-0 sm:max-w-[280px]"
         >
-          <SheetTitle className="sr-only">{t("sidebar.mobile.title")}</SheetTitle>
+          <SheetTitle className="sr-only">
+            {t("sidebar.mobile.title")}
+          </SheetTitle>
           <SheetDescription className="sr-only">
             {t("sidebar.mobile.description")}
           </SheetDescription>

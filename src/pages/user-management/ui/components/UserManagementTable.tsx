@@ -53,7 +53,9 @@ export function UserManagementTable({
   onChangeStatus,
 }: UserManagementTableProps) {
   const { t, locale } = useI18n();
-  const branchLabelById = new Map(branchOptions.map((branch) => [branch.id, branch.name]));
+  const branchLabelById = new Map(
+    branchOptions.map((branch) => [branch.id, branch.name]),
+  );
 
   return (
     <Table className={USER_TABLE_MIN_WIDTH_CLASS}>
@@ -77,7 +79,7 @@ export function UserManagementTable({
           <TableRow>
             <TableCell
               colSpan={USER_TABLE_COLUMN_COUNT}
-              className="py-10 text-center text-muted-foreground"
+              className="text-muted-foreground py-10 text-center"
             >
               {t("users.table.loading")}
             </TableCell>
@@ -88,7 +90,7 @@ export function UserManagementTable({
           <TableRow>
             <TableCell
               colSpan={USER_TABLE_COLUMN_COUNT}
-              className="py-10 text-center text-muted-foreground"
+              className="text-muted-foreground py-10 text-center"
             >
               {t("users.table.empty")}
             </TableCell>
@@ -110,7 +112,9 @@ export function UserManagementTable({
                           icon={MoreHorizontalCircle01Icon}
                           className="size-3.5"
                         />
-                        <span className="sr-only">{t("users.table.action.menu")}</span>
+                        <span className="sr-only">
+                          {t("users.table.action.menu")}
+                        </span>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
@@ -122,14 +126,19 @@ export function UserManagementTable({
                         {t("users.table.action.edit")}
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => onOpenPassword(user)}>
-                        <HugeiconsIcon icon={LockPasswordIcon} className="size-3.5" />
+                        <HugeiconsIcon
+                          icon={LockPasswordIcon}
+                          className="size-3.5"
+                        />
                         {t("users.table.action.password")}
                       </DropdownMenuItem>
                       <DropdownMenuSub>
                         <DropdownMenuSubTrigger>
                           {t("users.table.action.changeStatus")}
                         </DropdownMenuSubTrigger>
-                        <DropdownMenuSubContent className={USER_ACTION_STATUS_SUB_MENU_CLASS}>
+                        <DropdownMenuSubContent
+                          className={USER_ACTION_STATUS_SUB_MENU_CLASS}
+                        >
                           {USER_STATUS_VALUES.map((status) => (
                             <DropdownMenuItem
                               key={status}
@@ -153,7 +162,9 @@ export function UserManagementTable({
                     <span className="inline-grid size-6 place-content-center rounded-full bg-gradient-to-br from-[#c8d8ff] to-[#91b8ff] text-[10px] font-semibold text-slate-800">
                       {toInitials(user.username)}
                     </span>
-                    <span className="font-medium text-foreground">{user.username}</span>
+                    <span className="text-foreground font-medium">
+                      {user.username}
+                    </span>
                   </div>
                 </TableCell>
 
@@ -165,15 +176,17 @@ export function UserManagementTable({
 
                 <TableCell>
                   <div className="flex max-w-[220px] flex-wrap items-center gap-1">
-                    {user.roles.slice(0, USER_ROLE_VISIBLE_BADGES).map((role) => (
-                      <Badge
-                        key={role.id}
-                        variant="outline"
-                        className="h-5 rounded-full"
-                      >
-                        {role.roleName}
-                      </Badge>
-                    ))}
+                    {user.roles
+                      .slice(0, USER_ROLE_VISIBLE_BADGES)
+                      .map((role) => (
+                        <Badge
+                          key={role.id}
+                          variant="outline"
+                          className="h-5 rounded-full"
+                        >
+                          {role.roleName}
+                        </Badge>
+                      ))}
                     {user.roles.length > USER_ROLE_VISIBLE_BADGES ? (
                       <Badge variant="outline" className="h-5 rounded-full">
                         +{user.roles.length - USER_ROLE_VISIBLE_BADGES}

@@ -45,18 +45,27 @@ export function BranchManagementHeader({
   const { t } = useI18n();
 
   return (
-    <section className="rounded-2xl border bg-card">
+    <section className="bg-card rounded-2xl border">
       <div className="flex flex-wrap items-start justify-between gap-3 border-b px-4 py-4">
         <div className="space-y-1">
-          <h1 className="text-xl font-semibold text-foreground">
+          <h1 className="text-foreground text-xl font-semibold">
             {t("branch.title")}{" "}
-            <span className="text-muted-foreground text-sm font-medium">{total}</span>
+            <span className="text-muted-foreground text-sm font-medium">
+              {total}
+            </span>
           </h1>
-          <p className="text-sm text-muted-foreground">{t("branch.subtitle")}</p>
+          <p className="text-muted-foreground text-sm">
+            {t("branch.subtitle")}
+          </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={onRefresh} disabled={loading}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onRefresh}
+            disabled={loading}
+          >
             <HugeiconsIcon icon={RefreshIcon} />
             {t("branch.action.refresh")}
           </Button>
@@ -83,7 +92,9 @@ export function BranchManagementHeader({
 
         <Select
           value={statusFilter}
-          onValueChange={(value) => onStatusFilterChange(value as BranchStatusFilter)}
+          onValueChange={(value) =>
+            onStatusFilterChange(value as BranchStatusFilter)
+          }
         >
           <SelectTrigger>
             <SelectValue placeholder={t("branch.filter.status")} />

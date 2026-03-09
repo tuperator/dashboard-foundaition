@@ -21,12 +21,10 @@ export const settingsMessages = {
     "settings.security.title": "Bảo mật & Chính sách",
     "settings.security.description":
       "Thiết lập các lớp bảo vệ cơ bản cho người dùng và dữ liệu.",
-    "settings.security.enforce2fa.title":
-      "Bắt buộc 2FA cho tài khoản quản trị",
+    "settings.security.enforce2fa.title": "Bắt buộc 2FA cho tài khoản quản trị",
     "settings.security.enforce2fa.description":
       "Giảm rủi ro bị truy cập trái phép vào khu vực quản trị.",
-    "settings.security.ipRestriction.title":
-      "Giới hạn truy cập theo IP nội bộ",
+    "settings.security.ipRestriction.title": "Giới hạn truy cập theo IP nội bộ",
     "settings.security.ipRestriction.description":
       "Chỉ cho phép đăng nhập từ danh sách IP được cấp quyền.",
     "settings.security.requirePolicy.title":

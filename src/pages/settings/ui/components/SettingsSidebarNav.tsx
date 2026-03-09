@@ -28,7 +28,7 @@ export function SettingsSidebarNav() {
           <a
             key={section.href}
             href={section.href}
-            className="block rounded-md px-2 py-1.5 text-sm hover:bg-muted"
+            className="hover:bg-muted block rounded-md px-2 py-1.5 text-sm"
           >
             {sectionLabelByHref[section.href] || section.label}
           </a>

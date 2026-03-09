@@ -37,13 +37,18 @@ export function WorkflowListTable({
             <TableHead>{t("tasks.workflow.table.statuses")}</TableHead>
             <TableHead>{t("tasks.workflow.table.transitions")}</TableHead>
             <TableHead>{t("tasks.workflow.table.projects")}</TableHead>
-            <TableHead className="w-[220px]">{t("tasks.workflow.table.actions")}</TableHead>
+            <TableHead className="w-[220px]">
+              {t("tasks.workflow.table.actions")}
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {rows.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className="py-10 text-center text-sm text-muted-foreground">
+              <TableCell
+                colSpan={6}
+                className="text-muted-foreground py-10 text-center text-sm"
+              >
                 {t("tasks.workflow.table.empty")}
               </TableCell>
             </TableRow>
@@ -51,15 +56,21 @@ export function WorkflowListTable({
             rows.map(({ workflow, assignedProjects }) => (
               <TableRow key={workflow.id}>
                 <TableCell>
-                  <p className="text-sm font-semibold text-foreground">{workflow.name}</p>
-                  <p className="line-clamp-1 text-xs text-muted-foreground">
+                  <p className="text-foreground text-sm font-semibold">
+                    {workflow.name}
+                  </p>
+                  <p className="text-muted-foreground line-clamp-1 text-xs">
                     {workflow.description || t("tasks.common.noDescription")}
                   </p>
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
                     {workflow.issueTypes.map((issueType) => (
-                      <IssueTypeTag key={issueType} issueType={issueType} active />
+                      <IssueTypeTag
+                        key={issueType}
+                        issueType={issueType}
+                        active
+                      />
                     ))}
                   </div>
                 </TableCell>
@@ -76,10 +87,16 @@ export function WorkflowListTable({
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
                     {assignedProjects.length === 0 ? (
-                      <span className="text-xs text-muted-foreground">{t("tasks.common.none")}</span>
+                      <span className="text-muted-foreground text-xs">
+                        {t("tasks.common.none")}
+                      </span>
                     ) : (
                       assignedProjects.slice(0, 3).map((project) => (
-                        <Badge key={project.id} variant="outline" className="h-6 rounded-full">
+                        <Badge
+                          key={project.id}
+                          variant="outline"
+                          className="h-6 rounded-full"
+                        >
                           {project.key}
                         </Badge>
                       ))

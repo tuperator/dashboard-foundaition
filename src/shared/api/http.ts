@@ -1,7 +1,11 @@
 import axios from "axios";
 import { AxiosError, AxiosHeaders } from "axios";
 import type { InternalAxiosRequestConfig } from "axios";
-import { clearAuthSession, getAuthSession, saveAuthSession } from "@/shared/lib/auth-session";
+import {
+  clearAuthSession,
+  getAuthSession,
+  saveAuthSession,
+} from "@/shared/lib/auth-session";
 import { API_BASE_URL, API_KEY } from "./config";
 import { API_ENDPOINTS } from "./endpoints";
 import { getApiErrorMessage } from "./error-messages";
@@ -72,7 +76,12 @@ export class ApiClientError extends Error {
   details: ApiErrorDetail[];
   backendMessage?: string;
 
-  constructor({ status, code, details = [], backendMessage }: ApiClientErrorParams) {
+  constructor({
+    status,
+    code,
+    details = [],
+    backendMessage,
+  }: ApiClientErrorParams) {
     super(getApiErrorMessage(code, status));
     this.name = "ApiClientError";
     this.status = status;
@@ -140,7 +149,9 @@ async function refreshAccessToken() {
   }
 
   try {
-    const response = await refreshHttpClient.post<ApiEnvelope<RefreshTokenData>>(
+    const response = await refreshHttpClient.post<
+      ApiEnvelope<RefreshTokenData>
+    >(
       REFRESH_TOKEN_ENDPOINT,
       {
         refreshToken: session.refreshToken,
@@ -174,7 +185,11 @@ apiClient.interceptors.request.use((config) => {
     return config;
   }
 
-  setAuthorizationHeader(config, session.accessToken, session.tokenType || "Bearer");
+  setAuthorizationHeader(
+    config,
+    session.accessToken,
+    session.tokenType || "Bearer",
+  );
   return config;
 });
 
@@ -182,7 +197,8 @@ apiClient.interceptors.response.use(
   (response) => response,
   async (error: unknown) => {
     const apiError = normalizeApiError(error);
-    const originalRequest = error instanceof AxiosError ? error.config : undefined;
+    const originalRequest =
+      error instanceof AxiosError ? error.config : undefined;
 
     const shouldAutoRefresh =
       !!originalRequest &&

@@ -43,15 +43,22 @@ export function AppShellHeader({
   const isSettingsPage = location.pathname.startsWith(appRoutes.settings);
   const isUsersPage = location.pathname.startsWith(appRoutes.users);
   const isTasksPage = location.pathname.startsWith(appRoutes.tasksOverview);
-  const isTaskProjectsPage = location.pathname.startsWith(appRoutes.tasksProjects);
-  const isTaskProjectDetailsPage =
-    /^\/tasks\/projects\/[^/]+$/.test(location.pathname);
+  const isTaskProjectsPage = location.pathname.startsWith(
+    appRoutes.tasksProjects,
+  );
+  const isTaskProjectDetailsPage = /^\/tasks\/projects\/[^/]+$/.test(
+    location.pathname,
+  );
   const isRoleGroupsPage = location.pathname.startsWith(appRoutes.roleGroups);
   const isBranchesPage = location.pathname.startsWith(appRoutes.branches);
   const isCompanyPage = location.pathname.startsWith(appRoutes.companyInfo);
 
   const breadcrumbRoot =
-    isUsersPage || isRoleGroupsPage || isBranchesPage || isCompanyPage || isSettingsPage
+    isUsersPage ||
+    isRoleGroupsPage ||
+    isBranchesPage ||
+    isCompanyPage ||
+    isSettingsPage
       ? t("app.header.breadcrumb.system")
       : isTasksPage
         ? t("app.header.breadcrumb.tasks")
@@ -155,11 +162,7 @@ function HeaderIcon({
   }
 
   return (
-    <button
-      type="button"
-      aria-label={ariaLabel}
-      className={baseClassName}
-    >
+    <button type="button" aria-label={ariaLabel} className={baseClassName}>
       <HugeiconsIcon icon={icon} className="size-4" />
     </button>
   );

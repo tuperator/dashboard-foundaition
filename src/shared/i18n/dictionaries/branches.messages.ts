@@ -55,11 +55,11 @@ export const branchesMessages = {
   },
   en: {
     "branch.title": "Branch management",
-    "branch.subtitle":
-      "Manage branch operations for the current company.",
+    "branch.subtitle": "Manage branch operations for the current company.",
     "branch.action.add": "Add branch",
     "branch.action.refresh": "Refresh",
-    "branch.filter.searchPlaceholder": "Search by branch name, address or agent id...",
+    "branch.filter.searchPlaceholder":
+      "Search by branch name, address or agent id...",
     "branch.filter.status": "Status",
     "branch.filter.status.all": "All statuses",
     "branch.filter.reset": "Reset filters",
@@ -95,8 +95,7 @@ export const branchesMessages = {
     "branch.notice.created.description":
       "Branch information has been saved successfully.",
     "branch.notice.updated.title": "Updated branch {name}",
-    "branch.notice.updated.description":
-      "Branch information has been updated.",
+    "branch.notice.updated.description": "Branch information has been updated.",
     "branch.notice.status.title": "Status changed for {name}",
     "branch.notice.status.description": "New status: {status}.",
     "branch.notice.error.load": "Failed to load branches",

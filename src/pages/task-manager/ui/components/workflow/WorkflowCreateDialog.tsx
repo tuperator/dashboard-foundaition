@@ -43,7 +43,9 @@ export function WorkflowCreateDialog({
         </DialogHeader>
         <div className="space-y-2">
           <div className="space-y-1">
-            <Label htmlFor="create-workflow-name">{t("tasks.workflow.form.name")}</Label>
+            <Label htmlFor="create-workflow-name">
+              {t("tasks.workflow.form.name")}
+            </Label>
             <Input
               id="create-workflow-name"
               value={form.name}

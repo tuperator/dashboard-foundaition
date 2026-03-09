@@ -30,25 +30,27 @@ export function CompanyProfileForm({ form }: CompanyProfileFormProps) {
   } = form;
 
   return (
-    <form onSubmit={onSubmit} className="rounded-2xl border bg-card">
+    <form onSubmit={onSubmit} className="bg-card rounded-2xl border">
       <div className="border-b px-4 py-3 md:px-5">
-        <h2 className="text-sm font-semibold text-foreground">
+        <h2 className="text-foreground text-sm font-semibold">
           {t("company.profile.form.title")}
         </h2>
-        <p className="mt-1 text-xs text-muted-foreground">
+        <p className="text-muted-foreground mt-1 text-xs">
           {t("company.profile.form.description")}
         </p>
       </div>
 
       <div className="space-y-5 px-4 py-4 md:px-5">
         <section className="space-y-3">
-          <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+          <h3 className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
             {t("company.profile.form.section.general")}
           </h3>
 
           <div className="grid gap-3 md:grid-cols-2">
             <div>
-              <Label htmlFor="company-name">{t("company.profile.form.name")}</Label>
+              <Label htmlFor="company-name">
+                {t("company.profile.form.name")}
+              </Label>
               <Input
                 id="company-name"
                 placeholder={t("company.profile.form.placeholder.name")}
@@ -59,7 +61,9 @@ export function CompanyProfileForm({ form }: CompanyProfileFormProps) {
             </div>
 
             <div>
-              <Label htmlFor="company-code">{t("company.profile.form.companyCode")}</Label>
+              <Label htmlFor="company-code">
+                {t("company.profile.form.companyCode")}
+              </Label>
               <Input
                 id="company-code"
                 placeholder={t("company.profile.form.placeholder.companyCode")}
@@ -69,7 +73,9 @@ export function CompanyProfileForm({ form }: CompanyProfileFormProps) {
             </div>
 
             <div>
-              <Label htmlFor="company-brand">{t("company.profile.form.brand")}</Label>
+              <Label htmlFor="company-brand">
+                {t("company.profile.form.brand")}
+              </Label>
               <Input
                 id="company-brand"
                 placeholder={t("company.profile.form.placeholder.brand")}
@@ -79,7 +85,9 @@ export function CompanyProfileForm({ form }: CompanyProfileFormProps) {
             </div>
 
             <div>
-              <Label htmlFor="company-market">{t("company.profile.form.market")}</Label>
+              <Label htmlFor="company-market">
+                {t("company.profile.form.market")}
+              </Label>
               <Input
                 id="company-market"
                 placeholder={t("company.profile.form.placeholder.market")}
@@ -91,13 +99,15 @@ export function CompanyProfileForm({ form }: CompanyProfileFormProps) {
         </section>
 
         <section className="space-y-3">
-          <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+          <h3 className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
             {t("company.profile.form.section.contact")}
           </h3>
 
           <div className="grid gap-3 md:grid-cols-2">
             <div>
-              <Label htmlFor="company-email">{t("company.profile.form.email")}</Label>
+              <Label htmlFor="company-email">
+                {t("company.profile.form.email")}
+              </Label>
               <Input
                 id="company-email"
                 type="email"
@@ -109,7 +119,9 @@ export function CompanyProfileForm({ form }: CompanyProfileFormProps) {
             </div>
 
             <div>
-              <Label htmlFor="company-phone">{t("company.profile.form.phone")}</Label>
+              <Label htmlFor="company-phone">
+                {t("company.profile.form.phone")}
+              </Label>
               <Input
                 id="company-phone"
                 placeholder={t("company.profile.form.placeholder.phone")}
@@ -120,7 +132,9 @@ export function CompanyProfileForm({ form }: CompanyProfileFormProps) {
             </div>
 
             <div className="md:col-span-2">
-              <Label htmlFor="company-website">{t("company.profile.form.websiteLink")}</Label>
+              <Label htmlFor="company-website">
+                {t("company.profile.form.websiteLink")}
+              </Label>
               <Input
                 id="company-website"
                 placeholder={t("company.profile.form.placeholder.website")}
@@ -133,13 +147,15 @@ export function CompanyProfileForm({ form }: CompanyProfileFormProps) {
         </section>
 
         <section className="space-y-3">
-          <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+          <h3 className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
             {t("company.profile.form.section.legal")}
           </h3>
 
           <div className="space-y-3">
             <div>
-              <Label htmlFor="company-tax-code">{t("company.profile.form.taxCode")}</Label>
+              <Label htmlFor="company-tax-code">
+                {t("company.profile.form.taxCode")}
+              </Label>
               <Input
                 id="company-tax-code"
                 placeholder={t("company.profile.form.placeholder.taxCode")}
@@ -154,7 +170,9 @@ export function CompanyProfileForm({ form }: CompanyProfileFormProps) {
               </Label>
               <Textarea
                 id="company-headquarters"
-                placeholder={t("company.profile.form.placeholder.headquartersAddress")}
+                placeholder={t(
+                  "company.profile.form.placeholder.headquartersAddress",
+                )}
                 className="mt-1 min-h-[74px]"
                 {...register("headquartersAddress")}
               />
@@ -166,7 +184,9 @@ export function CompanyProfileForm({ form }: CompanyProfileFormProps) {
               </Label>
               <Textarea
                 id="company-register-address"
-                placeholder={t("company.profile.form.placeholder.businessRegisterAddress")}
+                placeholder={t(
+                  "company.profile.form.placeholder.businessRegisterAddress",
+                )}
                 className="mt-1 min-h-[74px]"
                 {...register("businessRegisterAddress")}
               />

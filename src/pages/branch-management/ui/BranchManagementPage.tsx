@@ -3,7 +3,12 @@ import { ApiClientError } from "@/shared/api/http";
 import { AppShell } from "@/widgets/app-shell";
 import { useI18n } from "@/shared/providers/i18n/I18nProvider";
 import { useAppToast } from "@/shared/providers/toast/ToastProvider";
-import type { BranchItem, BranchStatus, CreateBranchPayload, UpdateBranchPayload } from "../model/types";
+import type {
+  BranchItem,
+  BranchStatus,
+  CreateBranchPayload,
+  UpdateBranchPayload,
+} from "../model/types";
 import { useBranchManagement } from "../model/useBranchManagement";
 import { BranchFormDialog } from "./components/BranchFormDialog";
 import { BranchManagementHeader } from "./components/BranchManagementHeader";
@@ -29,9 +34,15 @@ export function BranchManagementPage() {
   const [editingBranch, setEditingBranch] = useState<BranchItem | null>(null);
 
   const stats = useMemo(() => {
-    const active = branches.filter((branch) => branch.status === "ACTIVE").length;
-    const inactive = branches.filter((branch) => branch.status === "INACTIVE").length;
-    const deleted = branches.filter((branch) => branch.status === "DELETED").length;
+    const active = branches.filter(
+      (branch) => branch.status === "ACTIVE",
+    ).length;
+    const inactive = branches.filter(
+      (branch) => branch.status === "INACTIVE",
+    ).length;
+    const deleted = branches.filter(
+      (branch) => branch.status === "DELETED",
+    ).length;
     return {
       total: branches.length,
       active,
@@ -56,9 +67,15 @@ export function BranchManagementPage() {
     }
   };
 
-  const handleUpdate = async (branchId: string, payload: UpdateBranchPayload) => {
+  const handleUpdate = async (
+    branchId: string,
+    payload: UpdateBranchPayload,
+  ) => {
     try {
-      const updated = await updateBranchMutation.mutateAsync({ branchId, payload });
+      const updated = await updateBranchMutation.mutateAsync({
+        branchId,
+        payload,
+      });
       setEditingBranch(null);
       appToast.success({
         title: tp("branch.notice.updated.title", { name: updated.name }),
@@ -72,7 +89,10 @@ export function BranchManagementPage() {
     }
   };
 
-  const handleChangeStatus = async (branch: BranchItem, status: BranchStatus) => {
+  const handleChangeStatus = async (
+    branch: BranchItem,
+    status: BranchStatus,
+  ) => {
     if (branch.status === status) {
       return;
     }
@@ -120,17 +140,25 @@ export function BranchManagementPage() {
         />
 
         <div className="grid gap-3 md:grid-cols-3">
-          <StatCard title={t("branch.badge.active")} value={stats.active} tone="active" />
+          <StatCard
+            title={t("branch.badge.active")}
+            value={stats.active}
+            tone="active"
+          />
           <StatCard
             title={t("branch.badge.inactive")}
             value={stats.inactive}
             tone="inactive"
           />
-          <StatCard title={t("branch.badge.deleted")} value={stats.deleted} tone="deleted" />
+          <StatCard
+            title={t("branch.badge.deleted")}
+            value={stats.deleted}
+            tone="deleted"
+          />
         </div>
 
         {branchesQuery.isError ? (
-          <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3">
+          <div className="border-destructive/30 bg-destructive/5 rounded-xl border px-4 py-3">
             <p className="text-destructive text-sm font-medium">
               {t("branch.notice.error.load")}
             </p>
@@ -162,7 +190,11 @@ export function BranchManagementPage() {
       />
 
       <BranchFormDialog
-        key={editingBranch ? `branch-edit-${editingBranch.id}` : "branch-edit-empty"}
+        key={
+          editingBranch
+            ? `branch-edit-${editingBranch.id}`
+            : "branch-edit-empty"
+        }
         mode="edit"
         open={Boolean(editingBranch)}
         branch={editingBranch}
@@ -211,9 +243,11 @@ function StatCard({
         : "from-rose-50 to-rose-100/40 border-rose-200/70";
 
   return (
-    <article className={`rounded-2xl border bg-gradient-to-br p-4 ${className}`}>
+    <article
+      className={`rounded-2xl border bg-gradient-to-br p-4 ${className}`}
+    >
       <p className="text-muted-foreground text-xs">{title}</p>
-      <p className="mt-1 text-2xl font-semibold text-foreground">{value}</p>
+      <p className="text-foreground mt-1 text-2xl font-semibold">{value}</p>
     </article>
   );
 }

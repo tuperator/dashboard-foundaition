@@ -19,10 +19,7 @@ export default defineConfig({
             return undefined;
           }
 
-          if (
-            id.includes("react-router") ||
-            id.includes("@remix-run")
-          ) {
+          if (id.includes("react-router") || id.includes("@remix-run")) {
             return "vendor-router";
           }
 

@@ -48,7 +48,9 @@ export function GeneralSettingsCard({
       </CardHeader>
       <CardContent className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="workspace-name">{t("settings.general.workspaceName")}</Label>
+          <Label htmlFor="workspace-name">
+            {t("settings.general.workspaceName")}
+          </Label>
           <Input
             id="workspace-name"
             value={workspaceName}
@@ -63,7 +65,9 @@ export function GeneralSettingsCard({
             onValueChange={(value) => onLanguageChange(value as Locale)}
           >
             <SelectTrigger id="language" className="w-full">
-              <SelectValue placeholder={t("settings.general.languagePlaceholder")} />
+              <SelectValue
+                placeholder={t("settings.general.languagePlaceholder")}
+              />
             </SelectTrigger>
             <SelectContent>
               {LANGUAGE_OPTIONS.map((option) => (
@@ -79,7 +83,9 @@ export function GeneralSettingsCard({
           <Label htmlFor="timezone">{t("settings.general.timezone")}</Label>
           <Select value={timeZone} onValueChange={onTimeZoneChange}>
             <SelectTrigger id="timezone" className="w-full">
-              <SelectValue placeholder={t("settings.general.timezonePlaceholder")} />
+              <SelectValue
+                placeholder={t("settings.general.timezonePlaceholder")}
+              />
             </SelectTrigger>
             <SelectContent>
               {TIME_ZONE_OPTIONS.map((option) => (

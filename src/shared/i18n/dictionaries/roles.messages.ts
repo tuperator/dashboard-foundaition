@@ -28,8 +28,7 @@ export const rolesMessages = {
   },
   en: {
     "role.title": "Role manager",
-    "role.subtitle":
-      "System role catalog currently applied. Read-only mode.",
+    "role.subtitle": "System role catalog currently applied. Read-only mode.",
     "role.action.refresh": "Refresh",
     "role.readOnly.badge": "Read-only",
     "role.filter.searchPlaceholder": "Search by role name or identifier...",

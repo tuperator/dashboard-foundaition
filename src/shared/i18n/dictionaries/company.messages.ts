@@ -34,11 +34,14 @@ export const companyMessages = {
     "company.profile.form.websiteLink": "Website",
     "company.profile.form.taxCode": "Mã số thuế",
     "company.profile.form.headquartersAddress": "Địa chỉ trụ sở chính",
-    "company.profile.form.businessRegisterAddress": "Địa chỉ đăng ký kinh doanh",
-    "company.profile.form.placeholder.name": "Ví dụ: Tuperator Enterprises LTD.",
+    "company.profile.form.businessRegisterAddress":
+      "Địa chỉ đăng ký kinh doanh",
+    "company.profile.form.placeholder.name":
+      "Ví dụ: Tuperator Enterprises LTD.",
     "company.profile.form.placeholder.companyCode": "Ví dụ: TPR-ERP",
     "company.profile.form.placeholder.brand": "Ví dụ: Tuperator",
-    "company.profile.form.placeholder.market": "Ví dụ: SaaS / Enterprise Operations",
+    "company.profile.form.placeholder.market":
+      "Ví dụ: SaaS / Enterprise Operations",
     "company.profile.form.placeholder.email": "company@example.com",
     "company.profile.form.placeholder.phone": "Ví dụ: 02838990001",
     "company.profile.form.placeholder.website": "https://your-company.com",
@@ -64,7 +67,8 @@ export const companyMessages = {
     "company.profile.error.unknown":
       "Có lỗi xảy ra trong quá trình cập nhật. Vui lòng thử lại.",
     "company.profile.state.loading": "Đang tải hồ sơ công ty...",
-    "company.profile.state.empty": "Không có dữ liệu hồ sơ công ty để hiển thị.",
+    "company.profile.state.empty":
+      "Không có dữ liệu hồ sơ công ty để hiển thị.",
   },
   en: {
     "company.profile.title": "Company profile",
@@ -103,7 +107,8 @@ export const companyMessages = {
     "company.profile.form.headquartersAddress": "Headquarters address",
     "company.profile.form.businessRegisterAddress":
       "Business registration address",
-    "company.profile.form.placeholder.name": "Example: Tuperator Enterprises LTD.",
+    "company.profile.form.placeholder.name":
+      "Example: Tuperator Enterprises LTD.",
     "company.profile.form.placeholder.companyCode": "Example: TPR-ERP",
     "company.profile.form.placeholder.brand": "Example: Tuperator",
     "company.profile.form.placeholder.market":

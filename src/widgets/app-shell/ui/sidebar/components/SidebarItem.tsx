@@ -26,8 +26,7 @@ export function SidebarItem({ item }: SidebarItemProps) {
   const hasActiveChild =
     item.children?.some((child) =>
       isCurrentPath(location.pathname, child.to, "prefix"),
-    ) ||
-    false;
+    ) || false;
   const isActive = isCurrentPath(location.pathname, item.to, item.matchMode);
 
   if (hasChildren) {

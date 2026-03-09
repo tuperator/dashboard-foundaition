@@ -7,10 +7,7 @@ import {
   updateBranch,
   updateBranchStatus,
 } from "./branchManagement.api";
-import {
-  BRANCH_FILTER_ALL,
-  BRANCH_MANAGEMENT_QUERY_KEYS,
-} from "./constants";
+import { BRANCH_FILTER_ALL, BRANCH_MANAGEMENT_QUERY_KEYS } from "./constants";
 import type {
   BranchItem,
   BranchStatus,
@@ -73,7 +70,10 @@ export function useBranchManagement() {
     const normalizedSearch = search.trim().toLowerCase();
 
     return branches.filter((branch: BranchItem) => {
-      if (statusFilter !== BRANCH_FILTER_ALL && branch.status !== statusFilter) {
+      if (
+        statusFilter !== BRANCH_FILTER_ALL &&
+        branch.status !== statusFilter
+      ) {
         return false;
       }
 

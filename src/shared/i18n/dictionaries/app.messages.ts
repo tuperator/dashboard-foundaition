@@ -19,8 +19,7 @@ export const appMessages = {
     "app.feed.time.today1159": "Hôm nay, 11:59 SA",
     "app.feed.time.feb22026": "2 Thg 2, 2026",
     "app.feed.notification.fixedBug": "Bạn đã sửa một lỗi.",
-    "app.feed.notification.newUserRegistered":
-      "Một người dùng mới đã đăng ký.",
+    "app.feed.notification.newUserRegistered": "Một người dùng mới đã đăng ký.",
     "app.feed.activity.changedStyle": "Đã thay đổi giao diện.",
     "app.feed.activity.releasedVersion": "Đã phát hành phiên bản mới.",
     "app.feed.activity.submittedBug": "Đã gửi một lỗi.",

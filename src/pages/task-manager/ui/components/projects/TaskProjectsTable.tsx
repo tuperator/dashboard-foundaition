@@ -26,8 +26,8 @@ export function TaskProjectsTable({
   const navigate = useNavigate();
 
   return (
-    <section className="rounded-2xl border bg-card p-3">
-      <div className="mb-2 grid grid-cols-[minmax(0,1.6fr)_100px_160px_140px_100px_120px] gap-2 px-2 py-1 text-xs font-medium text-muted-foreground">
+    <section className="bg-card rounded-2xl border p-3">
+      <div className="text-muted-foreground mb-2 grid grid-cols-[minmax(0,1.6fr)_100px_160px_140px_100px_120px] gap-2 px-2 py-1 text-xs font-medium">
         <span>{t("tasks.projects.table.project")}</span>
         <span>{t("tasks.projects.table.type")}</span>
         <span>{t("tasks.projects.table.owner")}</span>
@@ -38,7 +38,7 @@ export function TaskProjectsTable({
 
       {projects.length === 0 ? (
         <div className="rounded-xl border border-dashed p-8 text-center">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {t("tasks.projects.emptyFiltered")}
           </p>
         </div>
@@ -52,53 +52,64 @@ export function TaskProjectsTable({
               updatedAt: 0,
             };
             const completion =
-              stats.total === 0 ? 0 : Math.round((stats.done / stats.total) * 100);
+              stats.total === 0
+                ? 0
+                : Math.round((stats.done / stats.total) * 100);
 
             return (
               <article
                 key={project.id}
-                className="grid grid-cols-[minmax(0,1.6fr)_100px_160px_140px_100px_120px] items-center gap-2 rounded-xl border bg-gradient-to-r from-card to-muted/10 px-2 py-2.5 transition hover:border-primary/40 hover:bg-primary/[0.03]"
+                className="from-card to-muted/10 hover:border-primary/40 hover:bg-primary/[0.03] grid grid-cols-[minmax(0,1.6fr)_100px_160px_140px_100px_120px] items-center gap-2 rounded-xl border bg-gradient-to-r px-2 py-2.5 transition"
               >
                 <div className="min-w-0">
                   <div className="mb-1 flex items-center gap-2">
-                    <h2 className="truncate text-sm font-semibold text-foreground">
+                    <h2 className="text-foreground truncate text-sm font-semibold">
                       {project.name}
                     </h2>
-                    <Badge className="h-5 rounded-full bg-primary/10 px-2 text-[11px] text-primary">
+                    <Badge className="bg-primary/10 text-primary h-5 rounded-full px-2 text-[11px]">
                       {project.key}
                     </Badge>
                   </div>
-                  <p className="truncate text-xs text-muted-foreground">
+                  <p className="text-muted-foreground truncate text-xs">
                     {project.description}
                   </p>
                 </div>
 
-                <Badge variant="outline" className="h-6 w-fit rounded-full px-2">
+                <Badge
+                  variant="outline"
+                  className="h-6 w-fit rounded-full px-2"
+                >
                   {project.type}
                 </Badge>
 
-                <span className="truncate text-sm text-foreground">{project.owner}</span>
+                <span className="text-foreground truncate text-sm">
+                  {project.owner}
+                </span>
 
                 <div className="text-sm">
-                  <p className="font-medium text-foreground">
+                  <p className="text-foreground font-medium">
                     {tp("tasks.projects.stat.members", {
                       count: project.members.length,
                     })}
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground text-xs">
                     {tp("tasks.projects.stat.tasks", { count: stats.total })}
                   </p>
                 </div>
 
                 <div>
-                  <p className="mb-1 text-xs font-medium text-foreground">{completion}%</p>
+                  <p className="text-foreground mb-1 text-xs font-medium">
+                    {completion}%
+                  </p>
                   <Progress value={completion} className="h-1.5" />
                 </div>
 
                 <Button
                   size="sm"
                   className="w-fit"
-                  onClick={() => navigate(getTaskProjectDetailsRoute(project.id))}
+                  onClick={() =>
+                    navigate(getTaskProjectDetailsRoute(project.id))
+                  }
                 >
                   {t("tasks.common.details")}
                 </Button>

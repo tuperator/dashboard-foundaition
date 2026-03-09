@@ -85,17 +85,17 @@ export const usersMessages = {
     "users.common.cancel": "Hủy",
     "users.common.close": "Đóng",
     "users.common.unknownUser": "người dùng",
-    "users.notice.profileUpdated.title": "\"{name}\" đã được cập nhật",
+    "users.notice.profileUpdated.title": '"{name}" đã được cập nhật',
     "users.notice.profileUpdated.description":
       "Thông tin hồ sơ đã được lưu thành công.",
     "users.notice.passwordUpdated.title": "Cập nhật mật khẩu thành công",
     "users.notice.passwordUpdated.description":
-      "Mật khẩu của \"{name}\" đã được thay đổi.",
+      'Mật khẩu của "{name}" đã được thay đổi.',
     "users.notice.statusChanged.title": "Đã đổi trạng thái cho {name}",
     "users.notice.statusChanged.description": "Trạng thái mới: {status}.",
     "users.notice.userDeleted.title": "Đã xóa người dùng",
     "users.notice.userDeleted.description":
-      "\"{name}\" đã được xóa khỏi hệ thống.",
+      '"{name}" đã được xóa khỏi hệ thống.',
     "users.notice.created.title": "Đã tạo tài khoản {name}",
     "users.notice.created.description":
       "Người dùng mới đã được thêm vào hệ thống.",
@@ -196,17 +196,17 @@ export const usersMessages = {
     "users.common.cancel": "Cancel",
     "users.common.close": "Close",
     "users.common.unknownUser": "user",
-    "users.notice.profileUpdated.title": "\"{name}\" updated",
+    "users.notice.profileUpdated.title": '"{name}" updated',
     "users.notice.profileUpdated.description":
       "Profile details have been saved successfully.",
     "users.notice.passwordUpdated.title": "Password updated",
     "users.notice.passwordUpdated.description":
-      "Password for \"{name}\" has been updated.",
+      'Password for "{name}" has been updated.',
     "users.notice.statusChanged.title": "{name} status changed",
     "users.notice.statusChanged.description": "Status updated to {status}.",
     "users.notice.userDeleted.title": "User deleted",
     "users.notice.userDeleted.description":
-      "\"{name}\" has been removed from the system.",
+      '"{name}" has been removed from the system.',
     "users.notice.created.title": "{name} account created",
     "users.notice.created.description":
       "The new user has been added to the system.",

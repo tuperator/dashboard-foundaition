@@ -1,6 +1,7 @@
 # User Management API Spec (Draft)
 
 ## 1) Domain Notes
+
 - Data source dựa trên bảng `account`, `role` bạn cung cấp.
 - Vì nghiệp vụ yêu cầu **1 user có nhiều roles**, backend nên có bảng mapping:
 
@@ -14,10 +15,12 @@ create table public.account_role (
 ```
 
 ## 2) Enums
+
 - `status`: `WORKING | ONLEAVE | RESIGNED`
 - `gender`: `MALE | FEMALE | OTHER`
 
 ## 3) Common Envelope
+
 ```json
 {
   "timestamp": "2026-03-05T12:00:00.000Z",
@@ -35,9 +38,11 @@ create table public.account_role (
 ## 4) APIs
 
 ### 4.1 List Users
+
 `GET /api/v1/users`
 
 Query params:
+
 - `page` (default `1`)
 - `size` (default `15`)
 - `search` (username/email/phone)
@@ -46,6 +51,7 @@ Query params:
 - `twoFactorEnabled` (`true|false`)
 
 Response `data`:
+
 ```json
 {
   "items": [
@@ -77,18 +83,22 @@ Response `data`:
 ```
 
 ### 4.2 Get User Detail
+
 `GET /api/v1/users/{accountId}`
 
 Response `data`: giống item user ở API list, có thể thêm:
+
 - `createdAt`
 - `updatedAt`
 - `picId`
 - `type`
 
 ### 4.3 Update Profile
+
 `PUT /api/v1/users/{accountId}/profile`
 
 Request body:
+
 ```json
 {
   "username": "Nguyen Van A",
@@ -103,14 +113,17 @@ Request body:
 ```
 
 Notes:
+
 - Email unique toàn hệ thống.
 - Phone unique theo `(phone, company_id)`.
 - `roleIds` update theo kiểu replace (xóa role cũ, insert role mới trong transaction).
 
 ### 4.4 Update Password
+
 `PUT /api/v1/users/{accountId}/password`
 
 Request body:
+
 ```json
 {
   "newPassword": "string-min-8"
@@ -118,13 +131,16 @@ Request body:
 ```
 
 Validation:
+
 - Tối thiểu 8 ký tự.
 - Khuyến nghị thêm policy: hoa, thường, số, ký tự đặc biệt.
 
 ### 4.5 Change Status
+
 `PATCH /api/v1/users/{accountId}/status`
 
 Request body:
+
 ```json
 {
   "status": "ONLEAVE"
@@ -132,15 +148,19 @@ Request body:
 ```
 
 ### 4.6 Delete User (soft delete recommended)
+
 `DELETE /api/v1/users/{accountId}`
 
 Khuyến nghị:
+
 - Thay vì hard delete `account`, nên set `status=RESIGNED` + revoke session.
 
 ### 4.7 List Roles
+
 `GET /api/v1/roles`
 
 Response `data`:
+
 ```json
 [
   { "id": "uuid", "roleName": "OPER_ADMIN" },
@@ -149,6 +169,7 @@ Response `data`:
 ```
 
 ## 5) Error Codes (suggested)
+
 - `USER_NOT_FOUND`
 - `USER_EMAIL_ALREADY_EXISTS`
 - `USER_PHONE_ALREADY_EXISTS`

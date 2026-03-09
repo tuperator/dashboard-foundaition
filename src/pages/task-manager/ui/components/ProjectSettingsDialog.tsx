@@ -93,13 +93,16 @@ export function ProjectSettingsDialog({
         <DialogHeader>
           <DialogTitle>Project settings</DialogTitle>
           <DialogDescription>
-            Cập nhật thông tin project, quản lý thành viên và phân quyền theo vai trò.
+            Cập nhật thông tin project, quản lý thành viên và phân quyền theo
+            vai trò.
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-          <section className="rounded-xl border bg-muted/15 p-3">
-            <p className="mb-3 text-sm font-semibold text-foreground">General information</p>
+          <section className="bg-muted/15 rounded-xl border p-3">
+            <p className="text-foreground mb-3 text-sm font-semibold">
+              General information
+            </p>
             <div className="grid gap-3">
               <div className="grid gap-1.5">
                 <Label htmlFor="project-settings-name">Project name</Label>
@@ -131,7 +134,10 @@ export function ProjectSettingsDialog({
                   <Select
                     value={form.type}
                     onValueChange={(value) =>
-                      setForm((prev) => ({ ...prev, type: value as ProjectType }))
+                      setForm((prev) => ({
+                        ...prev,
+                        type: value as ProjectType,
+                      }))
                     }
                   >
                     <SelectTrigger id="project-settings-type">
@@ -160,7 +166,9 @@ export function ProjectSettingsDialog({
               </div>
 
               <div className="grid gap-1.5">
-                <Label htmlFor="project-settings-description">Description</Label>
+                <Label htmlFor="project-settings-description">
+                  Description
+                </Label>
                 <Textarea
                   id="project-settings-description"
                   value={form.description}
@@ -176,8 +184,10 @@ export function ProjectSettingsDialog({
             </div>
           </section>
 
-          <section className="rounded-xl border bg-muted/15 p-3">
-            <p className="mb-3 text-sm font-semibold text-foreground">Members & permissions</p>
+          <section className="bg-muted/15 rounded-xl border p-3">
+            <p className="text-foreground mb-3 text-sm font-semibold">
+              Members & permissions
+            </p>
 
             <div className="mb-3 flex gap-2">
               <Input
@@ -203,14 +213,23 @@ export function ProjectSettingsDialog({
               {members.map((member) => (
                 <div
                   key={member}
-                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-card px-3 py-2"
+                  className="bg-card flex flex-wrap items-center justify-between gap-2 rounded-lg border px-3 py-2"
                 >
-                  <span className="text-sm font-medium text-foreground">{member}</span>
+                  <span className="text-foreground text-sm font-medium">
+                    {member}
+                  </span>
                   <div className="flex items-center gap-2">
                     <Select
-                      value={memberRoles[member] || (member === project.owner ? "OWNER" : "MEMBER")}
+                      value={
+                        memberRoles[member] ||
+                        (member === project.owner ? "OWNER" : "MEMBER")
+                      }
                       onValueChange={(value) =>
-                        onUpdateMemberRole(project.id, member, value as ProjectMemberRole)
+                        onUpdateMemberRole(
+                          project.id,
+                          member,
+                          value as ProjectMemberRole,
+                        )
                       }
                     >
                       <SelectTrigger className="w-[132px]">
@@ -234,7 +253,9 @@ export function ProjectSettingsDialog({
                         Remove
                       </Button>
                     ) : (
-                      <span className="text-xs text-muted-foreground">Owner</span>
+                      <span className="text-muted-foreground text-xs">
+                        Owner
+                      </span>
                     )}
                   </div>
                 </div>

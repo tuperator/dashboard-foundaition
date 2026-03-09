@@ -79,7 +79,8 @@ export function SprintDialog({
             {mode === "create" ? "Create sprint" : "Update sprint"}
           </DialogTitle>
           <DialogDescription>
-            Define sprint timeline, goal and scope for the current scrum project.
+            Define sprint timeline, goal and scope for the current scrum
+            project.
           </DialogDescription>
         </DialogHeader>
 
@@ -117,7 +118,10 @@ export function SprintDialog({
                 type="date"
                 value={form.startDate}
                 onChange={(event) =>
-                  setForm((prev) => ({ ...prev, startDate: event.target.value }))
+                  setForm((prev) => ({
+                    ...prev,
+                    startDate: event.target.value,
+                  }))
                 }
               />
             </div>

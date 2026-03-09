@@ -23,22 +23,32 @@ export function CompanyManagementHeader({
   const { t } = useI18n();
 
   return (
-    <section className="overflow-hidden rounded-2xl border bg-card">
+    <section className="bg-card overflow-hidden rounded-2xl border">
       <div className="bg-muted/35 border-b px-4 py-4 md:px-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-semibold text-foreground">
+              <h1 className="text-foreground text-xl font-semibold">
                 {t("company.profile.title")}
               </h1>
-              <Badge variant="outline" className="h-5 rounded-full px-2 text-[11px]">
+              <Badge
+                variant="outline"
+                className="h-5 rounded-full px-2 text-[11px]"
+              >
                 {t("company.profile.badge.selfManaged")}
               </Badge>
             </div>
-            <p className="text-sm text-muted-foreground">{t("company.profile.subtitle")}</p>
+            <p className="text-muted-foreground text-sm">
+              {t("company.profile.subtitle")}
+            </p>
           </div>
 
-          <Button variant="outline" size="sm" onClick={onRefresh} disabled={loading}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onRefresh}
+            disabled={loading}
+          >
             <HugeiconsIcon icon={RefreshIcon} />
             {t("company.profile.action.refresh")}
           </Button>
@@ -47,17 +57,23 @@ export function CompanyManagementHeader({
 
       <div className="grid gap-3 px-4 py-4 md:grid-cols-3 md:px-5">
         <article className="rounded-xl border bg-gradient-to-br from-slate-50 to-slate-100/40 p-3 dark:from-slate-950/40 dark:to-slate-900/30">
-          <p className="text-xs text-muted-foreground">{t("company.profile.summary.company")}</p>
-          <p className="mt-1 truncate text-sm font-semibold text-foreground">{companyName}</p>
+          <p className="text-muted-foreground text-xs">
+            {t("company.profile.summary.company")}
+          </p>
+          <p className="text-foreground mt-1 truncate text-sm font-semibold">
+            {companyName}
+          </p>
         </article>
 
         <article className="rounded-xl border bg-gradient-to-br from-indigo-50 to-sky-50/70 p-3 dark:from-indigo-950/40 dark:to-sky-950/20">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             {t("company.profile.summary.completion")}
           </p>
           <div className="mt-1 flex items-center justify-between gap-3">
-            <span className="text-lg font-semibold text-foreground">{completionPercent}%</span>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-foreground text-lg font-semibold">
+              {completionPercent}%
+            </span>
+            <span className="text-muted-foreground text-xs">
               {isComplete
                 ? t("company.profile.summary.statusReady")
                 : t("company.profile.summary.statusIncomplete")}
@@ -67,13 +83,15 @@ export function CompanyManagementHeader({
         </article>
 
         <article className="rounded-xl border bg-gradient-to-br from-emerald-50 to-teal-50/60 p-3 dark:from-emerald-950/30 dark:to-teal-950/20">
-          <p className="text-xs text-muted-foreground">{t("company.profile.summary.status")}</p>
-          <p className="mt-1 text-sm font-semibold text-foreground">
+          <p className="text-muted-foreground text-xs">
+            {t("company.profile.summary.status")}
+          </p>
+          <p className="text-foreground mt-1 text-sm font-semibold">
             {isComplete
               ? t("company.profile.summary.statusReady")
               : t("company.profile.summary.statusIncomplete")}
           </p>
-          <p className="mt-2 text-xs text-muted-foreground">
+          <p className="text-muted-foreground mt-2 text-xs">
             {t("company.profile.summary.statusHint")}
           </p>
         </article>

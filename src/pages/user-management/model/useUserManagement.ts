@@ -30,7 +30,8 @@ export function useUserManagement() {
 
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>(USER_FILTER_ALL);
-  const [statusFilter, setStatusFilter] = useState<UserStatusFilter>(USER_FILTER_ALL);
+  const [statusFilter, setStatusFilter] =
+    useState<UserStatusFilter>(USER_FILTER_ALL);
   const [twoFactorFilter, setTwoFactorFilter] =
     useState<UserTwoFactorFilter>(USER_FILTER_ALL);
   const [page, setPage] = useState(USER_DEFAULT_PAGE);
@@ -81,8 +82,12 @@ export function useUserManagement() {
     mutationFn: (payload: CreateUserPayload) =>
       createUserInCompany(companyId as string, payload),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: [USER_MANAGEMENT_QUERY_KEYS.list] });
-      void queryClient.invalidateQueries({ queryKey: [USER_MANAGEMENT_QUERY_KEYS.roles] });
+      void queryClient.invalidateQueries({
+        queryKey: [USER_MANAGEMENT_QUERY_KEYS.list],
+      });
+      void queryClient.invalidateQueries({
+        queryKey: [USER_MANAGEMENT_QUERY_KEYS.roles],
+      });
     },
   });
 
@@ -90,20 +95,26 @@ export function useUserManagement() {
     mutationFn: (args: { userId: string; payload: UpdateUserProfilePayload }) =>
       updateUserProfile(args.userId, args.payload),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: [USER_MANAGEMENT_QUERY_KEYS.list] });
+      void queryClient.invalidateQueries({
+        queryKey: [USER_MANAGEMENT_QUERY_KEYS.list],
+      });
     },
   });
 
   const updatePasswordMutation = useMutation({
-    mutationFn: (args: { userId: string; payload: UpdateUserPasswordPayload }) =>
-      updateUserPassword(args.userId, args.payload),
+    mutationFn: (args: {
+      userId: string;
+      payload: UpdateUserPasswordPayload;
+    }) => updateUserPassword(args.userId, args.payload),
   });
 
   const updateStatusMutation = useMutation({
     mutationFn: (args: { userId: string; status: UserStatus }) =>
       updateUserStatus(args.userId, args.status),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: [USER_MANAGEMENT_QUERY_KEYS.list] });
+      void queryClient.invalidateQueries({
+        queryKey: [USER_MANAGEMENT_QUERY_KEYS.list],
+      });
     },
   });
 

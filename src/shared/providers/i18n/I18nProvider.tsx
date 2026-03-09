@@ -7,10 +7,7 @@ import {
   type Locale,
   type TranslationKey,
 } from "@/shared/i18n/messages";
-import {
-  resolveInitialLocale,
-  setCurrentLocale,
-} from "@/shared/i18n/store";
+import { resolveInitialLocale, setCurrentLocale } from "@/shared/i18n/store";
 
 export type Translate = (key: TranslationKey) => string;
 export type TranslateWithParams = (

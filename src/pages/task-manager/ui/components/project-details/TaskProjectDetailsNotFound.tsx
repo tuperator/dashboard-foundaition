@@ -16,15 +16,15 @@ export function TaskProjectDetailsNotFound({
   return (
     <AppShell>
       <section className="space-y-4">
-        <header className="rounded-2xl border bg-card p-4">
-          <h1 className="text-xl font-semibold text-foreground">
+        <header className="bg-card rounded-2xl border p-4">
+          <h1 className="text-foreground text-xl font-semibold">
             {t("tasks.projectDetails.notFoundTitle")}
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="text-muted-foreground mt-1 text-sm">
             {t("tasks.projectDetails.notFoundDescription")}
           </p>
         </header>
-        <section className="rounded-2xl border bg-card p-5">
+        <section className="bg-card rounded-2xl border p-5">
           <Button variant="outline" onClick={onBack}>
             <HugeiconsIcon icon={ArrowLeft01Icon} />
             {t("tasks.common.backToWorkspace")}

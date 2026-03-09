@@ -31,7 +31,9 @@ export type UpdateCompanyProfilePayload = {
 };
 
 export async function getMyCompanyProfile(): Promise<CompanyProfileResponse> {
-  const response = await apiClient.get<CompanyProfileResponse>(API_ENDPOINTS.companies.me);
+  const response = await apiClient.get<CompanyProfileResponse>(
+    API_ENDPOINTS.companies.me,
+  );
   return response.data;
 }
 

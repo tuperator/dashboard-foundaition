@@ -17,9 +17,7 @@ import {
 } from "@/shared/ui/select";
 import { Badge } from "@/shared/ui/badge";
 import type { UserRole } from "../../model/types";
-import {
-  USER_FILTER_ALL,
-} from "../../model/constants";
+import { USER_FILTER_ALL } from "../../model/constants";
 import {
   USER_STATUS_VALUES,
   type UserStatusFilter,
@@ -58,16 +56,16 @@ export function UserManagementHeader({
   const { t } = useI18n();
 
   return (
-    <section className="rounded-2xl border bg-card">
+    <section className="bg-card rounded-2xl border">
       <div className="flex flex-wrap items-start justify-between gap-3 border-b px-4 py-4">
         <div className="space-y-1">
-          <h1 className="text-xl font-semibold text-foreground">
+          <h1 className="text-foreground text-xl font-semibold">
             {t("users.title")}{" "}
-            <span className="text-muted-foreground text-sm font-medium">{totalUsers}</span>
+            <span className="text-muted-foreground text-sm font-medium">
+              {totalUsers}
+            </span>
           </h1>
-          <p className="text-sm text-muted-foreground">
-            {t("users.subtitle")}
-          </p>
+          <p className="text-muted-foreground text-sm">{t("users.subtitle")}</p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -117,8 +115,10 @@ export function UserManagementHeader({
             <SelectTrigger className="w-full">
               <SelectValue placeholder={t("users.filter.role")} />
             </SelectTrigger>
-          <SelectContent>
-              <SelectItem value={USER_FILTER_ALL}>{t("users.filter.allRoles")}</SelectItem>
+            <SelectContent>
+              <SelectItem value={USER_FILTER_ALL}>
+                {t("users.filter.allRoles")}
+              </SelectItem>
               {roleOptions.map((role) => (
                 <SelectItem key={role.id} value={role.id}>
                   {role.roleName}
@@ -129,13 +129,17 @@ export function UserManagementHeader({
 
           <Select
             value={statusFilter}
-            onValueChange={(value) => onStatusFilterChange(value as UserStatusFilter)}
+            onValueChange={(value) =>
+              onStatusFilterChange(value as UserStatusFilter)
+            }
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder={t("users.filter.status")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={USER_FILTER_ALL}>{t("users.filter.allStatus")}</SelectItem>
+              <SelectItem value={USER_FILTER_ALL}>
+                {t("users.filter.allStatus")}
+              </SelectItem>
               {USER_STATUS_VALUES.map((status) => (
                 <SelectItem key={status} value={status}>
                   {status === "WORKING"
@@ -158,9 +162,15 @@ export function UserManagementHeader({
               <SelectValue placeholder={t("users.filter.twoFactor")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={USER_FILTER_ALL}>{t("users.filter.twoFactorAll")}</SelectItem>
-              <SelectItem value="ENABLED">{t("users.filter.twoFactorEnabled")}</SelectItem>
-              <SelectItem value="DISABLED">{t("users.filter.twoFactorDisabled")}</SelectItem>
+              <SelectItem value={USER_FILTER_ALL}>
+                {t("users.filter.twoFactorAll")}
+              </SelectItem>
+              <SelectItem value="ENABLED">
+                {t("users.filter.twoFactorEnabled")}
+              </SelectItem>
+              <SelectItem value="DISABLED">
+                {t("users.filter.twoFactorDisabled")}
+              </SelectItem>
             </SelectContent>
           </Select>
 

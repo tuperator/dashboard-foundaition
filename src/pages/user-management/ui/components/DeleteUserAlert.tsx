@@ -40,14 +40,18 @@ export function DeleteUserAlert({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel size="sm">{t("users.common.cancel")}</AlertDialogCancel>
+          <AlertDialogCancel size="sm">
+            {t("users.common.cancel")}
+          </AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
             size="sm"
             onClick={onConfirm}
             disabled={submitting}
           >
-            {submitting ? `${t("users.delete.confirm")}...` : t("users.delete.confirm")}
+            {submitting
+              ? `${t("users.delete.confirm")}...`
+              : t("users.delete.confirm")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

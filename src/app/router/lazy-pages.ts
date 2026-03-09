@@ -1,7 +1,9 @@
 import { lazy } from "react";
 
 export const DashboardPage = lazy(() =>
-  import("@/pages/dashboard").then((module) => ({ default: module.DashboardPage })),
+  import("@/pages/dashboard").then((module) => ({
+    default: module.DashboardPage,
+  })),
 );
 
 export const LoginPage = lazy(() =>
@@ -9,7 +11,9 @@ export const LoginPage = lazy(() =>
 );
 
 export const SettingsPage = lazy(() =>
-  import("@/pages/settings").then((module) => ({ default: module.SettingsPage })),
+  import("@/pages/settings").then((module) => ({
+    default: module.SettingsPage,
+  })),
 );
 
 export const UserManagementPage = lazy(() =>
@@ -55,5 +59,7 @@ export const CompanyManagementPage = lazy(() =>
 );
 
 export const NotFoundPage = lazy(() =>
-  import("@/pages/not-found").then((module) => ({ default: module.NotFoundPage })),
+  import("@/pages/not-found").then((module) => ({
+    default: module.NotFoundPage,
+  })),
 );

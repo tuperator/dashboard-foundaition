@@ -40,7 +40,7 @@ export function RoleManagementPage() {
         </div>
 
         {rolesQuery.isError ? (
-          <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3">
+          <div className="border-destructive/30 bg-destructive/5 rounded-xl border px-4 py-3">
             <p className="text-destructive text-sm font-medium">
               {t("role.notice.error.load")}
             </p>
@@ -77,7 +77,7 @@ function StatCard({ title, value }: { title: string; value: number }) {
   return (
     <article className="rounded-2xl border bg-gradient-to-br from-slate-50 to-slate-100/40 p-4">
       <p className="text-muted-foreground text-xs">{title}</p>
-      <p className="mt-1 text-2xl font-semibold text-foreground">{value}</p>
+      <p className="text-foreground mt-1 text-2xl font-semibold">{value}</p>
     </article>
   );
 }

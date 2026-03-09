@@ -55,7 +55,9 @@ export function LoginFormPanel({ form }: LoginFormPanelProps) {
               {...register("identity")}
             />
             {errors.identity ? (
-              <p className="text-destructive text-xs">{errors.identity.message}</p>
+              <p className="text-destructive text-xs">
+                {errors.identity.message}
+              </p>
             ) : null}
           </div>
 
@@ -81,7 +83,9 @@ export function LoginFormPanel({ form }: LoginFormPanelProps) {
               </button>
             </div>
             {errors.password ? (
-              <p className="text-destructive text-xs">{errors.password.message}</p>
+              <p className="text-destructive text-xs">
+                {errors.password.message}
+              </p>
             ) : null}
           </div>
 
@@ -93,7 +97,9 @@ export function LoginFormPanel({ form }: LoginFormPanelProps) {
                 <label className="text-muted-foreground inline-flex items-center gap-2 text-sm">
                   <Checkbox
                     checked={field.value}
-                    onCheckedChange={(checked) => field.onChange(Boolean(checked))}
+                    onCheckedChange={(checked) =>
+                      field.onChange(Boolean(checked))
+                    }
                   />
                   {t("auth.login.rememberMe")}
                 </label>

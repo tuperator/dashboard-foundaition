@@ -15,7 +15,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/select";
-import { TASK_PRIORITY_VALUES, type TaskPriority, type TaskProject } from "../../../model/types";
+import {
+  TASK_PRIORITY_VALUES,
+  type TaskPriority,
+  type TaskProject,
+} from "../../../model/types";
 
 type TaskProjectDetailsHeaderProps = {
   project: TaskProject;
@@ -61,23 +65,34 @@ export function TaskProjectDetailsHeader({
   const { t } = useI18n();
 
   return (
-    <header className="rounded-2xl border bg-card p-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-2">
-          <Button variant="ghost" size="sm" className="w-fit px-2" onClick={onBack}>
-            {t("tasks.common.backToWorkspace")}
-          </Button>
-          <div>
-            <h1 className="text-xl font-semibold text-foreground">{project.name}</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {t("tasks.projectDetails.headerDescription")}
-            </p>
-          </div>
+    <header className="bg-card rounded-2xl border p-4 flex flex-col gap-4 lg:gap-5">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="text-muted-foreground w-fit -ml-2 px-2 h-7"
+        onClick={onBack}
+      >
+        <HugeiconsIcon icon={AddCircleHalfDotIcon} className="hidden" /> {/* to easily keep spacing standard, or we just rely on text */}
+        {t("tasks.common.backToWorkspace")}
+      </Button>
+
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-foreground text-xl font-semibold">
+            {project.name}
+          </h1>
+          <p className="text-muted-foreground mt-1 text-sm">
+            {t("tasks.projectDetails.headerDescription")}
+          </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="outline" className="h-6 rounded-full">{project.key}</Badge>
-          <Badge className="h-6 rounded-full bg-primary/10 text-primary">{project.type}</Badge>
+          <Badge variant="outline" className="h-6 rounded-full">
+            {project.key}
+          </Badge>
+          <Badge className="bg-primary/10 text-primary h-6 rounded-full">
+            {project.type}
+          </Badge>
           <Button variant="outline" size="sm" onClick={onOpenEditProject}>
             {t("tasks.common.edit")}
           </Button>
@@ -98,11 +113,11 @@ export function TaskProjectDetailsHeader({
         </div>
       </div>
 
-      <div className="mt-4 grid gap-2 md:grid-cols-[minmax(0,1.1fr)_repeat(4,minmax(0,140px))]">
-        <div className="relative">
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="relative flex-1 min-w-[200px]">
           <HugeiconsIcon
             icon={Search01Icon}
-            className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground"
+            className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2"
           />
           <Input
             value={search}
@@ -113,35 +128,57 @@ export function TaskProjectDetailsHeader({
         </div>
 
         <Select value={statusFilter} onValueChange={onStatusFilterChange}>
-          <SelectTrigger><SelectValue placeholder={t("tasks.projectDetails.status")} /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-auto sm:min-w-[150px]">
+            <SelectValue placeholder={t("tasks.projectDetails.status")} />
+          </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">{t("tasks.projectDetails.allStatus")}</SelectItem>
+            <SelectItem value="ALL">
+              {t("tasks.projectDetails.allStatus")}
+            </SelectItem>
             {workflow.map((status) => (
-              <SelectItem key={status} value={status}>{status}</SelectItem>
+              <SelectItem key={status} value={status}>
+                {status}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
         <Select
           value={priorityFilter}
-          onValueChange={(value) => onPriorityFilterChange(value as "ALL" | TaskPriority)}
+          onValueChange={(value) =>
+            onPriorityFilterChange(value as "ALL" | TaskPriority)
+          }
         >
-          <SelectTrigger><SelectValue placeholder={t("tasks.projectDetails.priority")} /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-auto sm:min-w-[150px]">
+            <SelectValue placeholder={t("tasks.projectDetails.priority")} />
+          </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">{t("tasks.projectDetails.allPriority")}</SelectItem>
+            <SelectItem value="ALL">
+              {t("tasks.projectDetails.allPriority")}
+            </SelectItem>
             {TASK_PRIORITY_VALUES.map((priority) => (
-              <SelectItem key={priority} value={priority}>{priority}</SelectItem>
+              <SelectItem key={priority} value={priority}>
+                {priority}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
         <Select value={assigneeFilter} onValueChange={onAssigneeFilterChange}>
-          <SelectTrigger><SelectValue placeholder={t("tasks.projectDetails.assignee")} /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-auto sm:min-w-[150px]">
+            <SelectValue placeholder={t("tasks.projectDetails.assignee")} />
+          </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">{t("tasks.projectDetails.allAssignee")}</SelectItem>
-            <SelectItem value="__UNASSIGNED__">{t("tasks.common.unassigned")}</SelectItem>
+            <SelectItem value="ALL">
+              {t("tasks.projectDetails.allAssignee")}
+            </SelectItem>
+            <SelectItem value="__UNASSIGNED__">
+              {t("tasks.common.unassigned")}
+            </SelectItem>
             {project.members.map((member) => (
-              <SelectItem key={member} value={member}>{member}</SelectItem>
+              <SelectItem key={member} value={member}>
+                {member}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -152,11 +189,19 @@ export function TaskProjectDetailsHeader({
             onSortByChange(value as "LATEST" | "PRIORITY" | "BACKLOG_ORDER")
           }
         >
-          <SelectTrigger><SelectValue placeholder={t("tasks.projectDetails.sortBy")} /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-auto sm:min-w-[150px]">
+            <SelectValue placeholder={t("tasks.projectDetails.sortBy")} />
+          </SelectTrigger>
           <SelectContent>
-            <SelectItem value="LATEST">{t("tasks.projectDetails.sort.latestUpdated")}</SelectItem>
-            <SelectItem value="PRIORITY">{t("tasks.projectDetails.sort.priority")}</SelectItem>
-            <SelectItem value="BACKLOG_ORDER">{t("tasks.projectDetails.sort.backlogOrder")}</SelectItem>
+            <SelectItem value="LATEST">
+              {t("tasks.projectDetails.sort.latestUpdated")}
+            </SelectItem>
+            <SelectItem value="PRIORITY">
+              {t("tasks.projectDetails.sort.priority")}
+            </SelectItem>
+            <SelectItem value="BACKLOG_ORDER">
+              {t("tasks.projectDetails.sort.backlogOrder")}
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>

@@ -48,20 +48,38 @@ type WorkflowEditorDialogProps = {
   onOpenChange: (open: boolean) => void;
   onSaveMetadata: (
     workflowId: string,
-    payload: { name: string; description: string; issueTypes: WorkflowIssueType[] },
+    payload: {
+      name: string;
+      description: string;
+      issueTypes: WorkflowIssueType[];
+    },
   ) => void;
   onAssignProjects: (workflowId: string, projectIds: string[]) => void;
   onCreateStatus: (
     workflowId: string,
-    payload: { code: string; name: string; color: string; category: WorkflowStatusCategory },
+    payload: {
+      code: string;
+      name: string;
+      color: string;
+      category: WorkflowStatusCategory;
+    },
   ) => void;
   onUpdateStatus: (
     workflowId: string,
     statusId: string,
-    payload: { code: string; name: string; color: string; category: WorkflowStatusCategory },
+    payload: {
+      code: string;
+      name: string;
+      color: string;
+      category: WorkflowStatusCategory;
+    },
   ) => void;
   onDeleteStatus: (workflowId: string, statusId: string) => void;
-  onCreateTransition: (workflowId: string, fromStatusCode: string, toStatusCode: string) => void;
+  onCreateTransition: (
+    workflowId: string,
+    fromStatusCode: string,
+    toStatusCode: string,
+  ) => void;
   onDeleteTransition: (workflowId: string, transitionId: string) => void;
 };
 
@@ -84,9 +102,15 @@ export function WorkflowEditorDialog({
 
   const [name, setName] = useState(workflow.name);
   const [description, setDescription] = useState(workflow.description);
-  const [issueTypes, setIssueTypes] = useState<WorkflowIssueType[]>(workflow.issueTypes);
-  const [statusEditor, setStatusEditor] = useState<StatusEditorState | null>(null);
-  const [fromStatusCode, setFromStatusCode] = useState(workflow.statuses[0]?.code || "");
+  const [issueTypes, setIssueTypes] = useState<WorkflowIssueType[]>(
+    workflow.issueTypes,
+  );
+  const [statusEditor, setStatusEditor] = useState<StatusEditorState | null>(
+    null,
+  );
+  const [fromStatusCode, setFromStatusCode] = useState(
+    workflow.statuses[0]?.code || "",
+  );
   const [toStatusCode, setToStatusCode] = useState(
     workflow.statuses[1]?.code || workflow.statuses[0]?.code || "",
   );
@@ -113,17 +137,27 @@ export function WorkflowEditorDialog({
 
         <Tabs defaultValue="metadata">
           <TabsList variant="line">
-            <TabsTrigger value="metadata">{t("tasks.workflow.editor.tab.metadata")}</TabsTrigger>
-            <TabsTrigger value="status">{t("tasks.workflow.editor.tab.status")}</TabsTrigger>
-            <TabsTrigger value="transitions">{t("tasks.workflow.editor.tab.transitions")}</TabsTrigger>
-            <TabsTrigger value="projects">{t("tasks.workflow.editor.tab.projects")}</TabsTrigger>
+            <TabsTrigger value="metadata">
+              {t("tasks.workflow.editor.tab.metadata")}
+            </TabsTrigger>
+            <TabsTrigger value="status">
+              {t("tasks.workflow.editor.tab.status")}
+            </TabsTrigger>
+            <TabsTrigger value="transitions">
+              {t("tasks.workflow.editor.tab.transitions")}
+            </TabsTrigger>
+            <TabsTrigger value="projects">
+              {t("tasks.workflow.editor.tab.projects")}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="metadata" className="space-y-3">
-            <div className="rounded-xl border bg-muted/10 p-3">
+            <div className="bg-muted/10 rounded-xl border p-3">
               <div className="grid gap-2 md:grid-cols-2">
                 <div className="space-y-1">
-                  <Label htmlFor="workflow-edit-name">{t("tasks.workflow.form.name")}</Label>
+                  <Label htmlFor="workflow-edit-name">
+                    {t("tasks.workflow.form.name")}
+                  </Label>
                   <Input
                     id="workflow-edit-name"
                     value={name}
@@ -200,9 +234,9 @@ export function WorkflowEditorDialog({
           </TabsContent>
 
           <TabsContent value="status" className="space-y-3">
-            <section className="rounded-xl border bg-muted/10 p-3">
+            <section className="bg-muted/10 rounded-xl border p-3">
               <div className="mb-3 flex items-center justify-between">
-                <p className="text-sm font-semibold text-foreground">
+                <p className="text-foreground text-sm font-semibold">
                   {t("tasks.workflow.editor.statusCatalog")}
                 </p>
                 <Button
@@ -216,9 +250,9 @@ export function WorkflowEditorDialog({
               </div>
 
               {statusEditor ? (
-                <div className="mb-3 rounded-lg border border-primary/30 bg-primary/[0.03] p-3">
+                <div className="border-primary/30 bg-primary/[0.03] mb-3 rounded-lg border p-3">
                   <div className="mb-2 flex items-center justify-between">
-                    <p className="text-sm font-medium text-foreground">
+                    <p className="text-foreground text-sm font-medium">
                       {statusEditor.mode === "create"
                         ? t("tasks.workflow.editor.statusCreate")
                         : t("tasks.workflow.editor.statusEdit")}
@@ -339,7 +373,7 @@ export function WorkflowEditorDialog({
                 {workflow.statuses.map((status) => (
                   <div
                     key={status.id}
-                    className="flex items-center justify-between rounded-lg border bg-card px-3 py-2"
+                    className="bg-card flex items-center justify-between rounded-lg border px-3 py-2"
                   >
                     <div className="flex items-center gap-3">
                       <StatusChip
@@ -383,9 +417,9 @@ export function WorkflowEditorDialog({
           </TabsContent>
 
           <TabsContent value="transitions" className="space-y-3">
-            <section className="rounded-xl border bg-muted/10 p-3">
+            <section className="bg-muted/10 rounded-xl border p-3">
               <div className="mb-3 flex items-center justify-between">
-                <p className="text-sm font-semibold text-foreground">
+                <p className="text-foreground text-sm font-semibold">
                   {t("tasks.workflow.editor.transitionRules")}
                 </p>
                 <Badge variant="outline" className="h-6 rounded-full">
@@ -393,11 +427,16 @@ export function WorkflowEditorDialog({
                 </Badge>
               </div>
 
-              <div className="mb-3 rounded-lg border border-dashed bg-card p-2.5">
+              <div className="bg-card mb-3 rounded-lg border border-dashed p-2.5">
                 <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto]">
-                  <Select value={fromStatusCode} onValueChange={setFromStatusCode}>
+                  <Select
+                    value={fromStatusCode}
+                    onValueChange={setFromStatusCode}
+                  >
                     <SelectTrigger>
-                      <SelectValue placeholder={t("tasks.workflow.editor.fromStatus")} />
+                      <SelectValue
+                        placeholder={t("tasks.workflow.editor.fromStatus")}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {workflow.statuses.map((status) => (
@@ -408,13 +447,15 @@ export function WorkflowEditorDialog({
                     </SelectContent>
                   </Select>
 
-                  <div className="grid place-content-center text-muted-foreground">
+                  <div className="text-muted-foreground grid place-content-center">
                     <HugeiconsIcon icon={ArrowRight01Icon} className="size-4" />
                   </div>
 
                   <Select value={toStatusCode} onValueChange={setToStatusCode}>
                     <SelectTrigger>
-                      <SelectValue placeholder={t("tasks.workflow.editor.toStatus")} />
+                      <SelectValue
+                        placeholder={t("tasks.workflow.editor.toStatus")}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {workflow.statuses.map((status) => (
@@ -433,12 +474,20 @@ export function WorkflowEditorDialog({
                       }
                       if (fromStatusCode === toStatusCode) {
                         appToast.warning({
-                          title: t("tasks.workflow.toast.invalidTransitionTitle"),
-                          description: t("tasks.workflow.toast.invalidTransitionDescription"),
+                          title: t(
+                            "tasks.workflow.toast.invalidTransitionTitle",
+                          ),
+                          description: t(
+                            "tasks.workflow.toast.invalidTransitionDescription",
+                          ),
                         });
                         return;
                       }
-                      onCreateTransition(workflow.id, fromStatusCode, toStatusCode);
+                      onCreateTransition(
+                        workflow.id,
+                        fromStatusCode,
+                        toStatusCode,
+                      );
                     }}
                   >
                     <HugeiconsIcon icon={LinkSquare02Icon} />
@@ -449,7 +498,7 @@ export function WorkflowEditorDialog({
 
               <div className="space-y-1.5">
                 {workflow.transitions.length === 0 ? (
-                  <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
+                  <div className="text-muted-foreground rounded-lg border border-dashed p-6 text-center text-sm">
                     {t("tasks.workflow.editor.emptyTransitions")}
                   </div>
                 ) : (
@@ -460,7 +509,7 @@ export function WorkflowEditorDialog({
                     return (
                       <article
                         key={transition.id}
-                        className="flex items-center justify-between rounded-lg border bg-card px-3 py-2"
+                        className="bg-card flex items-center justify-between rounded-lg border px-3 py-2"
                       >
                         <div className="flex items-center gap-2">
                           <StatusChip
@@ -470,7 +519,7 @@ export function WorkflowEditorDialog({
                           />
                           <HugeiconsIcon
                             icon={ArrowRight01Icon}
-                            className="size-3.5 text-muted-foreground"
+                            className="text-muted-foreground size-3.5"
                           />
                           <StatusChip
                             color={toStatus?.color || "#6B7280"}
@@ -482,7 +531,9 @@ export function WorkflowEditorDialog({
                           variant="ghost"
                           size="sm"
                           className="h-6 px-2 text-xs"
-                          onClick={() => onDeleteTransition(workflow.id, transition.id)}
+                          onClick={() =>
+                            onDeleteTransition(workflow.id, transition.id)
+                          }
                         >
                           {t("tasks.common.remove")}
                         </Button>
@@ -495,9 +546,9 @@ export function WorkflowEditorDialog({
           </TabsContent>
 
           <TabsContent value="projects" className="space-y-3">
-            <section className="rounded-xl border bg-muted/10 p-3">
+            <section className="bg-muted/10 rounded-xl border p-3">
               <div className="mb-3 flex items-center justify-between">
-                <p className="text-sm font-semibold text-foreground">
+                <p className="text-foreground text-sm font-semibold">
                   {t("tasks.workflow.editor.applyProjects")}
                 </p>
                 <Button
@@ -537,14 +588,18 @@ export function WorkflowEditorDialog({
                       )}
                     >
                       <div>
-                        <p className="text-sm font-medium text-foreground">{project.name}</p>
-                        <p className="text-xs text-muted-foreground">{project.key}</p>
+                        <p className="text-foreground text-sm font-medium">
+                          {project.name}
+                        </p>
+                        <p className="text-muted-foreground text-xs">
+                          {project.key}
+                        </p>
                       </div>
                       <input
                         type="checkbox"
                         readOnly
                         checked={active}
-                        className="pointer-events-none size-4 rounded border-border"
+                        className="border-border pointer-events-none size-4 rounded"
                       />
                     </button>
                   );

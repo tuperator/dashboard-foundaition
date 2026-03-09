@@ -23,7 +23,12 @@ import {
   BRANCH_DEFAULT_STATUS,
   BRANCH_FORM_DIALOG_CLASS,
 } from "../../model/constants";
-import type { BranchItem, BranchStatus, CreateBranchPayload, UpdateBranchPayload } from "../../model/types";
+import type {
+  BranchItem,
+  BranchStatus,
+  CreateBranchPayload,
+  UpdateBranchPayload,
+} from "../../model/types";
 
 type BranchFormDialogProps = {
   mode: "create" | "edit";
@@ -75,12 +80,17 @@ export function BranchFormDialog({
   const [form, setForm] = useState<BranchFormState>(initialState);
 
   const title =
-    mode === "create" ? t("branch.form.create.title") : t("branch.form.edit.title");
+    mode === "create"
+      ? t("branch.form.create.title")
+      : t("branch.form.edit.title");
 
   const submitLabel =
-    mode === "create" ? t("branch.form.submitCreate") : t("branch.form.submitUpdate");
+    mode === "create"
+      ? t("branch.form.submitCreate")
+      : t("branch.form.submitUpdate");
 
-  const nameError = form.name.trim().length === 0 ? t("branch.form.nameRequired") : "";
+  const nameError =
+    form.name.trim().length === 0 ? t("branch.form.nameRequired") : "";
   const canSubmit = !nameError;
 
   return (
@@ -142,7 +152,10 @@ export function BranchFormDialog({
               <Select
                 value={form.status}
                 onValueChange={(value) =>
-                  setForm((prev) => ({ ...prev, status: value as BranchStatus }))
+                  setForm((prev) => ({
+                    ...prev,
+                    status: value as BranchStatus,
+                  }))
                 }
               >
                 <SelectTrigger>

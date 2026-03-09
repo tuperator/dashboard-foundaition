@@ -52,7 +52,8 @@ export const apiMessages = {
     "api.error.status.403": "Bạn không có quyền truy cập tài nguyên này.",
     "api.error.status.404": "Không tìm thấy dữ liệu yêu cầu.",
     "api.error.status.409": "Dữ liệu đang xung đột. Vui lòng thử lại.",
-    "api.error.status.422": "Dữ liệu gửi lên chưa hợp lệ. Vui lòng kiểm tra lại.",
+    "api.error.status.422":
+      "Dữ liệu gửi lên chưa hợp lệ. Vui lòng kiểm tra lại.",
     "api.error.status.5xx":
       "Hệ thống đang bận hoặc gặp sự cố. Vui lòng thử lại sau.",
     "api.error.default": "Có lỗi xảy ra. Vui lòng thử lại.",
@@ -64,18 +65,15 @@ export const apiMessages = {
       "Your session has expired. Please sign in again.",
     "api.error.TOKEN_NOT_YET_VALID":
       "Your session is not valid yet. Please sign in again.",
-    "api.error.FORBIDDEN":
-      "You do not have permission to perform this action.",
+    "api.error.FORBIDDEN": "You do not have permission to perform this action.",
     "api.error.COMPANY_ACCESS_DENIED":
       "You cannot access data from this company.",
     "api.error.USER_CREATION_FORBIDDEN":
       "You do not have permission to manage users.",
     "api.error.USER_PROFILE_NOT_FOUND":
       "User was not found or has been removed.",
-    "api.error.USER_ALREADY_EXISTS":
-      "Email or phone number already exists.",
-    "api.error.BRANCH_NOT_FOUND":
-      "Branch is invalid or no longer active.",
+    "api.error.USER_ALREADY_EXISTS": "Email or phone number already exists.",
+    "api.error.BRANCH_NOT_FOUND": "Branch is invalid or no longer active.",
     "api.error.BRANCH_MANAGEMENT_FORBIDDEN":
       "You do not have permission to manage branches.",
     "api.error.COMPANY_PROFILE_NOT_FOUND":
@@ -106,11 +104,11 @@ export const apiMessages = {
       "This account is inactive. Please contact your administrator.",
     "api.error.AUTH_FORBIDDEN":
       "You do not have permission to perform this action.",
-    "api.error.status.400":
-      "Request is invalid. Please review and try again.",
+    "api.error.status.400": "Request is invalid. Please review and try again.",
     "api.error.status.401":
       "Authentication is invalid or expired. Please sign in again.",
-    "api.error.status.403": "You do not have permission to access this resource.",
+    "api.error.status.403":
+      "You do not have permission to access this resource.",
     "api.error.status.404": "The requested data was not found.",
     "api.error.status.409":
       "Data conflict detected. Please refresh and try again.",

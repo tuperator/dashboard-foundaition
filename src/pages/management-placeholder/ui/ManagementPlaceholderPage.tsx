@@ -17,12 +17,14 @@ export function ManagementPlaceholderPage({
     <AppShell>
       <section className="space-y-4">
         <header className="space-y-1">
-          <h1 className="text-xl font-semibold text-foreground">{t(titleKey)}</h1>
-          <p className="text-sm text-muted-foreground">{t(descriptionKey)}</p>
+          <h1 className="text-foreground text-xl font-semibold">
+            {t(titleKey)}
+          </h1>
+          <p className="text-muted-foreground text-sm">{t(descriptionKey)}</p>
         </header>
 
-        <div className="rounded-2xl border bg-card p-6">
-          <p className="text-sm text-muted-foreground">
+        <div className="bg-card rounded-2xl border p-6">
+          <p className="text-muted-foreground text-sm">
             {t("common.comingSoon")}
           </p>
         </div>

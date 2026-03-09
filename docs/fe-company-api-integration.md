@@ -1,6 +1,7 @@
 # Company Profile APIs - FE Integration Guide
 
 Tài liệu này mô tả các API cho màn hình **quản lý hồ sơ công ty**:
+
 - `GET my company profile`
 - `PUT update my company profile`
 
@@ -43,6 +44,7 @@ Mapping theo bảng `public.company`:
 ```
 
 Lưu ý:
+
 - `name` bắt buộc.
 - Các field còn lại có thể `null`.
 - `companyCode` unique toàn hệ thống (theo DB constraint `unique_company_code_per_company`).
@@ -54,6 +56,7 @@ Lưu ý:
 `GET /api/v1/companies/me`
 
 Rule:
+
 - User chỉ cần đăng nhập hợp lệ.
 - Backend lấy `company_id` từ JWT/session user hiện tại.
 - Nếu account không gắn company hoặc company không tồn tại: trả lỗi `COMPANY_PROFILE_NOT_FOUND`.
@@ -65,6 +68,7 @@ GET /api/v1/companies/me
 ```
 
 Response `200`:
+
 - trả về `Company Object Response`.
 
 ## 3.2 Update My Company Profile
@@ -72,6 +76,7 @@ Response `200`:
 `PUT /api/v1/companies/me`
 
 Rule:
+
 - Chỉ role `OPER_ADMIN` hoặc `OPER_MANAGER` được cập nhật hồ sơ công ty.
 - Backend lấy `company_id` từ JWT/session user hiện tại.
 
@@ -93,6 +98,7 @@ Request body:
 ```
 
 Validation đề xuất:
+
 - `name`: required, not blank, max `255`.
 - `phone`: optional, max `15`, regex phone hợp lệ.
 - `email`: optional, max `255`, đúng format email.
@@ -105,6 +111,7 @@ Validation đề xuất:
 - `market`: optional, max `255`.
 
 Response `200`:
+
 - trả về `Company Object Response`.
 
 ## 4) Error Response Format
@@ -151,12 +158,14 @@ Các API trong tài liệu này có thể gặp:
 ## 6) Mapping Lỗi Theo Endpoint (Quick View)
 
 `GET /companies/me`:
+
 - `401`: `TOKEN_INVALID|TOKEN_EXPIRED|TOKEN_NOT_YET_VALID`
 - `404`: `COMPANY_PROFILE_NOT_FOUND`
 - `403`: `FORBIDDEN`
 - `400`: `BAD_REQUEST|VALIDATION_ERROR`
 
 `PUT /companies/me`:
+
 - `401`: `TOKEN_INVALID|TOKEN_EXPIRED|TOKEN_NOT_YET_VALID`
 - `403`: `COMPANY_PROFILE_UPDATE_FORBIDDEN|FORBIDDEN`
 - `404`: `COMPANY_PROFILE_NOT_FOUND`

@@ -3,8 +3,7 @@ export const authMessages = {
     "auth.checkingSession": "Đang kiểm tra phiên đăng nhập...",
     "auth.login.brand": "Tuperator",
     "auth.login.welcomeBack": "Chào mừng trở lại",
-    "auth.login.subtitle":
-      "Nhập email và mật khẩu để truy cập vào hệ thống.",
+    "auth.login.subtitle": "Nhập email và mật khẩu để truy cập vào hệ thống.",
     "auth.login.email": "Email",
     "auth.login.emailPlaceholder": "sellostore@company.com",
     "auth.login.password": "Mật khẩu",
@@ -57,7 +56,6 @@ export const authMessages = {
     "auth.validation.emailRequired": "Please enter your email.",
     "auth.validation.emailInvalid": "Email format is not valid.",
     "auth.validation.passwordRequired": "Please enter your password.",
-    "auth.validation.passwordMin":
-      "Password must have at least 6 characters.",
+    "auth.validation.passwordMin": "Password must have at least 6 characters.",
   },
 } as const;

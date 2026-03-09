@@ -118,14 +118,26 @@ export type UpdateTaskPayload = Omit<
   sprintId?: string | null;
   backlogOrder?: number;
 };
-export type CreateSprintPayload = Omit<SprintItem, "id" | "createdAt" | "status">;
-export type UpdateSprintPayload = Pick<SprintItem, "name" | "goal" | "startDate" | "endDate">;
+export type CreateSprintPayload = Omit<
+  SprintItem,
+  "id" | "createdAt" | "status"
+>;
+export type UpdateSprintPayload = Pick<
+  SprintItem,
+  "name" | "goal" | "startDate" | "endDate"
+>;
 
-export type CreateWorkflowPayload = Pick<WorkflowTemplate, "name" | "description"> & {
+export type CreateWorkflowPayload = Pick<
+  WorkflowTemplate,
+  "name" | "description"
+> & {
   issueTypes?: WorkflowIssueType[];
 };
 
-export type UpdateWorkflowPayload = Pick<WorkflowTemplate, "name" | "description" | "issueTypes">;
+export type UpdateWorkflowPayload = Pick<
+  WorkflowTemplate,
+  "name" | "description" | "issueTypes"
+>;
 
 export type CreateWorkflowStatusPayload = Omit<WorkflowStatusItem, "id">;
 export type UpdateWorkflowStatusPayload = Omit<WorkflowStatusItem, "id">;

@@ -14,7 +14,10 @@ import type {
 
 export const sidebarProfileName = "ByeWind";
 
-export const sidebarTabs = ["sidebar.tabs.favorites", "sidebar.tabs.recently"] as const;
+export const sidebarTabs = [
+  "sidebar.tabs.favorites",
+  "sidebar.tabs.recently",
+] as const;
 
 export const defaultActions: SidebarAction[] = [
   { labelKey: "sidebar.actions.open" },

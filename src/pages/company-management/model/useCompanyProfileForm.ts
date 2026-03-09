@@ -31,10 +31,13 @@ function toFormValues(profile: CompanyProfile): CompanyProfileFormValues {
       COMPANY_PROFILE_EMPTY_VALUES.businessRegisterAddress,
     taxCode: profile.taxCode ?? COMPANY_PROFILE_EMPTY_VALUES.taxCode,
     headquartersAddress:
-      profile.headquartersAddress ?? COMPANY_PROFILE_EMPTY_VALUES.headquartersAddress,
-    websiteLink: profile.websiteLink ?? COMPANY_PROFILE_EMPTY_VALUES.websiteLink,
+      profile.headquartersAddress ??
+      COMPANY_PROFILE_EMPTY_VALUES.headquartersAddress,
+    websiteLink:
+      profile.websiteLink ?? COMPANY_PROFILE_EMPTY_VALUES.websiteLink,
     brand: profile.brand ?? COMPANY_PROFILE_EMPTY_VALUES.brand,
-    companyCode: profile.companyCode ?? COMPANY_PROFILE_EMPTY_VALUES.companyCode,
+    companyCode:
+      profile.companyCode ?? COMPANY_PROFILE_EMPTY_VALUES.companyCode,
     market: profile.market ?? COMPANY_PROFILE_EMPTY_VALUES.market,
   };
 }
@@ -44,12 +47,16 @@ function normalizeNullableString(value: string): string | null {
   return normalized.length > 0 ? normalized : null;
 }
 
-function toUpdatePayload(values: CompanyProfileFormValues): UpdateCompanyProfilePayload {
+function toUpdatePayload(
+  values: CompanyProfileFormValues,
+): UpdateCompanyProfilePayload {
   return {
     name: values.name.trim(),
     phone: normalizeNullableString(values.phone),
     email: normalizeNullableString(values.email),
-    businessRegisterAddress: normalizeNullableString(values.businessRegisterAddress),
+    businessRegisterAddress: normalizeNullableString(
+      values.businessRegisterAddress,
+    ),
     taxCode: normalizeNullableString(values.taxCode),
     headquartersAddress: normalizeNullableString(values.headquartersAddress),
     websiteLink: normalizeNullableString(values.websiteLink),
@@ -59,10 +66,7 @@ function toUpdatePayload(values: CompanyProfileFormValues): UpdateCompanyProfile
   };
 }
 
-function resolveErrorMessage(
-  error: unknown,
-  fallback: string,
-) {
+function resolveErrorMessage(error: unknown, fallback: string) {
   if (error instanceof ApiClientError) {
     return error.message;
   }
@@ -102,7 +106,10 @@ export function useCompanyProfileForm() {
     mutationFn: (values: CompanyProfileFormValues) =>
       updateMyCompanyProfile(toUpdatePayload(values)),
     onSuccess: (nextProfile) => {
-      queryClient.setQueryData([COMPANY_MANAGEMENT_QUERY_KEYS.profile], nextProfile);
+      queryClient.setQueryData(
+        [COMPANY_MANAGEMENT_QUERY_KEYS.profile],
+        nextProfile,
+      );
       form.reset(toFormValues(nextProfile));
       appToast.success({
         title: t("company.profile.notice.saved.title"),
@@ -112,7 +119,10 @@ export function useCompanyProfileForm() {
     onError: (error) => {
       appToast.error({
         title: t("company.profile.notice.error.title"),
-        description: resolveErrorMessage(error, t("company.profile.error.unknown")),
+        description: resolveErrorMessage(
+          error,
+          t("company.profile.error.unknown"),
+        ),
       });
     },
   });
@@ -148,7 +158,10 @@ export function useCompanyProfileForm() {
     if (result.error) {
       appToast.error({
         title: t("company.profile.notice.error.load"),
-        description: resolveErrorMessage(result.error, t("company.profile.error.unknown")),
+        description: resolveErrorMessage(
+          result.error,
+          t("company.profile.error.unknown"),
+        ),
       });
       return;
     }
@@ -175,4 +188,6 @@ export function useCompanyProfileForm() {
   };
 }
 
-export type UseCompanyProfileFormResult = ReturnType<typeof useCompanyProfileForm>;
+export type UseCompanyProfileFormResult = ReturnType<
+  typeof useCompanyProfileForm
+>;

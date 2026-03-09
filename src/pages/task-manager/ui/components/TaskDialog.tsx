@@ -76,7 +76,13 @@ export function TaskDialog({
   onSubmit,
 }: TaskDialogProps) {
   const [form, setForm] = useState<FormState>(() =>
-    getInitialFormState(task, defaultProjectId, lockProjectId, projects, statusOptions),
+    getInitialFormState(
+      task,
+      defaultProjectId,
+      lockProjectId,
+      projects,
+      statusOptions,
+    ),
   );
 
   const canSubmit = useMemo(
@@ -88,7 +94,9 @@ export function TaskDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="[zoom:var(--app-scale)] sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{mode === "create" ? "Create task" : "Update task"}</DialogTitle>
+          <DialogTitle>
+            {mode === "create" ? "Create task" : "Update task"}
+          </DialogTitle>
           <DialogDescription>
             Capture issue details, assignee, status and priority.
           </DialogDescription>
@@ -100,7 +108,9 @@ export function TaskDialog({
             <Input
               id="task-title"
               value={form.title}
-              onChange={(event) => setForm((prev) => ({ ...prev, title: event.target.value }))}
+              onChange={(event) =>
+                setForm((prev) => ({ ...prev, title: event.target.value }))
+              }
               placeholder="Thiết kế màn quản lý user"
             />
           </div>
@@ -110,7 +120,8 @@ export function TaskDialog({
               <div className="grid gap-1.5">
                 <Label>Project</Label>
                 <div className="bg-muted/40 text-foreground rounded-md border px-3 py-2 text-sm">
-                  {projects.find((project) => project.id === lockProjectId)?.name || "Current project"}
+                  {projects.find((project) => project.id === lockProjectId)
+                    ?.name || "Current project"}
                 </div>
               </div>
             ) : (
@@ -118,7 +129,9 @@ export function TaskDialog({
                 <Label htmlFor="task-project">Project</Label>
                 <Select
                   value={form.projectId}
-                  onValueChange={(value) => setForm((prev) => ({ ...prev, projectId: value }))}
+                  onValueChange={(value) =>
+                    setForm((prev) => ({ ...prev, projectId: value }))
+                  }
                 >
                   <SelectTrigger id="task-project">
                     <SelectValue placeholder="Choose project" />
@@ -138,7 +151,9 @@ export function TaskDialog({
               <Label htmlFor="task-assignee">Assignee</Label>
               <Select
                 value={form.assignee}
-                onValueChange={(value) => setForm((prev) => ({ ...prev, assignee: value }))}
+                onValueChange={(value) =>
+                  setForm((prev) => ({ ...prev, assignee: value }))
+                }
               >
                 <SelectTrigger id="task-assignee">
                   <SelectValue placeholder="Assignee" />
@@ -182,7 +197,10 @@ export function TaskDialog({
               <Select
                 value={form.priority}
                 onValueChange={(value) =>
-                  setForm((prev) => ({ ...prev, priority: value as TaskPriority }))
+                  setForm((prev) => ({
+                    ...prev,
+                    priority: value as TaskPriority,
+                  }))
                 }
               >
                 <SelectTrigger id="task-priority">
@@ -205,7 +223,10 @@ export function TaskDialog({
               id="task-description"
               value={form.description}
               onChange={(event) =>
-                setForm((prev) => ({ ...prev, description: event.target.value }))
+                setForm((prev) => ({
+                  ...prev,
+                  description: event.target.value,
+                }))
               }
               placeholder="Task detail..."
               className="min-h-[76px]"
@@ -224,7 +245,8 @@ export function TaskDialog({
                 title: form.title,
                 description: form.description,
                 projectId: lockProjectId || form.projectId,
-                assignee: form.assignee === "__UNASSIGNED__" ? null : form.assignee,
+                assignee:
+                  form.assignee === "__UNASSIGNED__" ? null : form.assignee,
                 status: form.status,
                 priority: form.priority,
               })

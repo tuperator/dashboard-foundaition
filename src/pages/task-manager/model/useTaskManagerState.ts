@@ -34,7 +34,9 @@ function generateId(prefix: string) {
 }
 
 function normalizeStore(
-  raw: Partial<TaskManagerStore> & { workflowByProject?: Record<string, string[]> },
+  raw: Partial<TaskManagerStore> & {
+    workflowByProject?: Record<string, string[]>;
+  },
 ): TaskManagerStore {
   const projects = raw.projects || [];
   const workflows = normalizeWorkflowTemplates(
@@ -61,7 +63,9 @@ function normalizeStore(
         ? { ...task, sprintId: null }
         : task,
     )
-    .map((task) => sanitizeTaskStatus(task, task.projectId, workflows, workflowIdByProject));
+    .map((task) =>
+      sanitizeTaskStatus(task, task.projectId, workflows, workflowIdByProject),
+    );
   const selectedProjectId = raw.selectedProjectId || projects[0]?.id || null;
 
   return {
@@ -102,11 +106,17 @@ export function useTaskManagerState() {
       return;
     }
 
-    window.localStorage.setItem(TASK_MANAGER_STORAGE_KEY, JSON.stringify(store));
+    window.localStorage.setItem(
+      TASK_MANAGER_STORAGE_KEY,
+      JSON.stringify(store),
+    );
   }, [store]);
 
   const selectedProject = useMemo(
-    () => store.projects.find((project) => project.id === store.selectedProjectId) || null,
+    () =>
+      store.projects.find(
+        (project) => project.id === store.selectedProjectId,
+      ) || null,
     [store.projects, store.selectedProjectId],
   );
 
@@ -120,7 +130,10 @@ export function useTaskManagerState() {
     [selectedProjectId, store.tasks],
   );
 
-  const members = useMemo(() => selectedProject?.members || [], [selectedProject]);
+  const members = useMemo(
+    () => selectedProject?.members || [],
+    [selectedProject],
+  );
 
   const selectedWorkflowTemplate = useMemo(() => {
     if (!selectedProjectId) {
@@ -182,7 +195,9 @@ export function useTaskManagerState() {
           ...previous.memberRolesByProject,
           [nextProject.id]: {
             [nextProject.owner]: "OWNER",
-            ...Object.fromEntries(nextProject.members.map((member) => [member, "MEMBER"])),
+            ...Object.fromEntries(
+              nextProject.members.map((member) => [member, "MEMBER"]),
+            ),
           },
         },
       };
@@ -237,7 +252,9 @@ export function useTaskManagerState() {
 
   const deleteProject = (projectId: string) => {
     setStore((previous) => {
-      const nextProjects = previous.projects.filter((project) => project.id !== projectId);
+      const nextProjects = previous.projects.filter(
+        (project) => project.id !== projectId,
+      );
       const nextWorkflowIdByProject = { ...previous.workflowIdByProject };
       const nextMemberRolesByProject = { ...previous.memberRolesByProject };
       delete nextWorkflowIdByProject[projectId];
@@ -252,7 +269,9 @@ export function useTaskManagerState() {
         ...previous,
         projects: nextProjects,
         tasks: previous.tasks.filter((task) => task.projectId !== projectId),
-        sprints: previous.sprints.filter((sprint) => sprint.projectId !== projectId),
+        sprints: previous.sprints.filter(
+          (sprint) => sprint.projectId !== projectId,
+        ),
         workflowIdByProject: nextWorkflowIdByProject,
         workflowByProject: buildWorkflowByProjectMap(
           nextProjects,
@@ -307,7 +326,9 @@ export function useTaskManagerState() {
         project.id === projectId
           ? {
               ...project,
-              members: project.members.filter((member) => member !== memberName),
+              members: project.members.filter(
+                (member) => member !== memberName,
+              ),
             }
           : project,
       ),
@@ -393,7 +414,9 @@ export function useTaskManagerState() {
               sprintId: payload.sprintId ?? null,
               backlogOrder:
                 payload.backlogOrder ||
-                (payload.sprintId ? task.backlogOrder : getNextBacklogOrder(previous.tasks, payload.projectId)),
+                (payload.sprintId
+                  ? task.backlogOrder
+                  : getNextBacklogOrder(previous.tasks, payload.projectId)),
               updatedAt: new Date().toISOString(),
             }
           : task,
@@ -439,13 +462,7 @@ export function useTaskManagerState() {
         return previous;
       }
 
-      if (
-        !isWorkflowTransitionAllowed(
-          workflowTemplate,
-          task.status,
-          status,
-        )
-      ) {
+      if (!isWorkflowTransitionAllowed(workflowTemplate, task.status, status)) {
         return previous;
       }
 
@@ -489,7 +506,9 @@ export function useTaskManagerState() {
   ) => {
     setStore((previous) => {
       const backlogTasks = previous.tasks
-        .filter((task) => task.projectId === projectId && task.sprintId === null)
+        .filter(
+          (task) => task.projectId === projectId && task.sprintId === null,
+        )
         .sort((a, b) => a.backlogOrder - b.backlogOrder);
       const index = backlogTasks.findIndex((task) => task.id === taskId);
       if (index === -1) {
@@ -502,7 +521,10 @@ export function useTaskManagerState() {
       }
 
       const reordered = [...backlogTasks];
-      [reordered[index], reordered[swapIndex]] = [reordered[swapIndex], reordered[index]];
+      [reordered[index], reordered[swapIndex]] = [
+        reordered[swapIndex],
+        reordered[index],
+      ];
 
       const orderMap = new Map<string, number>();
       reordered.forEach((task, orderIndex) => {
@@ -556,7 +578,10 @@ export function useTaskManagerState() {
         return previous;
       }
 
-      let nextBacklogOrder = getNextBacklogOrder(previous.tasks, task.projectId);
+      let nextBacklogOrder = getNextBacklogOrder(
+        previous.tasks,
+        task.projectId,
+      );
 
       return {
         ...previous,
@@ -620,7 +645,10 @@ export function useTaskManagerState() {
       return {
         ...previous,
         sprints: previous.sprints.map((sprint) => {
-          if (sprint.projectId !== target.projectId || sprint.status === "CLOSED") {
+          if (
+            sprint.projectId !== target.projectId ||
+            sprint.status === "CLOSED"
+          ) {
             return sprint;
           }
           if (sprint.id === sprintId) {
@@ -642,12 +670,17 @@ export function useTaskManagerState() {
         return previous;
       }
 
-      let nextBacklogOrder = getNextBacklogOrder(previous.tasks, sprint.projectId);
+      let nextBacklogOrder = getNextBacklogOrder(
+        previous.tasks,
+        sprint.projectId,
+      );
 
       return {
         ...previous,
         sprints: previous.sprints.map((item) =>
-          item.id === sprintId ? { ...item, status: "CLOSED" as SprintStatus } : item,
+          item.id === sprintId
+            ? { ...item, status: "CLOSED" as SprintStatus }
+            : item,
         ),
         tasks: previous.tasks.map((task) => {
           if (task.sprintId !== sprintId) {
@@ -688,7 +721,10 @@ export function useTaskManagerState() {
     });
   };
 
-  const updateWorkflowTemplate = (workflowId: string, payload: UpdateWorkflowPayload) => {
+  const updateWorkflowTemplate = (
+    workflowId: string,
+    payload: UpdateWorkflowPayload,
+  ) => {
     setStore((previous) => ({
       ...previous,
       workflowTemplates: previous.workflowTemplates.map((workflowTemplate) =>
@@ -749,7 +785,10 @@ export function useTaskManagerState() {
     });
   };
 
-  const assignWorkflowToProjects = (workflowId: string, projectIds: string[]) => {
+  const assignWorkflowToProjects = (
+    workflowId: string,
+    projectIds: string[],
+  ) => {
     const projectIdSet = new Set(projectIds);
     setStore((previous) => {
       const hasWorkflow = previous.workflowTemplates.some(
@@ -796,33 +835,35 @@ export function useTaskManagerState() {
         return previous;
       }
 
-      const nextWorkflowTemplates = previous.workflowTemplates.map((workflowTemplate) => {
-        if (workflowTemplate.id !== workflowId) {
-          return workflowTemplate;
-        }
+      const nextWorkflowTemplates = previous.workflowTemplates.map(
+        (workflowTemplate) => {
+          if (workflowTemplate.id !== workflowId) {
+            return workflowTemplate;
+          }
 
-        if (
-          workflowTemplate.statuses.some(
-            (statusItem) => statusItem.code === normalizedCode,
-          )
-        ) {
-          return workflowTemplate;
-        }
+          if (
+            workflowTemplate.statuses.some(
+              (statusItem) => statusItem.code === normalizedCode,
+            )
+          ) {
+            return workflowTemplate;
+          }
 
-        const nextStatus: WorkflowStatusItem = {
-          id: generateId("workflow-status"),
-          code: normalizedCode,
-          name: payload.name.trim() || normalizedCode,
-          color: payload.color,
-          category: payload.category,
-        };
+          const nextStatus: WorkflowStatusItem = {
+            id: generateId("workflow-status"),
+            code: normalizedCode,
+            name: payload.name.trim() || normalizedCode,
+            color: payload.color,
+            category: payload.category,
+          };
 
-        return {
-          ...workflowTemplate,
-          statuses: [...workflowTemplate.statuses, nextStatus],
-          updatedAt: new Date().toISOString(),
-        };
-      });
+          return {
+            ...workflowTemplate,
+            statuses: [...workflowTemplate.statuses, nextStatus],
+            updatedAt: new Date().toISOString(),
+          };
+        },
+      );
 
       return {
         ...previous,
@@ -869,38 +910,40 @@ export function useTaskManagerState() {
         return previous;
       }
 
-      const nextWorkflowTemplates = previous.workflowTemplates.map((workflowTemplate) => {
-        if (workflowTemplate.id !== workflowId) {
-          return workflowTemplate;
-        }
+      const nextWorkflowTemplates = previous.workflowTemplates.map(
+        (workflowTemplate) => {
+          if (workflowTemplate.id !== workflowId) {
+            return workflowTemplate;
+          }
 
-        return {
-          ...workflowTemplate,
-          statuses: workflowTemplate.statuses.map((statusItem) =>
-            statusItem.id === statusId
-              ? {
-                  ...statusItem,
-                  code: nextCode,
-                  name: payload.name.trim() || nextCode,
-                  color: payload.color,
-                  category: payload.category,
-                }
-              : statusItem,
-          ),
-          transitions: workflowTemplate.transitions.map((transition) => ({
-            ...transition,
-            fromStatusCode:
-              transition.fromStatusCode === targetStatus.code
-                ? nextCode
-                : transition.fromStatusCode,
-            toStatusCode:
-              transition.toStatusCode === targetStatus.code
-                ? nextCode
-                : transition.toStatusCode,
-          })),
-          updatedAt: new Date().toISOString(),
-        };
-      });
+          return {
+            ...workflowTemplate,
+            statuses: workflowTemplate.statuses.map((statusItem) =>
+              statusItem.id === statusId
+                ? {
+                    ...statusItem,
+                    code: nextCode,
+                    name: payload.name.trim() || nextCode,
+                    color: payload.color,
+                    category: payload.category,
+                  }
+                : statusItem,
+            ),
+            transitions: workflowTemplate.transitions.map((transition) => ({
+              ...transition,
+              fromStatusCode:
+                transition.fromStatusCode === targetStatus.code
+                  ? nextCode
+                  : transition.fromStatusCode,
+              toStatusCode:
+                transition.toStatusCode === targetStatus.code
+                  ? nextCode
+                  : transition.toStatusCode,
+            })),
+            updatedAt: new Date().toISOString(),
+          };
+        },
+      );
 
       const nextTasks = previous.tasks.map((task) => {
         if (task.status !== targetStatus.code) {
@@ -959,7 +1002,9 @@ export function useTaskManagerState() {
         }
         return {
           ...item,
-          statuses: item.statuses.filter((statusItem) => statusItem.id !== statusId),
+          statuses: item.statuses.filter(
+            (statusItem) => statusItem.id !== statusId,
+          ),
           transitions: item.transitions.filter(
             (transition) =>
               transition.fromStatusCode !== targetStatus.code &&
@@ -978,8 +1023,12 @@ export function useTaskManagerState() {
           previous.workflowIdByProject,
         ),
         tasks: previous.tasks.map((task) => {
-          const assignedWorkflowId = previous.workflowIdByProject[task.projectId];
-          if (assignedWorkflowId !== workflowId || task.status !== targetStatus.code) {
+          const assignedWorkflowId =
+            previous.workflowIdByProject[task.projectId];
+          if (
+            assignedWorkflowId !== workflowId ||
+            task.status !== targetStatus.code
+          ) {
             return task;
           }
           return {
@@ -1002,39 +1051,44 @@ export function useTaskManagerState() {
         return previous;
       }
 
-      const nextWorkflowTemplates = previous.workflowTemplates.map((workflowTemplate) => {
-        if (workflowTemplate.id !== workflowId) {
-          return workflowTemplate;
-        }
+      const nextWorkflowTemplates = previous.workflowTemplates.map(
+        (workflowTemplate) => {
+          if (workflowTemplate.id !== workflowId) {
+            return workflowTemplate;
+          }
 
-        const statusCodeSet = new Set(
-          workflowTemplate.statuses.map((statusItem) => statusItem.code),
-        );
-        if (!statusCodeSet.has(fromStatusCode) || !statusCodeSet.has(toStatusCode)) {
-          return workflowTemplate;
-        }
+          const statusCodeSet = new Set(
+            workflowTemplate.statuses.map((statusItem) => statusItem.code),
+          );
+          if (
+            !statusCodeSet.has(fromStatusCode) ||
+            !statusCodeSet.has(toStatusCode)
+          ) {
+            return workflowTemplate;
+          }
 
-        const exists = workflowTemplate.transitions.some(
-          (transition) =>
-            transition.fromStatusCode === fromStatusCode &&
-            transition.toStatusCode === toStatusCode,
-        );
-        if (exists) {
-          return workflowTemplate;
-        }
+          const exists = workflowTemplate.transitions.some(
+            (transition) =>
+              transition.fromStatusCode === fromStatusCode &&
+              transition.toStatusCode === toStatusCode,
+          );
+          if (exists) {
+            return workflowTemplate;
+          }
 
-        const nextTransition: WorkflowTransitionItem = {
-          id: generateId("workflow-transition"),
-          fromStatusCode,
-          toStatusCode,
-        };
+          const nextTransition: WorkflowTransitionItem = {
+            id: generateId("workflow-transition"),
+            fromStatusCode,
+            toStatusCode,
+          };
 
-        return {
-          ...workflowTemplate,
-          transitions: [...workflowTemplate.transitions, nextTransition],
-          updatedAt: new Date().toISOString(),
-        };
-      });
+          return {
+            ...workflowTemplate,
+            transitions: [...workflowTemplate.transitions, nextTransition],
+            updatedAt: new Date().toISOString(),
+          };
+        },
+      );
 
       return {
         ...previous,
@@ -1043,7 +1097,10 @@ export function useTaskManagerState() {
     });
   };
 
-  const deleteWorkflowTransition = (workflowId: string, transitionId: string) => {
+  const deleteWorkflowTransition = (
+    workflowId: string,
+    transitionId: string,
+  ) => {
     setStore((previous) => ({
       ...previous,
       workflowTemplates: previous.workflowTemplates.map((workflowTemplate) =>
@@ -1153,7 +1210,8 @@ function createDefaultWorkflowTemplate(
   const normalizedStatuses = statuses
     .map((status) => normalizeStatusCode(status))
     .filter(Boolean);
-  const statusCodes = normalizedStatuses.length > 0 ? normalizedStatuses : DEFAULT_WORKFLOW;
+  const statusCodes =
+    normalizedStatuses.length > 0 ? normalizedStatuses : DEFAULT_WORKFLOW;
   const statusItems = statusCodes.map((code, index) => ({
     id: `${workflowId}-status-${index + 1}`,
     code,
@@ -1167,7 +1225,9 @@ function createDefaultWorkflowTemplate(
     name: options?.name?.trim() || "Custom workflow",
     description: options?.description?.trim() || "",
     statuses: statusItems,
-    transitions: createDefaultTransitions(statusItems.map((statusItem) => statusItem.code)),
+    transitions: createDefaultTransitions(
+      statusItems.map((statusItem) => statusItem.code),
+    ),
     issueTypes: options?.issueTypes?.length
       ? options.issueTypes
       : ["TASK", "BUG", "STORY"],
@@ -1176,7 +1236,9 @@ function createDefaultWorkflowTemplate(
   };
 }
 
-function createDefaultTransitions(statuses: string[]): WorkflowTransitionItem[] {
+function createDefaultTransitions(
+  statuses: string[],
+): WorkflowTransitionItem[] {
   const transitions: WorkflowTransitionItem[] = [];
   for (let index = 0; index < statuses.length - 1; index += 1) {
     transitions.push({
@@ -1214,12 +1276,16 @@ function buildLegacyWorkflowTemplates(
   return templates;
 }
 
-function normalizeWorkflowTemplates(rawTemplates: WorkflowTemplate[]): WorkflowTemplate[] {
+function normalizeWorkflowTemplates(
+  rawTemplates: WorkflowTemplate[],
+): WorkflowTemplate[] {
   if (rawTemplates.length === 0) {
-    return [createDefaultWorkflowTemplate("workflow-default", DEFAULT_WORKFLOW, {
-      name: "Default workflow",
-      description: "System default workflow.",
-    })];
+    return [
+      createDefaultWorkflowTemplate("workflow-default", DEFAULT_WORKFLOW, {
+        name: "Default workflow",
+        description: "System default workflow.",
+      }),
+    ];
   }
 
   return rawTemplates.map((template, templateIndex) => {
@@ -1230,7 +1296,9 @@ function normalizeWorkflowTemplates(rawTemplates: WorkflowTemplate[]): WorkflowT
           return null;
         }
         return {
-          id: statusItem.id || `${template.id || `workflow-${templateIndex + 1}`}-status-${statusIndex + 1}`,
+          id:
+            statusItem.id ||
+            `${template.id || `workflow-${templateIndex + 1}`}-status-${statusIndex + 1}`,
           code,
           name: statusItem.name?.trim() || code,
           color: statusItem.color || getDefaultStatusColor(code),
@@ -1239,12 +1307,13 @@ function normalizeWorkflowTemplates(rawTemplates: WorkflowTemplate[]): WorkflowT
       })
       .filter((item): item is WorkflowStatusItem => Boolean(item));
 
-    const statuses = statusItems.length > 0
-      ? deduplicateStatuses(statusItems)
-      : createDefaultWorkflowTemplate(
-          template.id || `workflow-${templateIndex + 1}`,
-          DEFAULT_WORKFLOW,
-        ).statuses;
+    const statuses =
+      statusItems.length > 0
+        ? deduplicateStatuses(statusItems)
+        : createDefaultWorkflowTemplate(
+            template.id || `workflow-${templateIndex + 1}`,
+            DEFAULT_WORKFLOW,
+          ).statuses;
 
     const allowedCodes = new Set(statuses.map((statusItem) => statusItem.code));
     const transitions = (template.transitions || [])
@@ -1264,17 +1333,19 @@ function normalizeWorkflowTemplates(rawTemplates: WorkflowTemplate[]): WorkflowT
           allowedCodes.has(transition.toStatusCode),
       );
 
-    const issueTypes =
-      template.issueTypes?.length
-        ? template.issueTypes
-        : (["TASK", "BUG", "STORY"] as WorkflowIssueType[]);
+    const issueTypes = template.issueTypes?.length
+      ? template.issueTypes
+      : (["TASK", "BUG", "STORY"] as WorkflowIssueType[]);
 
     return {
       id: template.id || `workflow-${templateIndex + 1}`,
       name: template.name?.trim() || `Workflow ${templateIndex + 1}`,
       description: template.description?.trim() || "",
       statuses,
-      transitions: transitions.length > 0 ? transitions : createDefaultTransitions(statuses.map((item) => item.code)),
+      transitions:
+        transitions.length > 0
+          ? transitions
+          : createDefaultTransitions(statuses.map((item) => item.code)),
       issueTypes,
       createdAt: template.createdAt || new Date().toISOString(),
       updatedAt: template.updatedAt || new Date().toISOString(),
@@ -1288,7 +1359,9 @@ function normalizeWorkflowMap(
   workflowIdByProject: Record<string, string> | undefined,
   legacyWorkflowByProject: Record<string, string[]> | undefined,
 ) {
-  const workflowIds = new Set(workflowTemplates.map((workflowTemplate) => workflowTemplate.id));
+  const workflowIds = new Set(
+    workflowTemplates.map((workflowTemplate) => workflowTemplate.id),
+  );
   const normalizedMap: Record<string, string> = {};
 
   for (const project of projects) {
@@ -1302,7 +1375,9 @@ function normalizeWorkflowMap(
     const matchedWorkflow = workflowTemplates.find((workflowTemplate) =>
       arraysEqual(
         workflowTemplate.statuses.map((statusItem) => statusItem.code),
-        legacyStatuses.map((status) => normalizeStatusCode(status)).filter(Boolean),
+        legacyStatuses
+          .map((status) => normalizeStatusCode(status))
+          .filter(Boolean),
       ),
     );
 
@@ -1326,7 +1401,8 @@ function buildWorkflowByProjectMap(
       );
       return [
         project.id,
-        workflowTemplate?.statuses.map((statusItem) => statusItem.code) || DEFAULT_WORKFLOW,
+        workflowTemplate?.statuses.map((statusItem) => statusItem.code) ||
+          DEFAULT_WORKFLOW,
       ];
     }),
   );
@@ -1359,14 +1435,18 @@ function sanitizeStatusCodeForProject(
     { workflowTemplates, workflowIdByProject } as TaskManagerStore,
     projectId,
   );
-  const fallbackStatus = workflowTemplate?.statuses[0]?.code || DEFAULT_WORKFLOW[0];
+  const fallbackStatus =
+    workflowTemplate?.statuses[0]?.code || DEFAULT_WORKFLOW[0];
   if (!normalizedStatus) {
     return fallbackStatus;
   }
   const allowedStatuses = new Set(
-    workflowTemplate?.statuses.map((statusItem) => statusItem.code) || DEFAULT_WORKFLOW,
+    workflowTemplate?.statuses.map((statusItem) => statusItem.code) ||
+      DEFAULT_WORKFLOW,
   );
-  return allowedStatuses.has(normalizedStatus) ? normalizedStatus : fallbackStatus;
+  return allowedStatuses.has(normalizedStatus)
+    ? normalizedStatus
+    : fallbackStatus;
 }
 
 function sanitizeTaskStatus(
@@ -1445,7 +1525,11 @@ function getDefaultStatusCategory(code: string): WorkflowStatusCategory {
   if (code.includes("DONE") || code.includes("REJECT")) {
     return "DONE";
   }
-  if (code.includes("PROGRESS") || code.includes("REVIEW") || code.includes("TEST")) {
+  if (
+    code.includes("PROGRESS") ||
+    code.includes("REVIEW") ||
+    code.includes("TEST")
+  ) {
     return "IN_PROGRESS";
   }
   return "TODO";
@@ -1455,7 +1539,11 @@ function normalizeStatusCategory(
   category: WorkflowStatusCategory | undefined,
   code: string,
 ) {
-  if (category === "TODO" || category === "IN_PROGRESS" || category === "DONE") {
+  if (
+    category === "TODO" ||
+    category === "IN_PROGRESS" ||
+    category === "DONE"
+  ) {
     return category;
   }
   return getDefaultStatusCategory(code);

@@ -256,7 +256,14 @@ export const TASK_MANAGER_DEFAULT_STORE: TaskManagerStore = {
     "proj-crm-suite": CRM_WORKFLOW_TEMPLATE_ID,
   },
   workflowByProject: {
-    "proj-erp-core": ["TODO", "IN_PROGRESS", "REVIEW", "TESTING", "DONE", "REJECTED"],
+    "proj-erp-core": [
+      "TODO",
+      "IN_PROGRESS",
+      "REVIEW",
+      "TESTING",
+      "DONE",
+      "REJECTED",
+    ],
     "proj-crm-suite": ["TODO", "IN_PROGRESS", "DONE"],
   },
   memberRolesByProject: {

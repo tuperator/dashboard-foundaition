@@ -16,7 +16,9 @@ export function TaskProjectsPage() {
 
   const [createProjectOpen, setCreateProjectOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [typeFilter, setTypeFilter] = useState<"ALL" | "SCRUM" | "KANBAN">("ALL");
+  const [typeFilter, setTypeFilter] = useState<"ALL" | "SCRUM" | "KANBAN">(
+    "ALL",
+  );
   const [ownerFilter, setOwnerFilter] = useState<string>("ALL");
   const [sortBy, setSortBy] = useState<SortMode>("UPDATED");
 
@@ -41,7 +43,10 @@ export function TaskProjectsPage() {
       if (task.status === "IN_PROGRESS") {
         current.inProgress += 1;
       }
-      current.updatedAt = Math.max(current.updatedAt, Date.parse(task.updatedAt) || 0);
+      current.updatedAt = Math.max(
+        current.updatedAt,
+        Date.parse(task.updatedAt) || 0,
+      );
       stats.set(task.projectId, current);
     }
 
@@ -66,11 +71,15 @@ export function TaskProjectsPage() {
     }
 
     if (typeFilter !== "ALL") {
-      nextProjects = nextProjects.filter((project) => project.type === typeFilter);
+      nextProjects = nextProjects.filter(
+        (project) => project.type === typeFilter,
+      );
     }
 
     if (ownerFilter !== "ALL") {
-      nextProjects = nextProjects.filter((project) => project.owner === ownerFilter);
+      nextProjects = nextProjects.filter(
+        (project) => project.owner === ownerFilter,
+      );
     }
 
     if (sortBy === "NAME") {
@@ -81,8 +90,10 @@ export function TaskProjectsPage() {
       return nextProjects.sort((a, b) => {
         const aStat = taskStatsByProject.get(a.id);
         const bStat = taskStatsByProject.get(b.id);
-        const aProgress = aStat && aStat.total > 0 ? aStat.done / aStat.total : 0;
-        const bProgress = bStat && bStat.total > 0 ? bStat.done / bStat.total : 0;
+        const aProgress =
+          aStat && aStat.total > 0 ? aStat.done / aStat.total : 0;
+        const bProgress =
+          bStat && bStat.total > 0 ? bStat.done / bStat.total : 0;
         return bProgress - aProgress;
       });
     }

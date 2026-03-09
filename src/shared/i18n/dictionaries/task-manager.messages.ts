@@ -13,7 +13,8 @@ export const taskManagerMessages = {
     "tasks.common.backToWorkspace": "Quay lại work space",
 
     "tasks.projects.pageTitle": "Work space",
-    "tasks.projects.pageDescription": "Danh sách project/workspace, lọc nhanh và mở chi tiết từng project.",
+    "tasks.projects.pageDescription":
+      "Danh sách project/workspace, lọc nhanh và mở chi tiết từng project.",
     "tasks.projects.newProject": "Tạo project",
     "tasks.projects.searchPlaceholder": "Tìm theo tên project, key, owner...",
     "tasks.projects.filter.projectType": "Loại project",
@@ -30,14 +31,16 @@ export const taskManagerMessages = {
     "tasks.projects.table.membersTasks": "Thành viên / Task",
     "tasks.projects.table.progress": "Tiến độ",
     "tasks.projects.table.action": "Thao tác",
-    "tasks.projects.emptyFiltered": "Không có project phù hợp với bộ lọc hiện tại.",
+    "tasks.projects.emptyFiltered":
+      "Không có project phù hợp với bộ lọc hiện tại.",
     "tasks.projects.stat.members": "{count} thành viên",
     "tasks.projects.stat.tasks": "{count} tasks",
     "tasks.projects.toast.projectCreatedTitle": "Đã tạo project",
     "tasks.projects.toast.projectCreatedDescription": "{name} đã được tạo.",
 
     "tasks.workflow.pageTitle": "Workflow manager",
-    "tasks.workflow.pageDescription": "Quản lý workflow theo dạng list và thao tác CRUD tập trung.",
+    "tasks.workflow.pageDescription":
+      "Quản lý workflow theo dạng list và thao tác CRUD tập trung.",
     "tasks.workflow.newWorkflow": "Tạo workflow",
     "tasks.workflow.table.workflow": "Workflow",
     "tasks.workflow.table.issueTypes": "Issue types",
@@ -48,12 +51,14 @@ export const taskManagerMessages = {
     "tasks.workflow.table.empty": "Không có workflow.",
     "tasks.workflow.button.manage": "Quản lý",
     "tasks.workflow.create.title": "Tạo workflow",
-    "tasks.workflow.create.description": "Tạo workflow template mới để áp dụng cho project.",
+    "tasks.workflow.create.description":
+      "Tạo workflow template mới để áp dụng cho project.",
     "tasks.workflow.create.namePlaceholder": "Ví dụ: Product Scrum workflow",
     "tasks.workflow.form.name": "Tên",
     "tasks.workflow.form.description": "Mô tả",
     "tasks.workflow.form.issueTypes": "Issue types",
-    "tasks.workflow.editor.description": "Quản lý metadata, status, transitions và phạm vi áp dụng.",
+    "tasks.workflow.editor.description":
+      "Quản lý metadata, status, transitions và phạm vi áp dụng.",
     "tasks.workflow.editor.tab.metadata": "Metadata",
     "tasks.workflow.editor.tab.status": "Status",
     "tasks.workflow.editor.tab.transitions": "Transitions",
@@ -76,17 +81,22 @@ export const taskManagerMessages = {
     "tasks.workflow.toast.createdDescription": "{name} đã được tạo.",
     "tasks.workflow.toast.updatedTitle": "Đã cập nhật workflow",
     "tasks.workflow.toast.metadataUpdated": "Đã lưu metadata workflow.",
-    "tasks.workflow.toast.appliedProjects": "Đã cập nhật project áp dụng workflow.",
+    "tasks.workflow.toast.appliedProjects":
+      "Đã cập nhật project áp dụng workflow.",
     "tasks.workflow.toast.deletedTitle": "Đã xóa workflow",
     "tasks.workflow.toast.deletedDescription": "{name} đã được xóa.",
     "tasks.workflow.toast.cannotDeleteTitle": "Không thể xóa",
-    "tasks.workflow.toast.cannotDeleteDescription": "Hệ thống cần tối thiểu 1 workflow.",
+    "tasks.workflow.toast.cannotDeleteDescription":
+      "Hệ thống cần tối thiểu 1 workflow.",
     "tasks.workflow.toast.invalidTransitionTitle": "Transition không hợp lệ",
-    "tasks.workflow.toast.invalidTransitionDescription": "Trạng thái nguồn và đích không được trùng nhau.",
+    "tasks.workflow.toast.invalidTransitionDescription":
+      "Trạng thái nguồn và đích không được trùng nhau.",
 
     "tasks.projectDetails.notFoundTitle": "Chi tiết project",
-    "tasks.projectDetails.notFoundDescription": "Không tìm thấy project hoặc project đã bị xóa.",
-    "tasks.projectDetails.headerDescription": "Module Agile theo chuẩn Scrum/Kanban: Issue management, Backlog, Sprint lifecycle.",
+    "tasks.projectDetails.notFoundDescription":
+      "Không tìm thấy project hoặc project đã bị xóa.",
+    "tasks.projectDetails.headerDescription":
+      "Module Agile theo chuẩn Scrum/Kanban: Issue management, Backlog, Sprint lifecycle.",
     "tasks.projectDetails.settings": "Cài đặt",
     "tasks.projectDetails.workflowManager": "Workflow manager",
     "tasks.projectDetails.newIssue": "Issue mới",
@@ -102,7 +112,71 @@ export const taskManagerMessages = {
     "tasks.projectDetails.sort.priority": "Độ ưu tiên",
     "tasks.projectDetails.sort.backlogOrder": "Thứ tự backlog",
     "tasks.projectDetails.toast.projectDeletedTitle": "Đã xóa project",
-    "tasks.projectDetails.toast.projectDeletedDescription": "Đã xóa project {name}.",
+    "tasks.projectDetails.toast.projectDeletedDescription":
+      "Đã xóa project {name}.",
+
+    "tasks.projectDetails.tab.issues": "Issues",
+    "tasks.projectDetails.tab.backlog": "Backlog",
+    "tasks.projectDetails.tab.sprints": "Sprints",
+    "tasks.projectDetails.tab.overview": "Tổng quan",
+    "tasks.projectDetails.activeSprint": "Sprint hiện tại: {name}",
+    "tasks.projectDetails.noActiveSprint": "Không có sprint nào đang chạy",
+    "tasks.projectDetails.view.list": "Danh sách",
+    "tasks.projectDetails.view.kanban": "Bảng",
+    "tasks.projectDetails.table.issue": "Issue",
+    "tasks.projectDetails.table.priority": "Độ ưu tiên",
+    "tasks.projectDetails.table.status": "Trạng thái",
+    "tasks.projectDetails.table.assignee": "Người phụ trách",
+    "tasks.projectDetails.table.sprint": "Sprint",
+    "tasks.projectDetails.table.updated": "Cập nhật",
+    "tasks.projectDetails.table.actions": "Thao tác",
+    "tasks.projectDetails.table.reorder": "Sắp xếp",
+    "tasks.projectDetails.table.addToSprint": "Thêm vào sprint",
+    "tasks.projectDetails.emptyIssue": "Không có issue nào trong project.",
+    "tasks.projectDetails.defaultSprintLabel": "Sprint mặc định",
+    "tasks.projectDetails.backlogLabel": "Backlog",
+    "tasks.projectDetails.toast.transitionNotAllowedTitle":
+      "Không thể chuyển trạng thái",
+    "tasks.projectDetails.toast.transitionNotAllowedDescription":
+      "Workflow không cho phép chuyển đổi sang trạng thái này.",
+    "tasks.projectDetails.backlogDescription":
+      "Danh sách các task chờ xếp vào sprint.",
+    "tasks.projectDetails.backlogCount": "{count} issues trong backlog",
+    "tasks.projectDetails.emptyBacklog": "Backlog trống.",
+    "tasks.projectDetails.sprintTargetAuto": "Chọn tự động",
+    "tasks.projectDetails.toast.noSprintAvailableTitle": "Không có sprint",
+    "tasks.projectDetails.toast.noSprintAvailableDescription":
+      "Bạn cần tạo ít nhất 1 sprint trước.",
+    "tasks.projectDetails.sprintOnlyScrum":
+      "Chức năng Sprint chỉ hỗ trợ cho dự án dạng SCRUM.",
+    "tasks.projectDetails.sprintManagement": "Quản lý Sprint",
+    "tasks.projectDetails.sprintManagementDescription":
+      "Tạo, chỉnh sửa và quản lý các vòng lặp phát triển.",
+    "tasks.projectDetails.createSprint": "Tạo sprint",
+    "tasks.projectDetails.noSprintYet": "Chưa có sprint nào.",
+    "tasks.projectDetails.noGoal": "Không có mục tiêu.",
+    "tasks.projectDetails.progress": "Tiến độ",
+    "tasks.projectDetails.startSprint": "Bắt đầu sprint",
+    "tasks.projectDetails.closeSprint": "Đóng sprint",
+    "tasks.projectDetails.noIssueInSprint": "Chưa có issue trong sprint này.",
+    "tasks.projectDetails.activeSprintBoard": "Bảng sprint hiện tại",
+    "tasks.projectDetails.metric.members": "Thành viên",
+    "tasks.projectDetails.metric.totalIssues": "Tổng số issues",
+    "tasks.projectDetails.metric.inProgress": "Đang thực hiện",
+    "tasks.projectDetails.metric.done": "Hoàn thành",
+    "tasks.projectDetails.projectCompletion": "Tiến độ project",
+    "tasks.projectDetails.workflow": "Workflow đang áp dụng",
+    "tasks.projectDetails.workflowDescription":
+      "Luồng trạng thái của các issue trong project này.",
+    "tasks.projectDetails.defaultWorkflow": "Workflow mặc định",
+    "tasks.projectDetails.toast.projectUpdatedTitle": "Chỉnh sửa thành công",
+    "tasks.projectDetails.toast.projectUpdatedDescription":
+      "Project {name} đã được cập nhật.",
+    "tasks.projectDetails.toast.issueCreatedTitle": "Đã tạo issue",
+    "tasks.projectDetails.toast.issueCreatedDescription": "{name} đã được tạo.",
+    "tasks.projectDetails.toast.issueUpdatedTitle": "Đã sửa issue",
+    "tasks.projectDetails.toast.issueUpdatedDescription":
+      "{name} đã được cập nhật.",
   },
   en: {
     "tasks.common.create": "Create",
@@ -118,7 +192,8 @@ export const taskManagerMessages = {
     "tasks.common.backToWorkspace": "Back to work space",
 
     "tasks.projects.pageTitle": "Work space",
-    "tasks.projects.pageDescription": "Project/workspace list with quick filters and project details access.",
+    "tasks.projects.pageDescription":
+      "Project/workspace list with quick filters and project details access.",
     "tasks.projects.newProject": "New project",
     "tasks.projects.searchPlaceholder": "Search by project name, key, owner...",
     "tasks.projects.filter.projectType": "Project type",
@@ -139,10 +214,12 @@ export const taskManagerMessages = {
     "tasks.projects.stat.members": "{count} members",
     "tasks.projects.stat.tasks": "{count} tasks",
     "tasks.projects.toast.projectCreatedTitle": "Project created",
-    "tasks.projects.toast.projectCreatedDescription": "{name} has been created.",
+    "tasks.projects.toast.projectCreatedDescription":
+      "{name} has been created.",
 
     "tasks.workflow.pageTitle": "Workflow manager",
-    "tasks.workflow.pageDescription": "Manage workflows in a list-first CRUD model.",
+    "tasks.workflow.pageDescription":
+      "Manage workflows in a list-first CRUD model.",
     "tasks.workflow.newWorkflow": "New workflow",
     "tasks.workflow.table.workflow": "Workflow",
     "tasks.workflow.table.issueTypes": "Issue types",
@@ -153,12 +230,14 @@ export const taskManagerMessages = {
     "tasks.workflow.table.empty": "No workflow found.",
     "tasks.workflow.button.manage": "Manage",
     "tasks.workflow.create.title": "Create workflow",
-    "tasks.workflow.create.description": "Create a new workflow template to assign to projects.",
+    "tasks.workflow.create.description":
+      "Create a new workflow template to assign to projects.",
     "tasks.workflow.create.namePlaceholder": "Example: Product Scrum workflow",
     "tasks.workflow.form.name": "Name",
     "tasks.workflow.form.description": "Description",
     "tasks.workflow.form.issueTypes": "Issue types",
-    "tasks.workflow.editor.description": "Manage metadata, statuses, transitions, and project assignment.",
+    "tasks.workflow.editor.description":
+      "Manage metadata, statuses, transitions, and project assignment.",
     "tasks.workflow.editor.tab.metadata": "Metadata",
     "tasks.workflow.editor.tab.status": "Status",
     "tasks.workflow.editor.tab.transitions": "Transitions",
@@ -181,17 +260,22 @@ export const taskManagerMessages = {
     "tasks.workflow.toast.createdDescription": "{name} has been created.",
     "tasks.workflow.toast.updatedTitle": "Workflow updated",
     "tasks.workflow.toast.metadataUpdated": "Workflow metadata has been saved.",
-    "tasks.workflow.toast.appliedProjects": "Workflow assignment has been updated.",
+    "tasks.workflow.toast.appliedProjects":
+      "Workflow assignment has been updated.",
     "tasks.workflow.toast.deletedTitle": "Workflow deleted",
     "tasks.workflow.toast.deletedDescription": "{name} has been deleted.",
     "tasks.workflow.toast.cannotDeleteTitle": "Cannot delete",
-    "tasks.workflow.toast.cannotDeleteDescription": "At least one workflow must remain.",
+    "tasks.workflow.toast.cannotDeleteDescription":
+      "At least one workflow must remain.",
     "tasks.workflow.toast.invalidTransitionTitle": "Invalid transition",
-    "tasks.workflow.toast.invalidTransitionDescription": "Source and target statuses cannot be identical.",
+    "tasks.workflow.toast.invalidTransitionDescription":
+      "Source and target statuses cannot be identical.",
 
     "tasks.projectDetails.notFoundTitle": "Project details",
-    "tasks.projectDetails.notFoundDescription": "Project not found or has been deleted.",
-    "tasks.projectDetails.headerDescription": "Agile module following Scrum/Kanban: issue management, backlog, and sprint lifecycle.",
+    "tasks.projectDetails.notFoundDescription":
+      "Project not found or has been deleted.",
+    "tasks.projectDetails.headerDescription":
+      "Agile module following Scrum/Kanban: issue management, backlog, and sprint lifecycle.",
     "tasks.projectDetails.settings": "Settings",
     "tasks.projectDetails.workflowManager": "Workflow manager",
     "tasks.projectDetails.newIssue": "New issue",
@@ -207,6 +291,71 @@ export const taskManagerMessages = {
     "tasks.projectDetails.sort.priority": "Priority",
     "tasks.projectDetails.sort.backlogOrder": "Backlog order",
     "tasks.projectDetails.toast.projectDeletedTitle": "Project deleted",
-    "tasks.projectDetails.toast.projectDeletedDescription": "Project {name} has been deleted.",
+    "tasks.projectDetails.toast.projectDeletedDescription":
+      "Project {name} has been deleted.",
+
+    "tasks.projectDetails.tab.issues": "Issues",
+    "tasks.projectDetails.tab.backlog": "Backlog",
+    "tasks.projectDetails.tab.sprints": "Sprints",
+    "tasks.projectDetails.tab.overview": "Overview",
+    "tasks.projectDetails.activeSprint": "Active sprint: {name}",
+    "tasks.projectDetails.noActiveSprint": "No active sprint",
+    "tasks.projectDetails.view.list": "List",
+    "tasks.projectDetails.view.kanban": "Board",
+    "tasks.projectDetails.table.issue": "Issue",
+    "tasks.projectDetails.table.priority": "Priority",
+    "tasks.projectDetails.table.status": "Status",
+    "tasks.projectDetails.table.assignee": "Assignee",
+    "tasks.projectDetails.table.sprint": "Sprint",
+    "tasks.projectDetails.table.updated": "Updated",
+    "tasks.projectDetails.table.actions": "Actions",
+    "tasks.projectDetails.table.reorder": "Reorder",
+    "tasks.projectDetails.table.addToSprint": "Add to sprint",
+    "tasks.projectDetails.emptyIssue": "No issues in this project.",
+    "tasks.projectDetails.defaultSprintLabel": "Default sprint",
+    "tasks.projectDetails.backlogLabel": "Backlog",
+    "tasks.projectDetails.toast.transitionNotAllowedTitle":
+      "Transition not allowed",
+    "tasks.projectDetails.toast.transitionNotAllowedDescription":
+      "The current workflow prevents this transition.",
+    "tasks.projectDetails.backlogDescription":
+      "List of issues waiting to be assigned to a sprint.",
+    "tasks.projectDetails.backlogCount": "{count} issues in backlog",
+    "tasks.projectDetails.emptyBacklog": "Backlog is empty.",
+    "tasks.projectDetails.sprintTargetAuto": "Auto select",
+    "tasks.projectDetails.toast.noSprintAvailableTitle": "No sprint available",
+    "tasks.projectDetails.toast.noSprintAvailableDescription":
+      "You must create at least one sprint first.",
+    "tasks.projectDetails.sprintOnlyScrum":
+      "Sprint management is only available for SCRUM projects.",
+    "tasks.projectDetails.sprintManagement": "Sprint Management",
+    "tasks.projectDetails.sprintManagementDescription":
+      "Create, edit, and manage development iterations.",
+    "tasks.projectDetails.createSprint": "Create sprint",
+    "tasks.projectDetails.noSprintYet": "No sprints yet.",
+    "tasks.projectDetails.noGoal": "No goal defined.",
+    "tasks.projectDetails.progress": "Progress",
+    "tasks.projectDetails.startSprint": "Start sprint",
+    "tasks.projectDetails.closeSprint": "Close sprint",
+    "tasks.projectDetails.noIssueInSprint": "No issues in this sprint.",
+    "tasks.projectDetails.activeSprintBoard": "Active sprint board",
+    "tasks.projectDetails.metric.members": "Members",
+    "tasks.projectDetails.metric.totalIssues": "Total issues",
+    "tasks.projectDetails.metric.inProgress": "In progress",
+    "tasks.projectDetails.metric.done": "Done",
+    "tasks.projectDetails.projectCompletion": "Project completion",
+    "tasks.projectDetails.workflow": "Assigned workflow",
+    "tasks.projectDetails.workflowDescription":
+      "Issue statuses lifecycle for this project.",
+    "tasks.projectDetails.defaultWorkflow": "Default workflow",
+    "tasks.projectDetails.toast.projectUpdatedTitle": "Project updated",
+    "tasks.projectDetails.toast.projectUpdatedDescription":
+      "Project {name} has been updated.",
+    "tasks.projectDetails.toast.issueCreatedTitle": "Issue created",
+    "tasks.projectDetails.toast.issueCreatedDescription":
+      "{name} has been created.",
+    "tasks.projectDetails.toast.issueUpdatedTitle": "Issue updated",
+    "tasks.projectDetails.toast.issueUpdatedDescription":
+      "{name} has been updated.",
   },
 } as const;

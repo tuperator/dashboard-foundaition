@@ -50,20 +50,22 @@ export function TaskWorkflowManagerPage() {
   );
 
   const workflowToManage = useMemo(
-    () => workflowTemplates.find((workflow) => workflow.id === manageWorkflowId) || null,
+    () =>
+      workflowTemplates.find((workflow) => workflow.id === manageWorkflowId) ||
+      null,
     [manageWorkflowId, workflowTemplates],
   );
 
   return (
     <AppShell>
       <section className="space-y-4">
-        <header className="rounded-2xl border bg-card p-4">
+        <header className="bg-card rounded-2xl border p-4">
           <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
             <div>
-              <h1 className="text-xl font-semibold text-foreground">
+              <h1 className="text-foreground text-xl font-semibold">
                 {t("tasks.workflow.pageTitle")}
               </h1>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="text-muted-foreground mt-1 text-sm">
                 {t("tasks.workflow.pageDescription")}
               </p>
             </div>
@@ -77,7 +79,9 @@ export function TaskWorkflowManagerPage() {
             rows={workflowRows}
             onManage={setManageWorkflowId}
             onDelete={(workflowId) => {
-              const workflow = workflowTemplates.find((item) => item.id === workflowId);
+              const workflow = workflowTemplates.find(
+                (item) => item.id === workflowId,
+              );
               if (!workflow) {
                 return;
               }
@@ -85,7 +89,9 @@ export function TaskWorkflowManagerPage() {
               if (workflowTemplates.length <= 1) {
                 appToast.warning({
                   title: t("tasks.workflow.toast.cannotDeleteTitle"),
-                  description: t("tasks.workflow.toast.cannotDeleteDescription"),
+                  description: t(
+                    "tasks.workflow.toast.cannotDeleteDescription",
+                  ),
                 });
                 return;
               }

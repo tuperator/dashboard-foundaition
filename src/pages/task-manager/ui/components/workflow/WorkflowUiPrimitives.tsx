@@ -32,10 +32,13 @@ export function StatusChip({
   code: string;
 }) {
   return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/20 px-2.5 py-1 text-xs font-medium text-foreground">
-      <span className="size-2 rounded-full" style={{ backgroundColor: color }} />
+    <span className="border-border bg-muted/20 text-foreground inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-xs font-medium">
+      <span
+        className="size-2 rounded-full"
+        style={{ backgroundColor: color }}
+      />
       <span>{name}</span>
-      <span className="text-[10px] text-muted-foreground">({code})</span>
+      <span className="text-muted-foreground text-[10px]">({code})</span>
     </span>
   );
 }

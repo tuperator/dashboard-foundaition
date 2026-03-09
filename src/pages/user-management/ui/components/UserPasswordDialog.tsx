@@ -86,7 +86,8 @@ function PasswordDialogContent({
     }
   }
 
-  const canSubmit = newPassword.length > 0 && confirmPassword.length > 0 && !passwordError;
+  const canSubmit =
+    newPassword.length > 0 && confirmPassword.length > 0 && !passwordError;
 
   return (
     <Dialog
@@ -122,7 +123,9 @@ function PasswordDialogContent({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="confirm-password">{t("users.password.confirm")}</Label>
+            <Label htmlFor="confirm-password">
+              {t("users.password.confirm")}
+            </Label>
             <Input
               id="confirm-password"
               type="password"

@@ -1,7 +1,18 @@
 import { API_ENDPOINTS } from "@/shared/api/endpoints";
 import { listRoles as listRolesApi } from "@/shared/api/roles";
 import { apiClient } from "@/shared/api/http";
-import type { Branch, BranchStatus, CreateUserPayload, PaginatedResult, UpdateUserPasswordPayload, UpdateUserProfilePayload, UserAccount, UserListFilters, UserRole, UserStatus } from "./types";
+import type {
+  Branch,
+  BranchStatus,
+  CreateUserPayload,
+  PaginatedResult,
+  UpdateUserPasswordPayload,
+  UpdateUserProfilePayload,
+  UserAccount,
+  UserListFilters,
+  UserRole,
+  UserStatus,
+} from "./types";
 import { USER_FILTER_ALL } from "./constants";
 
 type BackendUserRole = {
@@ -62,7 +73,9 @@ export async function getMyProfile() {
 export async function listUsersByCompany({
   companyId,
   filters,
-}: ListUsersByCompanyParams): Promise<PaginatedResult<UserAccount> & { totalPages: number }> {
+}: ListUsersByCompanyParams): Promise<
+  PaginatedResult<UserAccount> & { totalPages: number }
+> {
   const params = new URLSearchParams();
   params.append("page", String(filters.page));
   params.append("size", String(filters.pageSize));
@@ -105,8 +118,12 @@ export async function listUsersByCompany({
   };
 }
 
-export async function listBranchesByCompany(companyId: string): Promise<Branch[]> {
-  const response = await apiClient.get<BackendBranchesResponse>(API_ENDPOINTS.branches.byCompany(companyId));
+export async function listBranchesByCompany(
+  companyId: string,
+): Promise<Branch[]> {
+  const response = await apiClient.get<BackendBranchesResponse>(
+    API_ENDPOINTS.branches.byCompany(companyId),
+  );
 
   return response.data.items
     .map((branch) => ({
@@ -123,7 +140,10 @@ export async function listRoles(): Promise<UserRole[]> {
   return listRolesApi();
 }
 
-export async function createUserInCompany(companyId: string, payload: CreateUserPayload) {
+export async function createUserInCompany(
+  companyId: string,
+  payload: CreateUserPayload,
+) {
   const response = await apiClient.post<BackendUserItem>(
     API_ENDPOINTS.users.byCompany(companyId),
     {
@@ -220,7 +240,9 @@ function normalizeStatus(value: string | null): UserStatus {
   return "WORKING";
 }
 
-function normalizeGender(value: string | null): "MALE" | "FEMALE" | "OTHER" | null {
+function normalizeGender(
+  value: string | null,
+): "MALE" | "FEMALE" | "OTHER" | null {
   if (value === "MALE" || value === "FEMALE" || value === "OTHER") {
     return value;
   }
