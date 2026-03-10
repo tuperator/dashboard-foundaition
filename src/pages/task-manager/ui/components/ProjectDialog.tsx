@@ -20,14 +20,20 @@ import {
 import { Textarea } from "@/shared/ui/textarea";
 import {
   PROJECT_TYPE_VALUES,
+  type TaskManagerUserOption,
   type ProjectType,
   type TaskProject,
 } from "../../model/types";
+import {
+  TaskUserMultiSelect,
+  TaskUserSingleSelect,
+} from "./user-select/TaskUserSelect";
 
 type ProjectDialogProps = {
   open: boolean;
   mode: "create" | "edit";
   project: TaskProject | null;
+  userOptions: TaskManagerUserOption[];
   onOpenChange: (open: boolean) => void;
   onSubmit: (payload: {
     name: string;
@@ -44,7 +50,7 @@ type FormState = {
   key: string;
   description: string;
   owner: string;
-  members: string;
+  members: string[];
   type: ProjectType;
 };
 
@@ -53,7 +59,7 @@ const EMPTY_STATE: FormState = {
   key: "",
   description: "",
   owner: "",
-  members: "",
+  members: [],
   type: "SCRUM",
 };
 
@@ -61,6 +67,7 @@ export function ProjectDialog({
   open,
   mode,
   project,
+  userOptions,
   onOpenChange,
   onSubmit,
 }: ProjectDialogProps) {
@@ -141,25 +148,33 @@ export function ProjectDialog({
 
           <div className="grid gap-1.5">
             <Label htmlFor="project-owner">Owner</Label>
-            <Input
-              id="project-owner"
+            <TaskUserSingleSelect
+              users={userOptions}
               value={form.owner}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, owner: event.target.value }))
+              onChange={(value) =>
+                setForm((prev) => ({
+                  ...prev,
+                  owner: value,
+                  members: prev.members.filter((memberId) => memberId !== value),
+                }))
               }
-              placeholder="Toan Le"
+              placeholder="Select project owner"
+              searchPlaceholder="Search by name or email"
+              emptyLabel="No users found"
             />
           </div>
 
           <div className="grid gap-1.5">
-            <Label htmlFor="project-members">Members (comma separated)</Label>
-            <Input
-              id="project-members"
-              value={form.members}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, members: event.target.value }))
+            <Label htmlFor="project-members">Members</Label>
+            <TaskUserMultiSelect
+              users={userOptions.filter((user) => user.id !== form.owner)}
+              values={form.members}
+              onChange={(values) =>
+                setForm((prev) => ({ ...prev, members: values }))
               }
-              placeholder="Toan Le, Linh Tran, Minh Nguyen"
+              placeholder="Select project members"
+              searchPlaceholder="Search members"
+              emptyLabel="No users found"
             />
           </div>
 
@@ -192,10 +207,7 @@ export function ProjectDialog({
                 key: form.key,
                 description: form.description,
                 owner: form.owner,
-                members: form.members
-                  .split(",")
-                  .map((item) => item.trim())
-                  .filter(Boolean),
+                members: form.members.filter((memberId) => memberId !== form.owner),
                 type: form.type,
               });
             }}
@@ -218,7 +230,7 @@ function getInitialFormState(project: TaskProject | null): FormState {
     key: project.key,
     description: project.description,
     owner: project.owner,
-    members: project.members.join(", "),
+    members: project.members,
     type: project.type,
   };
 }

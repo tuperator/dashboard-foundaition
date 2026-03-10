@@ -1,14 +1,10 @@
 import type {
-  TaskProject,
   WorkflowIssueType,
   WorkflowStatusCategory,
-  WorkflowTemplate,
 } from "../../../model/types";
+import type { WorkflowListItem } from "../../../model/workflowManagement.types";
 
-export type WorkflowRow = {
-  workflow: WorkflowTemplate;
-  assignedProjects: TaskProject[];
-};
+export type WorkflowRow = WorkflowListItem;
 
 export type WorkflowCreateForm = {
   name: string;

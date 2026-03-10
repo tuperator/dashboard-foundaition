@@ -28,6 +28,14 @@ export type TaskPriorityItem = {
   order: number;
 };
 
+export type TaskManagerUserOption = {
+  id: string;
+  label: string;
+  email: string;
+  status: string;
+  initials: string;
+};
+
 export const SPRINT_STATUS_VALUES = ["PLANNED", "ACTIVE", "CLOSED"] as const;
 export type SprintStatus = (typeof SPRINT_STATUS_VALUES)[number];
 

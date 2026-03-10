@@ -53,7 +53,7 @@ export function WorkflowListTable({
               </TableCell>
             </TableRow>
           ) : (
-            rows.map(({ workflow, assignedProjects }) => (
+            rows.map((workflow) => (
               <TableRow key={workflow.id}>
                 <TableCell>
                   <p className="text-foreground text-sm font-semibold">
@@ -76,22 +76,22 @@ export function WorkflowListTable({
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline" className="h-6 rounded-full">
-                    {workflow.statuses.length}
+                    {workflow.statusCount}
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline" className="h-6 rounded-full">
-                    {workflow.transitions.length}
+                    {workflow.transitionCount}
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
-                    {assignedProjects.length === 0 ? (
+                    {workflow.assignedProjects.length === 0 ? (
                       <span className="text-muted-foreground text-xs">
                         {t("tasks.common.none")}
                       </span>
                     ) : (
-                      assignedProjects.slice(0, 3).map((project) => (
+                      workflow.assignedProjects.slice(0, 3).map((project) => (
                         <Badge
                           key={project.id}
                           variant="outline"
@@ -101,9 +101,9 @@ export function WorkflowListTable({
                         </Badge>
                       ))
                     )}
-                    {assignedProjects.length > 3 ? (
+                    {workflow.assignedProjects.length > 3 ? (
                       <Badge variant="outline" className="h-6 rounded-full">
-                        +{assignedProjects.length - 3}
+                        +{workflow.assignedProjects.length - 3}
                       </Badge>
                     ) : null}
                   </div>

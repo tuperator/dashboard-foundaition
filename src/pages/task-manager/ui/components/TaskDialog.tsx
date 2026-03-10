@@ -20,10 +20,12 @@ import {
 import { Textarea } from "@/shared/ui/textarea";
 import {
   type TaskItem,
+  type TaskManagerUserOption,
   type TaskPriority,
   type TaskPriorityItem,
   type TaskProject,
 } from "../../model/types";
+import { TaskUserSingleSelect } from "./user-select/TaskUserSelect";
 
 type TaskDialogProps = {
   open: boolean;
@@ -32,7 +34,7 @@ type TaskDialogProps = {
   projects: TaskProject[];
   defaultProjectId: string | null;
   lockProjectId?: string;
-  members: string[];
+  assigneeOptions: TaskManagerUserOption[];
   statusOptions: string[];
   taskPriorities: TaskPriorityItem[];
   onOpenChange: (open: boolean) => void;
@@ -71,7 +73,7 @@ export function TaskDialog({
   projects,
   defaultProjectId,
   lockProjectId,
-  members,
+  assigneeOptions,
   statusOptions,
   taskPriorities,
   onOpenChange,
@@ -152,24 +154,28 @@ export function TaskDialog({
 
             <div className="grid gap-1.5">
               <Label htmlFor="task-assignee">Assignee</Label>
-              <Select
-                value={form.assignee}
-                onValueChange={(value) =>
+              <TaskUserSingleSelect
+                users={assigneeOptions}
+                value={
+                  form.assignee === "__UNASSIGNED__" ? "" : form.assignee
+                }
+                onChange={(value) =>
                   setForm((prev) => ({ ...prev, assignee: value }))
                 }
+                placeholder="Select assignee"
+                searchPlaceholder="Search assignee"
+                emptyLabel="No users found"
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-fit px-0"
+                onClick={() =>
+                  setForm((prev) => ({ ...prev, assignee: "__UNASSIGNED__" }))
+                }
               >
-                <SelectTrigger id="task-assignee">
-                  <SelectValue placeholder="Assignee" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__UNASSIGNED__">Unassigned</SelectItem>
-                  {members.map((member) => (
-                    <SelectItem key={member} value={member}>
-                      {member}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                Unassigned
+              </Button>
             </div>
           </div>
 

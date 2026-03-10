@@ -3,6 +3,7 @@ import { AppShell } from "@/widgets/app-shell";
 import { useI18n } from "@/shared/providers/i18n/I18nProvider";
 import { useAppToast } from "@/shared/providers/toast/ToastProvider";
 import { useTaskManagerState } from "../model/useTaskManagerState";
+import { useTaskManagerUsers } from "../model/useTaskManagerUsers";
 import { ProjectDialog } from "./components/ProjectDialog";
 import { TaskProjectsHeader } from "./components/projects/TaskProjectsHeader";
 import { TaskProjectsTable } from "./components/projects/TaskProjectsTable";
@@ -13,6 +14,7 @@ export function TaskProjectsPage() {
   const { t, tp } = useI18n();
   const appToast = useAppToast();
   const { projects, tasks, createProject } = useTaskManagerState();
+  const { userOptions, resolveUserLabel } = useTaskManagerUsers();
 
   const [createProjectOpen, setCreateProjectOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -54,8 +56,11 @@ export function TaskProjectsPage() {
   }, [tasks]);
 
   const ownerOptions = useMemo(
-    () => Array.from(new Set(projects.map((project) => project.owner))).sort(),
-    [projects],
+    () =>
+      Array.from(new Set(projects.map((project) => project.owner)))
+        .map((owner) => ({ value: owner, label: resolveUserLabel(owner) }))
+        .sort((left, right) => left.label.localeCompare(right.label)),
+    [projects, resolveUserLabel],
   );
 
   const filteredProjects = useMemo(() => {
@@ -64,7 +69,7 @@ export function TaskProjectsPage() {
     if (search.trim()) {
       const keyword = search.trim().toLowerCase();
       nextProjects = nextProjects.filter((project) =>
-        `${project.name} ${project.key} ${project.description} ${project.owner}`
+        `${project.name} ${project.key} ${project.description} ${resolveUserLabel(project.owner)}`
           .toLowerCase()
           .includes(keyword),
       );
@@ -103,7 +108,15 @@ export function TaskProjectsPage() {
       const bUpdatedAt = taskStatsByProject.get(b.id)?.updatedAt || 0;
       return bUpdatedAt - aUpdatedAt;
     });
-  }, [ownerFilter, projects, search, sortBy, taskStatsByProject, typeFilter]);
+  }, [
+    ownerFilter,
+    projects,
+    search,
+    sortBy,
+    taskStatsByProject,
+    typeFilter,
+    resolveUserLabel,
+  ]);
 
   return (
     <AppShell>
@@ -124,6 +137,7 @@ export function TaskProjectsPage() {
         <TaskProjectsTable
           projects={filteredProjects}
           taskStatsByProject={taskStatsByProject}
+          resolveUserLabel={resolveUserLabel}
         />
       </section>
 
@@ -132,6 +146,7 @@ export function TaskProjectsPage() {
         open={createProjectOpen}
         mode="create"
         project={null}
+        userOptions={userOptions}
         onOpenChange={setCreateProjectOpen}
         onSubmit={(payload) => {
           createProject(payload);

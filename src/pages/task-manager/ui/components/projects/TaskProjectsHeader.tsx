@@ -19,7 +19,7 @@ type TaskProjectsHeaderProps = {
   typeFilter: "ALL" | "SCRUM" | "KANBAN";
   ownerFilter: string;
   sortBy: SortMode;
-  ownerOptions: string[];
+  ownerOptions: Array<{ value: string; label: string }>;
   onSearchChange: (value: string) => void;
   onTypeFilterChange: (value: "ALL" | "SCRUM" | "KANBAN") => void;
   onOwnerFilterChange: (value: string) => void;
@@ -102,8 +102,8 @@ export function TaskProjectsHeader({
               {t("tasks.projects.filter.allOwners")}
             </SelectItem>
             {ownerOptions.map((owner) => (
-              <SelectItem key={owner} value={owner}>
-                {owner}
+              <SelectItem key={owner.value} value={owner.value}>
+                {owner.label}
               </SelectItem>
             ))}
           </SelectContent>

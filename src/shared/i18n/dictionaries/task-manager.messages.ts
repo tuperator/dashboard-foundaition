@@ -6,6 +6,8 @@ export const taskManagerMessages = {
     "tasks.common.delete": "Xóa",
     "tasks.common.remove": "Gỡ",
     "tasks.common.add": "Thêm",
+    "tasks.common.retry": "Thử lại",
+    "tasks.common.close": "Đóng",
     "tasks.common.details": "Chi tiết",
     "tasks.common.none": "Không có",
     "tasks.common.noDescription": "Không có mô tả",
@@ -50,6 +52,7 @@ export const taskManagerMessages = {
     "tasks.workflow.table.projects": "Projects",
     "tasks.workflow.table.actions": "Thao tác",
     "tasks.workflow.table.empty": "Không có workflow.",
+    "tasks.workflow.table.loading": "Đang tải workflow...",
     "tasks.workflow.button.manage": "Quản lý",
     "tasks.workflow.create.title": "Tạo workflow",
     "tasks.workflow.create.description":
@@ -92,6 +95,8 @@ export const taskManagerMessages = {
     "tasks.workflow.toast.invalidTransitionTitle": "Transition không hợp lệ",
     "tasks.workflow.toast.invalidTransitionDescription":
       "Trạng thái nguồn và đích không được trùng nhau.",
+    "tasks.workflow.toast.requestFailedTitle": "Thao tác workflow thất bại",
+    "tasks.workflow.toast.loadingFailedTitle": "Không thể tải workflow",
 
     "tasks.projectDetails.notFoundTitle": "Chi tiết project",
     "tasks.projectDetails.notFoundDescription":
@@ -193,6 +198,8 @@ export const taskManagerMessages = {
     "tasks.common.delete": "Delete",
     "tasks.common.remove": "Remove",
     "tasks.common.add": "Add",
+    "tasks.common.retry": "Retry",
+    "tasks.common.close": "Close",
     "tasks.common.details": "Details",
     "tasks.common.none": "None",
     "tasks.common.noDescription": "No description",
@@ -237,6 +244,7 @@ export const taskManagerMessages = {
     "tasks.workflow.table.projects": "Projects",
     "tasks.workflow.table.actions": "Actions",
     "tasks.workflow.table.empty": "No workflow found.",
+    "tasks.workflow.table.loading": "Loading workflows...",
     "tasks.workflow.button.manage": "Manage",
     "tasks.workflow.create.title": "Create workflow",
     "tasks.workflow.create.description":
@@ -279,6 +287,8 @@ export const taskManagerMessages = {
     "tasks.workflow.toast.invalidTransitionTitle": "Invalid transition",
     "tasks.workflow.toast.invalidTransitionDescription":
       "Source and target statuses cannot be identical.",
+    "tasks.workflow.toast.requestFailedTitle": "Workflow request failed",
+    "tasks.workflow.toast.loadingFailedTitle": "Unable to load workflows",
 
     "tasks.projectDetails.notFoundTitle": "Project details",
     "tasks.projectDetails.notFoundDescription":

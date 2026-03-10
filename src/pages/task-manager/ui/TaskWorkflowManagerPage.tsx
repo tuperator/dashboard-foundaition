@@ -5,7 +5,9 @@ import { AppShell } from "@/widgets/app-shell";
 import { useI18n } from "@/shared/providers/i18n/I18nProvider";
 import { useAppToast } from "@/shared/providers/toast/ToastProvider";
 import { Button } from "@/shared/ui/button";
+import { Spinner } from "@/shared/ui/spinner";
 import { useTaskManagerState } from "../model/useTaskManagerState";
+import { useWorkflowManagement } from "../model/useWorkflowManagement";
 import { WorkflowCreateDialog } from "./components/workflow/WorkflowCreateDialog";
 import { WorkflowEditorDialog } from "./components/workflow/WorkflowEditorDialog";
 import { WorkflowListTable } from "./components/workflow/WorkflowListTable";
@@ -17,20 +19,7 @@ import {
 export function TaskWorkflowManagerPage() {
   const { t, tp } = useI18n();
   const appToast = useAppToast();
-  const {
-    projects,
-    workflowTemplates,
-    workflowIdByProject,
-    createWorkflowTemplate,
-    deleteWorkflowTemplate,
-    updateWorkflowTemplate,
-    assignWorkflowToProjects,
-    createWorkflowStatus,
-    updateWorkflowStatus,
-    deleteWorkflowStatus,
-    createWorkflowTransition,
-    deleteWorkflowTransition,
-  } = useTaskManagerState();
+  const { projects } = useTaskManagerState();
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [createForm, setCreateForm] = useState<WorkflowCreateForm>(
@@ -38,23 +27,34 @@ export function TaskWorkflowManagerPage() {
   );
   const [manageWorkflowId, setManageWorkflowId] = useState<string | null>(null);
 
+  const {
+    workflowsQuery,
+    workflowDetailQuery,
+    createWorkflowMutation,
+    updateWorkflowMutation,
+    deleteWorkflowMutation,
+    assignProjectsMutation,
+    createStatusMutation,
+    updateStatusMutation,
+    deleteStatusMutation,
+    createTransitionMutation,
+    deleteTransitionMutation,
+    isMutating,
+  } = useWorkflowManagement(manageWorkflowId);
+
   const workflowRows = useMemo(
-    () =>
-      workflowTemplates.map((workflow) => ({
-        workflow,
-        assignedProjects: projects.filter(
-          (project) => workflowIdByProject[project.id] === workflow.id,
-        ),
-      })),
-    [projects, workflowIdByProject, workflowTemplates],
+    () => workflowsQuery.data?.items || [],
+    [workflowsQuery.data],
   );
 
-  const workflowToManage = useMemo(
-    () =>
-      workflowTemplates.find((workflow) => workflow.id === manageWorkflowId) ||
-      null,
-    [manageWorkflowId, workflowTemplates],
-  );
+  const workflowToManage = workflowDetailQuery.data || null;
+
+  const handleMutationError = (error: unknown) => {
+    appToast.error({
+      title: t("tasks.workflow.toast.requestFailedTitle"),
+      description: error instanceof Error ? error.message : undefined,
+    });
+  };
 
   return (
     <AppShell>
@@ -69,55 +69,86 @@ export function TaskWorkflowManagerPage() {
                 {t("tasks.workflow.pageDescription")}
               </p>
             </div>
-            <Button onClick={() => setCreateDialogOpen(true)}>
+            <Button
+              onClick={() => setCreateDialogOpen(true)}
+              disabled={createWorkflowMutation.isPending}
+            >
               <HugeiconsIcon icon={AddCircleHalfDotIcon} />
               {t("tasks.workflow.newWorkflow")}
             </Button>
           </div>
 
-          <WorkflowListTable
-            rows={workflowRows}
-            onManage={setManageWorkflowId}
-            onDelete={(workflowId) => {
-              const workflow = workflowTemplates.find(
-                (item) => item.id === workflowId,
-              );
-              if (!workflow) {
-                return;
-              }
+          {workflowsQuery.isLoading ? (
+            <div className="text-muted-foreground flex min-h-40 items-center justify-center gap-2 rounded-xl border border-dashed text-sm">
+              <Spinner className="size-4" />
+              {t("tasks.workflow.table.loading")}
+            </div>
+          ) : workflowsQuery.isError ? (
+            <div className="flex min-h-40 flex-col items-center justify-center gap-3 rounded-xl border border-dashed px-6 text-center">
+              <p className="text-sm font-medium">
+                {t("tasks.workflow.toast.loadingFailedTitle")}
+              </p>
+              <p className="text-muted-foreground text-sm">
+                {workflowsQuery.error instanceof Error
+                  ? workflowsQuery.error.message
+                  : undefined}
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => void workflowsQuery.refetch()}
+              >
+                {t("tasks.common.retry")}
+              </Button>
+            </div>
+          ) : (
+            <WorkflowListTable
+              rows={workflowRows}
+              onManage={setManageWorkflowId}
+              onDelete={async (workflowId) => {
+                const workflow = workflowRows.find((item) => item.id === workflowId);
+                if (!workflow) {
+                  return;
+                }
 
-              if (workflowTemplates.length <= 1) {
-                appToast.warning({
-                  title: t("tasks.workflow.toast.cannotDeleteTitle"),
-                  description: t(
-                    "tasks.workflow.toast.cannotDeleteDescription",
-                  ),
-                });
-                return;
-              }
+                if (workflowRows.length <= 1) {
+                  appToast.warning({
+                    title: t("tasks.workflow.toast.cannotDeleteTitle"),
+                    description: t(
+                      "tasks.workflow.toast.cannotDeleteDescription",
+                    ),
+                  });
+                  return;
+                }
 
-              deleteWorkflowTemplate(workflowId);
-              if (manageWorkflowId === workflowId) {
-                setManageWorkflowId(null);
-              }
+                try {
+                  await deleteWorkflowMutation.mutateAsync(workflowId);
+                  if (manageWorkflowId === workflowId) {
+                    setManageWorkflowId(null);
+                  }
 
-              appToast.success({
-                title: t("tasks.workflow.toast.deletedTitle"),
-                description: tp("tasks.workflow.toast.deletedDescription", {
-                  name: workflow.name,
-                }),
-              });
-            }}
-          />
+                  appToast.success({
+                    title: t("tasks.workflow.toast.deletedTitle"),
+                    description: tp("tasks.workflow.toast.deletedDescription", {
+                      name: workflow.name,
+                    }),
+                  });
+                } catch (error) {
+                  handleMutationError(error);
+                }
+              }}
+            />
+          )}
         </header>
       </section>
 
       <WorkflowCreateDialog
         open={createDialogOpen}
         form={createForm}
+        submitting={createWorkflowMutation.isPending}
         onOpenChange={setCreateDialogOpen}
         onFormChange={setCreateForm}
-        onSubmit={() => {
+        onSubmit={async () => {
           if (!createForm.name.trim()) {
             appToast.warning({
               title: t("tasks.workflow.toast.invalidTitle"),
@@ -126,41 +157,112 @@ export function TaskWorkflowManagerPage() {
             return;
           }
 
-          createWorkflowTemplate({
-            name: createForm.name,
-            description: createForm.description,
-            issueTypes: createForm.issueTypes,
-          });
-          setCreateDialogOpen(false);
-          setCreateForm(EMPTY_WORKFLOW_CREATE_FORM);
-          appToast.success({
-            title: t("tasks.workflow.toast.createdTitle"),
-            description: tp("tasks.workflow.toast.createdDescription", {
+          try {
+            await createWorkflowMutation.mutateAsync({
               name: createForm.name,
-            }),
-          });
+              description: createForm.description,
+              issueTypes: createForm.issueTypes,
+            });
+            setCreateDialogOpen(false);
+            setCreateForm(EMPTY_WORKFLOW_CREATE_FORM);
+            appToast.success({
+              title: t("tasks.workflow.toast.createdTitle"),
+              description: tp("tasks.workflow.toast.createdDescription", {
+                name: createForm.name,
+              }),
+            });
+          } catch (error) {
+            handleMutationError(error);
+          }
         }}
       />
+
+      {manageWorkflowId && workflowDetailQuery.isLoading ? (
+        <div className="bg-background/60 fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+          <div className="bg-card flex items-center gap-2 rounded-xl border px-4 py-3 text-sm shadow-sm">
+            <Spinner className="size-4" />
+            {t("tasks.workflow.table.loading")}
+          </div>
+        </div>
+      ) : null}
+
+      {manageWorkflowId && workflowDetailQuery.isError ? (
+        <div className="bg-background/60 fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+          <div className="bg-card w-full max-w-md rounded-2xl border p-5 shadow-lg">
+            <h2 className="text-base font-semibold">
+              {t("tasks.workflow.toast.loadingFailedTitle")}
+            </h2>
+            <p className="text-muted-foreground mt-2 text-sm">
+              {workflowDetailQuery.error instanceof Error
+                ? workflowDetailQuery.error.message
+                : undefined}
+            </p>
+            <div className="mt-4 flex justify-end gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => void workflowDetailQuery.refetch()}
+              >
+                {t("tasks.common.retry")}
+              </Button>
+              <Button size="sm" onClick={() => setManageWorkflowId(null)}>
+                {t("tasks.common.close")}
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {workflowToManage ? (
         <WorkflowEditorDialog
           key={workflowToManage.id}
           open
+          submitting={isMutating}
           workflow={workflowToManage}
           projects={projects}
-          workflowIdByProject={workflowIdByProject}
           onOpenChange={(open) => {
             if (!open) {
               setManageWorkflowId(null);
             }
           }}
-          onSaveMetadata={updateWorkflowTemplate}
-          onAssignProjects={assignWorkflowToProjects}
-          onCreateStatus={createWorkflowStatus}
-          onUpdateStatus={updateWorkflowStatus}
-          onDeleteStatus={deleteWorkflowStatus}
-          onCreateTransition={createWorkflowTransition}
-          onDeleteTransition={deleteWorkflowTransition}
+          onSaveMetadata={(workflowId, payload) =>
+            updateWorkflowMutation
+              .mutateAsync({ workflowId, payload })
+              .then(() => undefined)
+          }
+          onAssignProjects={(workflowId, projectIds) =>
+            assignProjectsMutation
+              .mutateAsync({ workflowId, projectIds })
+              .then(() => undefined)
+          }
+          onCreateStatus={(workflowId, payload) =>
+            createStatusMutation
+              .mutateAsync({ workflowId, payload })
+              .then(() => undefined)
+          }
+          onUpdateStatus={(workflowId, statusId, payload) =>
+            updateStatusMutation
+              .mutateAsync({ workflowId, statusId, payload })
+              .then(() => undefined)
+          }
+          onDeleteStatus={(workflowId, statusId) =>
+            deleteStatusMutation
+              .mutateAsync({ workflowId, statusId })
+              .then(() => undefined)
+          }
+          onCreateTransition={(workflowId, fromStatusCode, toStatusCode) =>
+            createTransitionMutation
+              .mutateAsync({
+                workflowId,
+                payload: { fromStatusCode, toStatusCode },
+              })
+              .then(() => undefined)
+          }
+          onDeleteTransition={(workflowId, transitionId) =>
+            deleteTransitionMutation
+              .mutateAsync({ workflowId, transitionId })
+              .then(() => undefined)
+          }
         />
       ) : null}
     </AppShell>

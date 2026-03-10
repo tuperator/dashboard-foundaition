@@ -1,3 +1,5 @@
+const TASK_MANAGEMENT_SERVICE_PREFIX = "/task-management-service";
+
 export const API_ENDPOINTS = {
   auth: {
     login: "/api/v1/auth/login",
@@ -20,5 +22,22 @@ export const API_ENDPOINTS = {
   },
   companies: {
     me: "/api/v1/companies/me",
+  },
+  taskManagement: {
+    workflows: {
+      list: `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/workflows`,
+      byId: (workflowId: string) =>
+        `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/workflows/${workflowId}`,
+      statuses: (workflowId: string) =>
+        `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/workflows/${workflowId}/statuses`,
+      statusById: (workflowId: string, statusId: string) =>
+        `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/workflows/${workflowId}/statuses/${statusId}`,
+      transitions: (workflowId: string) =>
+        `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/workflows/${workflowId}/transitions`,
+      transitionById: (workflowId: string, transitionId: string) =>
+        `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/workflows/${workflowId}/transitions/${transitionId}`,
+      projects: (workflowId: string) =>
+        `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/workflows/${workflowId}/projects`,
+    },
   },
 } as const;

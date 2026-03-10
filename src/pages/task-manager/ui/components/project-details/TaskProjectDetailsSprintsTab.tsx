@@ -18,6 +18,7 @@ export interface TaskProjectDetailsSprintsTabProps {
   workflowStatusByCode: Map<string, { name: string; color: string }>;
   activeSprint: SprintItem | null;
   activeSprintTasksByStatus: Map<string, TaskItem[]>;
+  resolveUserLabel: (value: string | null | undefined) => string;
   dragTaskId: string | null;
   setDragTaskId: (taskId: string | null) => void;
   onSprintCreate: () => void;
@@ -35,6 +36,7 @@ export function TaskProjectDetailsSprintsTab({
   workflowStatusByCode,
   activeSprint,
   activeSprintTasksByStatus,
+  resolveUserLabel,
   dragTaskId,
   setDragTaskId,
   onSprintCreate,
@@ -233,7 +235,9 @@ export function TaskProjectDetailsSprintsTab({
                         {task.title}
                       </p>
                       <p className="text-muted-foreground mt-1 text-xs">
-                        {task.assignee || t("tasks.common.unassigned")}
+                        {task.assignee
+                          ? resolveUserLabel(task.assignee)
+                          : t("tasks.common.unassigned")}
                       </p>
                     </article>
                   ))}

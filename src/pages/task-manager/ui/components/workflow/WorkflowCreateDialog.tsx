@@ -18,6 +18,7 @@ import type { WorkflowCreateForm } from "./types";
 type WorkflowCreateDialogProps = {
   open: boolean;
   form: WorkflowCreateForm;
+  submitting?: boolean;
   onOpenChange: (open: boolean) => void;
   onFormChange: (form: WorkflowCreateForm) => void;
   onSubmit: () => void;
@@ -26,6 +27,7 @@ type WorkflowCreateDialogProps = {
 export function WorkflowCreateDialog({
   open,
   form,
+  submitting = false,
   onOpenChange,
   onFormChange,
   onSubmit,
@@ -34,7 +36,7 @@ export function WorkflowCreateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="[zoom:var(--app-scale)]">
         <DialogHeader>
           <DialogTitle>{t("tasks.workflow.create.title")}</DialogTitle>
           <DialogDescription>
@@ -49,6 +51,7 @@ export function WorkflowCreateDialog({
             <Input
               id="create-workflow-name"
               value={form.name}
+              disabled={submitting}
               onChange={(event) =>
                 onFormChange({
                   ...form,
@@ -65,6 +68,7 @@ export function WorkflowCreateDialog({
             <Textarea
               id="create-workflow-description"
               value={form.description}
+              disabled={submitting}
               onChange={(event) =>
                 onFormChange({
                   ...form,
@@ -83,6 +87,7 @@ export function WorkflowCreateDialog({
                   <button
                     key={issueType}
                     type="button"
+                    disabled={submitting}
                     onClick={() => {
                       if (active) {
                         if (form.issueTypes.length <= 1) {
@@ -116,7 +121,9 @@ export function WorkflowCreateDialog({
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={onSubmit}>{t("tasks.common.create")}</Button>
+          <Button onClick={onSubmit} disabled={submitting}>
+            {t("tasks.common.create")}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

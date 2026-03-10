@@ -6,8 +6,14 @@ import { useI18n } from "@/shared/providers/i18n/I18nProvider";
 import { useAppToast } from "@/shared/providers/toast/ToastProvider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { useTaskManagerState } from "../model/useTaskManagerState";
+import { useTaskManagerUsers } from "../model/useTaskManagerUsers";
+import {
+  buildTaskUserOptionsByIds,
+  getTaskProjectParticipantIds,
+} from "../model/helpers/userHelpers";
 import {
   type SprintItem,
+  type TaskManagerUserOption,
   type TaskItem,
   type TaskPriority,
   type TaskProject,
@@ -60,6 +66,7 @@ export function TaskProjectDetailsPage() {
   const navigate = useNavigate();
   const { projectId = "" } = useParams<{ projectId: string }>();
   const { projects, ...actions } = useTaskManagerState();
+  const { userOptions, userOptionById, resolveUserLabel } = useTaskManagerUsers();
 
   const project = useMemo(
     () => projects.find((item) => item.id === projectId) || null,
@@ -79,6 +86,9 @@ export function TaskProjectDetailsPage() {
       key={project.id}
       project={project}
       actions={actions}
+      userOptions={userOptions}
+      userOptionById={userOptionById}
+      resolveUserLabel={resolveUserLabel}
       onBack={() => navigate(appRoutes.tasksProjects)}
     />
   );
@@ -87,10 +97,16 @@ export function TaskProjectDetailsPage() {
 function ProjectDetailsContent({
   project,
   actions,
+  userOptions,
+  userOptionById,
+  resolveUserLabel,
   onBack,
 }: {
   project: TaskProject;
   actions: ProjectDetailsActions;
+  userOptions: TaskManagerUserOption[];
+  userOptionById: Map<string, TaskManagerUserOption>;
+  resolveUserLabel: (value: string | null | undefined) => string;
   onBack: () => void;
 }) {
   const navigate = useNavigate();
@@ -130,6 +146,14 @@ function ProjectDetailsContent({
   const taskPriorityByCode = useMemo(
     () => new Map(taskPriorities.map((p) => [p.code, p])),
     [taskPriorities],
+  );
+  const participantIds = useMemo(
+    () => getTaskProjectParticipantIds(project),
+    [project],
+  );
+  const participantOptions = useMemo(
+    () => buildTaskUserOptionsByIds(participantIds, userOptionById),
+    [participantIds, userOptionById],
   );
   const projectTasks = useMemo(
     () => actions.tasks.filter((task) => task.projectId === project.id),
@@ -196,7 +220,7 @@ function ProjectDetailsContent({
     if (search.trim()) {
       const keyword = search.trim().toLowerCase();
       nextTasks = nextTasks.filter((task) =>
-        `${task.title} ${task.description} ${task.assignee || ""}`
+        `${task.title} ${task.description} ${resolveUserLabel(task.assignee)}`
           .toLowerCase()
           .includes(keyword),
       );
@@ -226,6 +250,7 @@ function ProjectDetailsContent({
     sortBy,
     statusFilter,
     taskPriorityByCode,
+    resolveUserLabel,
   ]);
 
   const backlogTasks = useMemo(
@@ -313,8 +338,10 @@ function ProjectDetailsContent({
           statusFilter={statusFilter}
           priorityFilter={priorityFilter}
           assigneeFilter={assigneeFilter}
+          assigneeOptions={participantOptions}
           sortBy={sortBy}
           taskPriorities={taskPriorities}
+          resolveUserLabel={resolveUserLabel}
           onBack={onBack}
           onOpenEditProject={() => setEditDialogOpen(true)}
           onOpenSettings={() => setSettingsDialogOpen(true)}
@@ -374,8 +401,10 @@ function ProjectDetailsContent({
               setIssueViewMode={setIssueViewMode}
               taskPriorities={taskPriorities}
               taskPriorityByCode={taskPriorityByCode}
+              assigneeOptions={participantOptions}
               dragTaskId={dragTaskId}
               setDragTaskId={setDragTaskId}
+              resolveUserLabel={resolveUserLabel}
               onTaskChangePriority={(taskId, priority) =>
                 actions.changeTaskPriority(taskId, priority)
               }
@@ -420,6 +449,7 @@ function ProjectDetailsContent({
               workflowStatusByCode={workflowStatusByCode}
               activeSprint={activeSprint}
               activeSprintTasksByStatus={activeSprintTasksByStatus}
+              resolveUserLabel={resolveUserLabel}
               dragTaskId={dragTaskId}
               setDragTaskId={setDragTaskId}
               onSprintCreate={() => {
@@ -451,6 +481,7 @@ function ProjectDetailsContent({
         open={editDialogOpen}
         mode="edit"
         project={project}
+        userOptions={userOptions}
         onOpenChange={setEditDialogOpen}
         onSubmit={(payload) => {
           actions.updateProject(project.id, {
@@ -476,6 +507,8 @@ function ProjectDetailsContent({
         open={settingsDialogOpen}
         project={project}
         memberRoles={memberRoles}
+        userOptions={userOptions}
+        userOptionById={userOptionById}
         onOpenChange={setSettingsDialogOpen}
         onSaveProject={(projectId, payload) => {
           actions.updateProject(projectId, payload);
@@ -509,7 +542,7 @@ function ProjectDetailsContent({
         projects={[project]}
         defaultProjectId={project.id}
         lockProjectId={project.id}
-        members={project.members}
+        assigneeOptions={participantOptions}
         statusOptions={workflow}
         taskPriorities={taskPriorities}
         onOpenChange={(open) => {

@@ -26,6 +26,26 @@ export const apiMessages = {
     "api.error.COMPANY_CODE_ALREADY_EXISTS":
       "Mã công ty đã tồn tại trong hệ thống.",
     "api.error.ROLE_NOT_FOUND": "Vai trò không hợp lệ.",
+    "api.error.WORKFLOW_NOT_FOUND":
+      "Không tìm thấy workflow hoặc workflow đã bị xóa.",
+    "api.error.WORKFLOW_NAME_ALREADY_EXISTS":
+      "Tên workflow đã tồn tại trong công ty hiện tại.",
+    "api.error.WORKFLOW_DELETE_FORBIDDEN":
+      "Không thể xóa workflow này do đang được sử dụng.",
+    "api.error.WORKFLOW_LAST_TEMPLATE_DELETE_FORBIDDEN":
+      "Hệ thống cần tối thiểu một workflow.",
+    "api.error.WORKFLOW_STATUS_NOT_FOUND":
+      "Không tìm thấy status trong workflow này.",
+    "api.error.WORKFLOW_STATUS_CODE_ALREADY_EXISTS":
+      "Mã status đã tồn tại trong workflow.",
+    "api.error.WORKFLOW_STATUS_DELETE_FORBIDDEN":
+      "Không thể xóa status này do đang được sử dụng.",
+    "api.error.WORKFLOW_TRANSITION_NOT_FOUND":
+      "Không tìm thấy transition trong workflow.",
+    "api.error.WORKFLOW_TRANSITION_ALREADY_EXISTS":
+      "Transition này đã tồn tại.",
+    "api.error.WORKFLOW_PROJECT_ASSIGNMENT_INVALID":
+      "Danh sách project áp dụng workflow không hợp lệ.",
     "api.error.VALIDATION_ERROR":
       "Dữ liệu gửi lên chưa đúng định dạng. Vui lòng kiểm tra lại.",
     "api.error.REQUEST_BODY_INVALID":
@@ -83,6 +103,26 @@ export const apiMessages = {
     "api.error.COMPANY_CODE_ALREADY_EXISTS":
       "Company code already exists in the system.",
     "api.error.ROLE_NOT_FOUND": "Role is invalid.",
+    "api.error.WORKFLOW_NOT_FOUND":
+      "Workflow was not found or has been removed.",
+    "api.error.WORKFLOW_NAME_ALREADY_EXISTS":
+      "Workflow name already exists in the current company.",
+    "api.error.WORKFLOW_DELETE_FORBIDDEN":
+      "This workflow cannot be deleted because it is in use.",
+    "api.error.WORKFLOW_LAST_TEMPLATE_DELETE_FORBIDDEN":
+      "The system requires at least one workflow.",
+    "api.error.WORKFLOW_STATUS_NOT_FOUND":
+      "Workflow status was not found.",
+    "api.error.WORKFLOW_STATUS_CODE_ALREADY_EXISTS":
+      "Status code already exists in this workflow.",
+    "api.error.WORKFLOW_STATUS_DELETE_FORBIDDEN":
+      "This status cannot be deleted because it is in use.",
+    "api.error.WORKFLOW_TRANSITION_NOT_FOUND":
+      "Workflow transition was not found.",
+    "api.error.WORKFLOW_TRANSITION_ALREADY_EXISTS":
+      "This transition already exists.",
+    "api.error.WORKFLOW_PROJECT_ASSIGNMENT_INVALID":
+      "Workflow project assignment is invalid.",
     "api.error.VALIDATION_ERROR":
       "Submitted data format is invalid. Please review and try again.",
     "api.error.REQUEST_BODY_INVALID":

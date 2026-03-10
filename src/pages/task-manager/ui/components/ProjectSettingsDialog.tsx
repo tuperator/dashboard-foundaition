@@ -23,14 +23,22 @@ import {
   PROJECT_TYPE_VALUES,
   type ProjectMemberRole,
   type ProjectType,
+  type TaskManagerUserOption,
   type TaskProject,
   type UpdateProjectPayload,
 } from "../../model/types";
+import { buildTaskUserOptionsByIds, getTaskProjectParticipantIds, resolveTaskUserLabel } from "../../model/helpers/userHelpers";
+import {
+  TaskUserMultiSelect,
+  TaskUserSingleSelect,
+} from "./user-select/TaskUserSelect";
 
 type ProjectSettingsDialogProps = {
   open: boolean;
   project: TaskProject | null;
   memberRoles: Record<string, ProjectMemberRole>;
+  userOptions: TaskManagerUserOption[];
+  userOptionById: Map<string, TaskManagerUserOption>;
   onOpenChange: (open: boolean) => void;
   onSaveProject: (projectId: string, payload: UpdateProjectPayload) => void;
   onAddMember: (projectId: string, member: string) => void;
@@ -62,6 +70,8 @@ export function ProjectSettingsDialog({
   open,
   project,
   memberRoles,
+  userOptions,
+  userOptionById,
   onOpenChange,
   onSaveProject,
   onAddMember,
@@ -69,7 +79,6 @@ export function ProjectSettingsDialog({
   onUpdateMemberRole,
 }: ProjectSettingsDialogProps) {
   const [form, setForm] = useState<FormState>(() => createFormState(project));
-  const [memberInput, setMemberInput] = useState("");
 
   const canSave = useMemo(
     () =>
@@ -83,8 +92,16 @@ export function ProjectSettingsDialog({
     return null;
   }
 
-  const members = Array.from(
-    new Set([project.owner, ...project.members].filter(Boolean)),
+  const participantIds = getTaskProjectParticipantIds({
+    owner: form.owner || project.owner,
+    members: project.members.filter((memberId) => memberId !== form.owner),
+  });
+  const participantOptions = buildTaskUserOptionsByIds(
+    participantIds,
+    userOptionById,
+  );
+  const currentMemberIds = project.members.filter(
+    (memberId) => memberId !== form.owner,
   );
 
   return (
@@ -156,12 +173,15 @@ export function ProjectSettingsDialog({
 
               <div className="grid gap-1.5">
                 <Label htmlFor="project-settings-owner">Owner</Label>
-                <Input
-                  id="project-settings-owner"
+                <TaskUserSingleSelect
+                  users={userOptions}
                   value={form.owner}
-                  onChange={(event) =>
-                    setForm((prev) => ({ ...prev, owner: event.target.value }))
+                  onChange={(value) =>
+                    setForm((prev) => ({ ...prev, owner: value }))
                   }
+                  placeholder="Select project owner"
+                  searchPlaceholder="Search by name or email"
+                  emptyLabel="No users found"
                 />
               </div>
 
@@ -189,45 +209,49 @@ export function ProjectSettingsDialog({
               Members & permissions
             </p>
 
-            <div className="mb-3 flex gap-2">
-              <Input
-                value={memberInput}
-                onChange={(event) => setMemberInput(event.target.value)}
-                placeholder="Add member name"
-              />
-              <Button
-                variant="outline"
-                onClick={() => {
-                  if (!memberInput.trim()) {
-                    return;
-                  }
-                  onAddMember(project.id, memberInput.trim());
-                  setMemberInput("");
+            <div className="mb-3">
+              <Label className="mb-1.5 block">Project members</Label>
+              <TaskUserMultiSelect
+                users={userOptions.filter((user) => user.id !== form.owner)}
+                values={currentMemberIds}
+                onChange={(nextMemberIds) => {
+                  const currentMemberIdSet = new Set(currentMemberIds);
+                  nextMemberIds.forEach((memberId) => {
+                    if (!currentMemberIdSet.has(memberId)) {
+                      onAddMember(project.id, memberId);
+                    }
+                  });
+                  currentMemberIds.forEach((memberId) => {
+                    if (!nextMemberIds.includes(memberId)) {
+                      onRemoveMember(project.id, memberId);
+                    }
+                  });
                 }}
-              >
-                Add
-              </Button>
+                placeholder="Select project members"
+                searchPlaceholder="Search members"
+                emptyLabel="No users found"
+              />
             </div>
 
             <div className="space-y-2">
-              {members.map((member) => (
+              {participantOptions.map((member) => (
                 <div
-                  key={member}
+                  key={member.id}
                   className="bg-card flex flex-wrap items-center justify-between gap-2 rounded-lg border px-3 py-2"
                 >
                   <span className="text-foreground text-sm font-medium">
-                    {member}
+                    {resolveTaskUserLabel(member.id, userOptionById)}
                   </span>
                   <div className="flex items-center gap-2">
                     <Select
                       value={
-                        memberRoles[member] ||
-                        (member === project.owner ? "OWNER" : "MEMBER")
+                        memberRoles[member.id] ||
+                        (member.id === form.owner ? "OWNER" : "MEMBER")
                       }
                       onValueChange={(value) =>
                         onUpdateMemberRole(
                           project.id,
-                          member,
+                          member.id,
                           value as ProjectMemberRole,
                         )
                       }
@@ -244,11 +268,11 @@ export function ProjectSettingsDialog({
                       </SelectContent>
                     </Select>
 
-                    {member !== project.owner ? (
+                    {member.id !== form.owner ? (
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => onRemoveMember(project.id, member)}
+                        onClick={() => onRemoveMember(project.id, member.id)}
                       >
                         Remove
                       </Button>
@@ -272,17 +296,13 @@ export function ProjectSettingsDialog({
             disabled={!canSave}
             onClick={() => {
               const owner = form.owner.trim();
-              const membersWithOwner = Array.from(
-                new Set([owner, ...project.members].filter(Boolean)),
-              );
-
               onSaveProject(project.id, {
                 name: form.name,
                 key: form.key,
                 description: form.description,
                 owner,
                 type: form.type,
-                members: membersWithOwner,
+                members: project.members.filter((memberId) => memberId !== owner),
               });
             }}
           >

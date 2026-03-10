@@ -27,6 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";
 import {
+  type TaskManagerUserOption,
   type TaskPriority,
   type TaskPriorityItem,
   type TaskProject,
@@ -39,8 +40,10 @@ type TaskProjectDetailsHeaderProps = {
   statusFilter: string;
   priorityFilter: "ALL" | TaskPriority;
   assigneeFilter: string;
+  assigneeOptions: TaskManagerUserOption[];
   sortBy: "LATEST" | "PRIORITY" | "BACKLOG_ORDER";
   taskPriorities: TaskPriorityItem[];
+  resolveUserLabel: (value: string | null | undefined) => string;
   onBack: () => void;
   onOpenEditProject: () => void;
   onOpenSettings: () => void;
@@ -62,8 +65,10 @@ export function TaskProjectDetailsHeader({
   statusFilter,
   priorityFilter,
   assigneeFilter,
+  assigneeOptions,
   sortBy,
   taskPriorities,
+  resolveUserLabel,
   onBack,
   onOpenEditProject,
   onOpenSettings,
@@ -215,9 +220,9 @@ export function TaskProjectDetailsHeader({
             <SelectItem value="__UNASSIGNED__">
               {t("tasks.common.unassigned")}
             </SelectItem>
-            {project.members.map((member) => (
-              <SelectItem key={member} value={member}>
-                {member}
+            {assigneeOptions.map((member) => (
+              <SelectItem key={member.id} value={member.id}>
+                {resolveUserLabel(member.id)}
               </SelectItem>
             ))}
           </SelectContent>

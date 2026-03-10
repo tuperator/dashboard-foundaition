@@ -39,16 +39,16 @@ import {
   type TaskProject,
   type WorkflowIssueType,
   type WorkflowStatusCategory,
-  type WorkflowTemplate,
 } from "../../../model/types";
+import type { WorkflowDetail } from "../../../model/workflowManagement.types";
 import { EMPTY_STATUS_EDITOR, type StatusEditorState } from "./types";
 import { StatusChip } from "./WorkflowUiPrimitives";
 
 type WorkflowEditorDialogProps = {
   open: boolean;
-  workflow: WorkflowTemplate;
+  workflow: WorkflowDetail;
   projects: TaskProject[];
-  workflowIdByProject: Record<string, string>;
+  submitting?: boolean;
   onOpenChange: (open: boolean) => void;
   onSaveMetadata: (
     workflowId: string,
@@ -57,8 +57,8 @@ type WorkflowEditorDialogProps = {
       description: string;
       issueTypes: WorkflowIssueType[];
     },
-  ) => void;
-  onAssignProjects: (workflowId: string, projectIds: string[]) => void;
+  ) => Promise<void>;
+  onAssignProjects: (workflowId: string, projectIds: string[]) => Promise<void>;
   onCreateStatus: (
     workflowId: string,
     payload: {
@@ -67,7 +67,7 @@ type WorkflowEditorDialogProps = {
       color: string;
       category: WorkflowStatusCategory;
     },
-  ) => void;
+  ) => Promise<void>;
   onUpdateStatus: (
     workflowId: string,
     statusId: string,
@@ -77,21 +77,21 @@ type WorkflowEditorDialogProps = {
       color: string;
       category: WorkflowStatusCategory;
     },
-  ) => void;
-  onDeleteStatus: (workflowId: string, statusId: string) => void;
+  ) => Promise<void>;
+  onDeleteStatus: (workflowId: string, statusId: string) => Promise<void>;
   onCreateTransition: (
     workflowId: string,
     fromStatusCode: string,
     toStatusCode: string,
-  ) => void;
-  onDeleteTransition: (workflowId: string, transitionId: string) => void;
+  ) => Promise<void>;
+  onDeleteTransition: (workflowId: string, transitionId: string) => Promise<void>;
 };
 
 export function WorkflowEditorDialog({
   open,
   workflow,
   projects,
-  workflowIdByProject,
+  submitting = false,
   onOpenChange,
   onSaveMetadata,
   onAssignProjects,
@@ -119,9 +119,7 @@ export function WorkflowEditorDialog({
     workflow.statuses[1]?.code || workflow.statuses[0]?.code || "",
   );
   const [assignProjectIds, setAssignProjectIds] = useState<string[]>(() =>
-    projects
-      .filter((project) => workflowIdByProject[project.id] === workflow.id)
-      .map((project) => project.id),
+    workflow.assignedProjects.map((project) => project.id),
   );
 
   const statusMap = useMemo(
@@ -165,6 +163,7 @@ export function WorkflowEditorDialog({
                 <Input
                   id="workflow-edit-name"
                   value={name}
+                  disabled={submitting}
                   onChange={(event) => setName(event.target.value)}
                 />
               </div>
@@ -175,6 +174,7 @@ export function WorkflowEditorDialog({
                 <Input
                   id="workflow-edit-description"
                   value={description}
+                  disabled={submitting}
                   onChange={(event) => setDescription(event.target.value)}
                 />
               </div>
@@ -189,6 +189,7 @@ export function WorkflowEditorDialog({
                     <button
                       key={issueType}
                       type="button"
+                      disabled={submitting}
                       onClick={() => {
                         if (active) {
                           if (issueTypes.length <= 1) return;
@@ -216,12 +217,25 @@ export function WorkflowEditorDialog({
             <div className="flex justify-end pt-1">
               <Button
                 size="sm"
-                onClick={() => {
-                  onSaveMetadata(workflow.id, { name, description, issueTypes });
-                  appToast.success({
-                    title: t("tasks.workflow.toast.updatedTitle"),
-                    description: t("tasks.workflow.toast.metadataUpdated"),
-                  });
+                disabled={submitting}
+                onClick={async () => {
+                  try {
+                    await onSaveMetadata(workflow.id, {
+                      name,
+                      description,
+                      issueTypes,
+                    });
+                    appToast.success({
+                      title: t("tasks.workflow.toast.updatedTitle"),
+                      description: t("tasks.workflow.toast.metadataUpdated"),
+                    });
+                  } catch (error) {
+                    appToast.error({
+                      title: t("tasks.workflow.toast.requestFailedTitle"),
+                      description:
+                        error instanceof Error ? error.message : undefined,
+                    });
+                  }
                 }}
               >
                 <HugeiconsIcon icon={FloppyDiskIcon} className="mr-2 size-4" />
@@ -244,6 +258,7 @@ export function WorkflowEditorDialog({
                   <Button
                     variant="ghost"
                     size="icon-sm"
+                    disabled={submitting}
                     onClick={() => setStatusEditor(null)}
                   >
                     <HugeiconsIcon icon={MultiplicationSignIcon} className="size-4" />
@@ -255,6 +270,7 @@ export function WorkflowEditorDialog({
                     <Label className="text-xs text-muted-foreground uppercase tracking-wider">Code</Label>
                     <Input
                       value={statusEditor.code}
+                      disabled={submitting}
                       onChange={(event) =>
                         setStatusEditor((previous) =>
                           previous ? { ...previous, code: event.target.value } : previous,
@@ -269,6 +285,7 @@ export function WorkflowEditorDialog({
                     </Label>
                     <Input
                       value={statusEditor.name}
+                      disabled={submitting}
                       onChange={(event) =>
                         setStatusEditor((previous) =>
                           previous ? { ...previous, name: event.target.value } : previous,
@@ -283,6 +300,7 @@ export function WorkflowEditorDialog({
                       <Input
                         type="color"
                         value={statusEditor.color}
+                        disabled={submitting}
                         onChange={(event) =>
                           setStatusEditor((previous) =>
                             previous ? { ...previous, color: event.target.value } : previous,
@@ -299,6 +317,7 @@ export function WorkflowEditorDialog({
                     <Label className="text-xs text-muted-foreground uppercase tracking-wider">Category</Label>
                     <Select
                       value={statusEditor.category}
+                      disabled={submitting}
                       onValueChange={(value) =>
                         setStatusEditor((previous) =>
                           previous
@@ -322,29 +341,43 @@ export function WorkflowEditorDialog({
                 </div>
 
                 <div className="flex justify-end gap-2 pt-1">
-                  <Button variant="outline" size="sm" onClick={() => setStatusEditor(null)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={submitting}
+                    onClick={() => setStatusEditor(null)}
+                  >
                     {t("tasks.common.none")}
                   </Button>
                   <Button
                     size="sm"
-                    onClick={() => {
+                    disabled={submitting}
+                    onClick={async () => {
                       if (!statusEditor.code.trim()) return;
-                      if (statusEditor.mode === "create") {
-                        onCreateStatus(workflow.id, {
-                          code: statusEditor.code,
-                          name: statusEditor.name,
-                          color: statusEditor.color,
-                          category: statusEditor.category,
-                        });
-                      } else if (statusEditor.statusId) {
-                        onUpdateStatus(workflow.id, statusEditor.statusId, {
-                          code: statusEditor.code,
-                          name: statusEditor.name,
-                          color: statusEditor.color,
-                          category: statusEditor.category,
+                      try {
+                        if (statusEditor.mode === "create") {
+                          await onCreateStatus(workflow.id, {
+                            code: statusEditor.code,
+                            name: statusEditor.name,
+                            color: statusEditor.color,
+                            category: statusEditor.category,
+                          });
+                        } else if (statusEditor.statusId) {
+                          await onUpdateStatus(workflow.id, statusEditor.statusId, {
+                            code: statusEditor.code,
+                            name: statusEditor.name,
+                            color: statusEditor.color,
+                            category: statusEditor.category,
+                          });
+                        }
+                        setStatusEditor(null);
+                      } catch (error) {
+                        appToast.error({
+                          title: t("tasks.workflow.toast.requestFailedTitle"),
+                          description:
+                            error instanceof Error ? error.message : undefined,
                         });
                       }
-                      setStatusEditor(null);
                     }}
                   >
                     {t("tasks.common.save")}
@@ -370,9 +403,9 @@ export function WorkflowEditorDialog({
               {workflow.statuses.map((status) => (
                 <div
                   key={status.id}
-                  className={cn(
-                    "flex items-center justify-between rounded-md border px-3 py-2 text-sm transition-colors",
-                    statusEditor?.statusId === status.id
+                className={cn(
+                  "flex items-center justify-between rounded-md border px-3 py-2 text-sm transition-colors",
+                  statusEditor?.statusId === status.id
                       ? "border-primary/30 bg-muted"
                       : "border-border bg-card hover:bg-muted/30",
                   )}
@@ -391,6 +424,7 @@ export function WorkflowEditorDialog({
                     <Button
                       variant="ghost"
                       size="icon-sm"
+                      disabled={submitting}
                       className="size-7 hover:bg-primary/10 hover:text-primary"
                       onClick={() =>
                         setStatusEditor({
@@ -408,8 +442,19 @@ export function WorkflowEditorDialog({
                     <Button
                       variant="ghost"
                       size="icon-sm"
+                      disabled={submitting}
                       className="size-7 hover:bg-destructive/10 hover:text-destructive"
-                      onClick={() => onDeleteStatus(workflow.id, status.id)}
+                      onClick={async () => {
+                        try {
+                          await onDeleteStatus(workflow.id, status.id);
+                        } catch (error) {
+                          appToast.error({
+                            title: t("tasks.workflow.toast.requestFailedTitle"),
+                            description:
+                              error instanceof Error ? error.message : undefined,
+                          });
+                        }
+                      }}
                     >
                       <HugeiconsIcon icon={Delete02Icon} className="size-3.5" />
                     </Button>
@@ -424,7 +469,11 @@ export function WorkflowEditorDialog({
             {/* Add transition */}
             <div className="rounded-md border border-dashed bg-muted/20 p-3">
               <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto]">
-                <Select value={fromStatusCode} onValueChange={setFromStatusCode}>
+                <Select
+                  value={fromStatusCode}
+                  onValueChange={setFromStatusCode}
+                  disabled={submitting}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder={t("tasks.workflow.editor.fromStatus")} />
                   </SelectTrigger>
@@ -441,7 +490,11 @@ export function WorkflowEditorDialog({
                   <HugeiconsIcon icon={ArrowRight01Icon} className="size-4" />
                 </div>
 
-                <Select value={toStatusCode} onValueChange={setToStatusCode}>
+                <Select
+                  value={toStatusCode}
+                  onValueChange={setToStatusCode}
+                  disabled={submitting}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder={t("tasks.workflow.editor.toStatus")} />
                   </SelectTrigger>
@@ -456,7 +509,8 @@ export function WorkflowEditorDialog({
 
                 <Button
                   variant="outline"
-                  onClick={() => {
+                  disabled={submitting}
+                  onClick={async () => {
                     if (!fromStatusCode || !toStatusCode) return;
                     if (fromStatusCode === toStatusCode) {
                       appToast.warning({
@@ -465,7 +519,19 @@ export function WorkflowEditorDialog({
                       });
                       return;
                     }
-                    onCreateTransition(workflow.id, fromStatusCode, toStatusCode);
+                    try {
+                      await onCreateTransition(
+                        workflow.id,
+                        fromStatusCode,
+                        toStatusCode,
+                      );
+                    } catch (error) {
+                      appToast.error({
+                        title: t("tasks.workflow.toast.requestFailedTitle"),
+                        description:
+                          error instanceof Error ? error.message : undefined,
+                      });
+                    }
                   }}
                 >
                   <HugeiconsIcon icon={LinkSquare02Icon} className="mr-2 size-4" />
@@ -510,8 +576,19 @@ export function WorkflowEditorDialog({
                       <Button
                         variant="ghost"
                         size="icon-sm"
+                        disabled={submitting}
                         className="size-7 hover:bg-destructive/10 hover:text-destructive"
-                        onClick={() => onDeleteTransition(workflow.id, transition.id)}
+                        onClick={async () => {
+                          try {
+                            await onDeleteTransition(workflow.id, transition.id);
+                          } catch (error) {
+                            appToast.error({
+                              title: t("tasks.workflow.toast.requestFailedTitle"),
+                              description:
+                                error instanceof Error ? error.message : undefined,
+                            });
+                          }
+                        }}
                       >
                         <HugeiconsIcon icon={Delete02Icon} className="size-3.5" />
                       </Button>
@@ -531,6 +608,7 @@ export function WorkflowEditorDialog({
                   <button
                     key={project.id}
                     type="button"
+                    disabled={submitting}
                     onClick={() =>
                       setAssignProjectIds((previous) =>
                         active
@@ -558,12 +636,21 @@ export function WorkflowEditorDialog({
             <div className="flex justify-end pt-1">
               <Button
                 size="sm"
-                onClick={() => {
-                  onAssignProjects(workflow.id, assignProjectIds);
-                  appToast.success({
-                    title: t("tasks.workflow.toast.updatedTitle"),
-                    description: t("tasks.workflow.toast.appliedProjects"),
-                  });
+                disabled={submitting}
+                onClick={async () => {
+                  try {
+                    await onAssignProjects(workflow.id, assignProjectIds);
+                    appToast.success({
+                      title: t("tasks.workflow.toast.updatedTitle"),
+                      description: t("tasks.workflow.toast.appliedProjects"),
+                    });
+                  } catch (error) {
+                    appToast.error({
+                      title: t("tasks.workflow.toast.requestFailedTitle"),
+                      description:
+                        error instanceof Error ? error.message : undefined,
+                    });
+                  }
                 }}
               >
                 <HugeiconsIcon icon={FloppyDiskIcon} className="mr-2 size-4" />

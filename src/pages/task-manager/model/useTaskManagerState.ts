@@ -97,13 +97,17 @@ export function useTaskManagerState() {
   };
 
   const createProject = (payload: CreateProjectPayload) => {
+    const owner = payload.owner.trim();
+    const members = (payload.members?.filter(Boolean) || []).filter(
+      (member) => member !== owner,
+    );
     const nextProject = {
       id: generateId("project"),
       name: payload.name.trim(),
       key: payload.key.trim().toUpperCase(),
       description: payload.description.trim(),
-      owner: payload.owner.trim(),
-      members: payload.members?.filter(Boolean) || [],
+      owner,
+      members,
       type: payload.type,
     };
 
@@ -133,12 +137,11 @@ export function useTaskManagerState() {
         ),
         memberRolesByProject: {
           ...previous.memberRolesByProject,
-          [nextProject.id]: {
-            [nextProject.owner]: "OWNER",
-            ...Object.fromEntries(
-              nextProject.members.map((member) => [member, "MEMBER"]),
-            ),
-          },
+          [nextProject.id]: buildNextMemberRoles(
+            nextProject.owner,
+            nextProject.members,
+            {},
+          ),
         },
       };
     });
@@ -146,6 +149,10 @@ export function useTaskManagerState() {
 
   const updateProject = (projectId: string, payload: UpdateProjectPayload) => {
     setStore((previous) => {
+      const owner = payload.owner.trim();
+      const members = payload.members
+        .filter(Boolean)
+        .filter((member) => member !== owner);
       const nextProjects = previous.projects.map((project) =>
         project.id === projectId
           ? {
@@ -154,8 +161,8 @@ export function useTaskManagerState() {
               name: payload.name.trim(),
               key: payload.key.trim().toUpperCase(),
               description: payload.description.trim(),
-              owner: payload.owner.trim(),
-              members: payload.members.filter(Boolean),
+              owner,
+              members,
             }
           : project,
       );
@@ -179,8 +186,8 @@ export function useTaskManagerState() {
         memberRolesByProject: {
           ...previous.memberRolesByProject,
           [projectId]: buildNextMemberRoles(
-            payload.owner.trim(),
-            payload.members.filter(Boolean),
+            owner,
+            members,
             previous.memberRolesByProject[projectId] || {},
           ),
         },

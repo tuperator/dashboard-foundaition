@@ -21,6 +21,7 @@ import { cn } from "@/shared/lib/utils";
 import { TASK_TABLE_MIN_WIDTH_CLASS } from "../../../model/constants";
 import {
   type TaskItem,
+  type TaskManagerUserOption,
   type TaskPriority,
   type TaskPriorityItem,
   type TaskProject,
@@ -41,8 +42,10 @@ export interface TaskProjectDetailsIssuesTabProps {
   setIssueViewMode: Dispatch<SetStateAction<ViewMode>>;
   taskPriorities: TaskPriorityItem[];
   taskPriorityByCode: Map<string, TaskPriorityItem>;
+  assigneeOptions: TaskManagerUserOption[];
   dragTaskId: string | null;
   setDragTaskId: Dispatch<SetStateAction<string | null>>;
+  resolveUserLabel: (value: string | null | undefined) => string;
   onTaskChangePriority: (taskId: string, priority: TaskPriority) => void;
   onTaskChangeStatus: (taskId: string, status: string) => void;
   onTaskChangeAssignee: (taskId: string, assignee: string | null) => void;
@@ -62,8 +65,10 @@ export function TaskProjectDetailsIssuesTab({
   setIssueViewMode,
   taskPriorities,
   taskPriorityByCode,
+  assigneeOptions,
   dragTaskId,
   setDragTaskId,
+  resolveUserLabel,
   onTaskChangePriority,
   onTaskChangeStatus,
   onTaskChangeAssignee,
@@ -249,9 +254,9 @@ export function TaskProjectDetailsIssuesTab({
                         <SelectItem value="__UNASSIGNED__">
                           {t("tasks.common.unassigned")}
                         </SelectItem>
-                        {project.members.map((member) => (
-                          <SelectItem key={member} value={member}>
-                            {member}
+                        {assigneeOptions.map((member) => (
+                          <SelectItem key={member.id} value={member.id}>
+                            {resolveUserLabel(member.id)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -347,7 +352,9 @@ export function TaskProjectDetailsIssuesTab({
                           {task.priority}
                         </Badge>
                         <span className="text-muted-foreground truncate text-xs">
-                          {task.assignee || t("tasks.common.unassigned")}
+                          {task.assignee
+                            ? resolveUserLabel(task.assignee)
+                            : t("tasks.common.unassigned")}
                         </span>
                       </div>
                       <div className="mt-2 flex items-center justify-between gap-1">

@@ -33,7 +33,7 @@ export function TaskProjectDetailsOverviewTab({
       <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           label={t("tasks.projectDetails.metric.members")}
-          value={String(project.members.length)}
+          value={String(new Set([project.owner, ...project.members]).size)}
         />
         <MetricCard
           label={t("tasks.projectDetails.metric.totalIssues")}

@@ -16,11 +16,13 @@ type TaskProjectStats = {
 type TaskProjectsTableProps = {
   projects: TaskProject[];
   taskStatsByProject: Map<string, TaskProjectStats>;
+  resolveUserLabel: (value: string | null | undefined) => string;
 };
 
 export function TaskProjectsTable({
   projects,
   taskStatsByProject,
+  resolveUserLabel,
 }: TaskProjectsTableProps) {
   const { t, tp } = useI18n();
   const navigate = useNavigate();
@@ -83,13 +85,13 @@ export function TaskProjectsTable({
                 </Badge>
 
                 <span className="text-foreground truncate text-sm">
-                  {project.owner}
+                  {resolveUserLabel(project.owner)}
                 </span>
 
                 <div className="text-sm">
                   <p className="text-foreground font-medium">
                     {tp("tasks.projects.stat.members", {
-                      count: project.members.length,
+                      count: new Set([project.owner, ...project.members]).size,
                     })}
                   </p>
                   <p className="text-muted-foreground text-xs">
