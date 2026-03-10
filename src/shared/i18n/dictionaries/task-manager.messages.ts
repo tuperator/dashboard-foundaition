@@ -12,10 +12,10 @@ export const taskManagerMessages = {
     "tasks.common.none": "Không có",
     "tasks.common.noDescription": "Không có mô tả",
     "tasks.common.unassigned": "Chưa phân công",
-    "tasks.common.backToWorkspace": "Quay lại work space",
+    "tasks.common.backToWorkspace": "Quay lại workspace",
     "tasks.common.actions": "Thao tác",
 
-    "tasks.projects.pageTitle": "Work space",
+    "tasks.projects.pageTitle": "Workspace",
     "tasks.projects.pageDescription":
       "Danh sách project/workspace, lọc nhanh và mở chi tiết từng project.",
     "tasks.projects.newProject": "Tạo project",
@@ -53,6 +53,8 @@ export const taskManagerMessages = {
     "tasks.workflow.table.actions": "Thao tác",
     "tasks.workflow.table.empty": "Không có workflow.",
     "tasks.workflow.table.loading": "Đang tải workflow...",
+    "tasks.workflow.pagination.rowsPerPage": "Số dòng mỗi trang",
+    "tasks.workflow.pagination.range": "{start}-{end} / {total}",
     "tasks.workflow.button.manage": "Quản lý",
     "tasks.workflow.create.title": "Tạo workflow",
     "tasks.workflow.create.description":
@@ -204,10 +206,10 @@ export const taskManagerMessages = {
     "tasks.common.none": "None",
     "tasks.common.noDescription": "No description",
     "tasks.common.unassigned": "Unassigned",
-    "tasks.common.backToWorkspace": "Back to work space",
+    "tasks.common.backToWorkspace": "Back to workspace",
     "tasks.common.actions": "Actions",
 
-    "tasks.projects.pageTitle": "Work space",
+    "tasks.projects.pageTitle": "Workspace",
     "tasks.projects.pageDescription":
       "Project/workspace list with quick filters and project details access.",
     "tasks.projects.newProject": "New project",
@@ -245,6 +247,8 @@ export const taskManagerMessages = {
     "tasks.workflow.table.actions": "Actions",
     "tasks.workflow.table.empty": "No workflow found.",
     "tasks.workflow.table.loading": "Loading workflows...",
+    "tasks.workflow.pagination.rowsPerPage": "Rows per page",
+    "tasks.workflow.pagination.range": "{start}-{end} of {total}",
     "tasks.workflow.button.manage": "Manage",
     "tasks.workflow.create.title": "Create workflow",
     "tasks.workflow.create.description":

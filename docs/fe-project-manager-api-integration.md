@@ -53,6 +53,8 @@ Content-Type: application/json
   "key": "ERP",
   "description": "Core workspace for enterprise operations modules.",
   "type": "SCRUM",
+  "createdById": "user-uuid-1",
+  "companyId": "company-uuid",
   "owner": {
     "id": "user-uuid",
     "username": "Nguyen Van A",
@@ -100,6 +102,8 @@ Lưu ý:
 
 - `key` unique trong phạm vi company, FE dùng để hiển thị badge và search.
 - `type` hiện FE hỗ trợ: `SCRUM | KANBAN`.
+- `createdById` là id account tạo project.
+- `companyId` là id company sở hữu project, backend nên lấy theo tenant hiện tại thay vì cho FE truyền tự do.
 - `owner.id` là id thật của user, không phải name string.
 - `members` phải trả cả `userId` và thông tin user tối thiểu để FE render label ngay, tránh phải gọi thêm API user.
 - `stats` nên được aggregate sẵn để FE render list page mà không cần gọi thêm API task.
@@ -153,6 +157,8 @@ Response `200`:
       "key": "ERP",
       "description": "Core workspace for enterprise operations modules.",
       "type": "SCRUM",
+      "createdById": "user-uuid-1",
+      "companyId": "company-uuid",
       "owner": {
         "id": "user-uuid",
         "username": "Nguyen Van A",
@@ -196,6 +202,8 @@ Request body:
   "key": "ERP",
   "description": "Core workspace for enterprise operations modules.",
   "type": "SCRUM",
+  "createdById": "user-uuid-1",
+  "companyId": "company-uuid",
   "ownerId": "user-uuid-1",
   "memberIds": [
     "user-uuid-2",
@@ -211,10 +219,17 @@ Validation đề xuất:
 - `key`: required, not blank, uppercase, max `50`, unique theo company
 - `description`: optional, max `2000`
 - `type`: required, `SCRUM | KANBAN`
+- `createdById`: required, uuid hợp lệ
+- `companyId`: required, uuid hợp lệ
 - `ownerId`: required, phải thuộc cùng company, status hợp lệ
 - `memberIds`: optional, unique
 - `memberIds` không được chứa `ownerId` (backend có thể tự remove nếu gửi lên)
 - `workflowId`: optional, nếu null thì backend gán workflow mặc định
+
+Rule đề xuất:
+
+- `createdById` phải khớp với user hiện tại hoặc backend có thể bỏ qua giá trị FE gửi lên và dùng user từ JWT.
+- `companyId` phải khớp với company context hiện tại hoặc backend có thể bỏ qua giá trị FE gửi lên và dùng company từ tenant context.
 
 Response `201`:
 

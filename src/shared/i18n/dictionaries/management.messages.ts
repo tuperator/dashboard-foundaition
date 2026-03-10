@@ -3,7 +3,7 @@ export const managementMessages = {
     "tasks.title": "Task manager",
     "tasks.description":
       "Theo dõi công việc, tiến độ xử lý và phối hợp giữa các nhóm.",
-    "tasks.projects.title": "Work space",
+    "tasks.projects.title": "Workspace",
     "tasks.projects.description":
       "Quản lý danh sách project/workspace, lọc nhanh và truy cập chi tiết từng project.",
     "tasks.projectDetails.title": "Chi tiết project",
@@ -32,7 +32,7 @@ export const managementMessages = {
     "tasks.title": "Task manager",
     "tasks.description":
       "Track work items, progress and cross-team collaboration.",
-    "tasks.projects.title": "Work space",
+    "tasks.projects.title": "Workspace",
     "tasks.projects.description":
       "Manage project/workspace list, apply filters, and open project detail quickly.",
     "tasks.projectDetails.title": "Project details",

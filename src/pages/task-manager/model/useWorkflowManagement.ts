@@ -1,5 +1,10 @@
+import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getMyProfile } from "../../user-management/model/userManagement.api";
+import {
+  TASK_WORKFLOW_DEFAULT_PAGE,
+  TASK_WORKFLOW_DEFAULT_PAGE_SIZE,
+} from "./constants";
 import {
   assignWorkflowProjects,
   createWorkflow,
@@ -29,6 +34,16 @@ export const WORKFLOW_MANAGEMENT_QUERY_KEYS = {
 
 export function useWorkflowManagement(selectedWorkflowId: string | null) {
   const queryClient = useQueryClient();
+  const [page, setPage] = useState(TASK_WORKFLOW_DEFAULT_PAGE);
+  const [pageSize, setPageSize] = useState(TASK_WORKFLOW_DEFAULT_PAGE_SIZE);
+
+  const filters = useMemo(
+    () => ({
+      page,
+      size: pageSize,
+    }),
+    [page, pageSize],
+  );
 
   const myProfileQuery = useQuery({
     queryKey: [WORKFLOW_MANAGEMENT_QUERY_KEYS.profile],
@@ -36,8 +51,8 @@ export function useWorkflowManagement(selectedWorkflowId: string | null) {
   });
 
   const workflowsQuery = useQuery({
-    queryKey: [WORKFLOW_MANAGEMENT_QUERY_KEYS.list],
-    queryFn: () => listWorkflows(),
+    queryKey: [WORKFLOW_MANAGEMENT_QUERY_KEYS.list, filters],
+    queryFn: () => listWorkflows(filters),
   });
 
   const workflowDetailQuery = useQuery({
@@ -166,6 +181,14 @@ export function useWorkflowManagement(selectedWorkflowId: string | null) {
     myProfileQuery,
     workflowsQuery,
     workflowDetailQuery,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    total: workflowsQuery.data?.total ?? 0,
+    totalPages:
+      workflowsQuery.data?.totalPages ??
+      Math.max(1, Math.ceil((workflowsQuery.data?.total ?? 0) / pageSize)),
     createWorkflowMutation,
     updateWorkflowMutation,
     deleteWorkflowMutation,

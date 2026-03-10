@@ -2,10 +2,28 @@ import { useMemo, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { AddCircleHalfDotIcon } from "@hugeicons/core-free-icons";
 import { AppShell } from "@/widgets/app-shell";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+} from "@/shared/ui/pagination";
 import { useI18n } from "@/shared/providers/i18n/I18nProvider";
 import { useAppToast } from "@/shared/providers/toast/ToastProvider";
 import { Button } from "@/shared/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/ui/select";
 import { Spinner } from "@/shared/ui/spinner";
+import {
+  TASK_WORKFLOW_DEFAULT_PAGE,
+  TASK_WORKFLOW_MAX_VISIBLE_PAGES,
+  TASK_WORKFLOW_PAGE_SIZE_OPTIONS,
+} from "../model/constants";
 import { useTaskManagerState } from "../model/useTaskManagerState";
 import { useWorkflowManagement } from "../model/useWorkflowManagement";
 import { WorkflowCreateDialog } from "./components/workflow/WorkflowCreateDialog";
@@ -30,6 +48,12 @@ export function TaskWorkflowManagerPage() {
   const {
     workflowsQuery,
     workflowDetailQuery,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    total,
+    totalPages,
     createWorkflowMutation,
     updateWorkflowMutation,
     deleteWorkflowMutation,
@@ -46,6 +70,19 @@ export function TaskWorkflowManagerPage() {
     () => workflowsQuery.data?.items || [],
     [workflowsQuery.data],
   );
+  const visiblePages = useMemo(() => {
+    const startIndex = Math.max(
+      0,
+      page - Math.ceil(TASK_WORKFLOW_MAX_VISIBLE_PAGES / 2),
+    );
+
+    return Array.from({ length: totalPages }, (_, index) => index + 1).slice(
+      startIndex,
+      startIndex + TASK_WORKFLOW_MAX_VISIBLE_PAGES,
+    );
+  }, [page, totalPages]);
+  const rowStart = total === 0 ? 0 : (page - 1) * pageSize + 1;
+  const rowEnd = Math.min(page * pageSize, total);
 
   const workflowToManage = workflowDetailQuery.data || null;
 
@@ -102,42 +139,106 @@ export function TaskWorkflowManagerPage() {
               </Button>
             </div>
           ) : (
-            <WorkflowListTable
-              rows={workflowRows}
-              onManage={setManageWorkflowId}
-              onDelete={async (workflowId) => {
-                const workflow = workflowRows.find((item) => item.id === workflowId);
-                if (!workflow) {
-                  return;
-                }
-
-                if (workflowRows.length <= 1) {
-                  appToast.warning({
-                    title: t("tasks.workflow.toast.cannotDeleteTitle"),
-                    description: t(
-                      "tasks.workflow.toast.cannotDeleteDescription",
-                    ),
-                  });
-                  return;
-                }
-
-                try {
-                  await deleteWorkflowMutation.mutateAsync(workflowId);
-                  if (manageWorkflowId === workflowId) {
-                    setManageWorkflowId(null);
+            <>
+              <WorkflowListTable
+                rows={workflowRows}
+                onManage={setManageWorkflowId}
+                onDelete={async (workflowId) => {
+                  const workflow = workflowRows.find(
+                    (item) => item.id === workflowId,
+                  );
+                  if (!workflow) {
+                    return;
                   }
 
-                  appToast.success({
-                    title: t("tasks.workflow.toast.deletedTitle"),
-                    description: tp("tasks.workflow.toast.deletedDescription", {
-                      name: workflow.name,
-                    }),
-                  });
-                } catch (error) {
-                  handleMutationError(error);
-                }
-              }}
-            />
+                  if (workflowRows.length <= 1 && total <= 1) {
+                    appToast.warning({
+                      title: t("tasks.workflow.toast.cannotDeleteTitle"),
+                      description: t(
+                        "tasks.workflow.toast.cannotDeleteDescription",
+                      ),
+                    });
+                    return;
+                  }
+
+                  try {
+                    await deleteWorkflowMutation.mutateAsync(workflowId);
+                    if (
+                      workflowRows.length === 1 &&
+                      page > TASK_WORKFLOW_DEFAULT_PAGE
+                    ) {
+                      setPage(page - 1);
+                    }
+                    if (manageWorkflowId === workflowId) {
+                      setManageWorkflowId(null);
+                    }
+
+                    appToast.success({
+                      title: t("tasks.workflow.toast.deletedTitle"),
+                      description: tp(
+                        "tasks.workflow.toast.deletedDescription",
+                        {
+                          name: workflow.name,
+                        },
+                      ),
+                    });
+                  } catch (error) {
+                    handleMutationError(error);
+                  }
+                }}
+              />
+
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-3 px-1">
+                <div className="text-muted-foreground flex items-center gap-2 text-xs">
+                  <span>{t("tasks.workflow.pagination.rowsPerPage")}</span>
+                  <Select
+                    value={String(pageSize)}
+                    onValueChange={(value) => {
+                      setPageSize(Number(value));
+                      setPage(TASK_WORKFLOW_DEFAULT_PAGE);
+                    }}
+                  >
+                    <SelectTrigger size="sm" className="w-[88px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TASK_WORKFLOW_PAGE_SIZE_OPTIONS.map((value) => (
+                        <SelectItem key={value} value={String(value)}>
+                          {value}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <span>
+                    {tp("tasks.workflow.pagination.range", {
+                      start: rowStart,
+                      end: rowEnd,
+                      total,
+                    })}
+                  </span>
+                </div>
+
+                <Pagination className="mx-0 w-auto justify-start">
+                  <PaginationContent>
+                    {visiblePages.map((value) => (
+                      <PaginationItem key={value}>
+                        <PaginationLink
+                          href="#"
+                          size="icon-sm"
+                          isActive={value === page}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            setPage(value);
+                          }}
+                        >
+                          {value}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            </>
           )}
         </header>
       </section>
@@ -163,6 +264,7 @@ export function TaskWorkflowManagerPage() {
               description: createForm.description,
               issueTypes: createForm.issueTypes,
             });
+            setPage(TASK_WORKFLOW_DEFAULT_PAGE);
             setCreateDialogOpen(false);
             setCreateForm(EMPTY_WORKFLOW_CREATE_FORM);
             appToast.success({
