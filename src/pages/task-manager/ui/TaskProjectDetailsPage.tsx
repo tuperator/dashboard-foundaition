@@ -481,6 +481,7 @@ function ProjectDetailsContent({
         open={editDialogOpen}
         mode="edit"
         project={project}
+        initialWorkflowId={actions.workflowIdByProject[project.id] || null}
         userOptions={userOptions}
         onOpenChange={setEditDialogOpen}
         onSubmit={(payload) => {

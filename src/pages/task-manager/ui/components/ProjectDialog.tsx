@@ -1,4 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Search01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
+import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 import {
   Dialog,
@@ -18,6 +22,8 @@ import {
   SelectValue,
 } from "@/shared/ui/select";
 import { Textarea } from "@/shared/ui/textarea";
+import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
+import { listWorkflows } from "../../model/workflowManagement.api";
 import {
   PROJECT_TYPE_VALUES,
   type TaskManagerUserOption,
@@ -33,6 +39,7 @@ type ProjectDialogProps = {
   open: boolean;
   mode: "create" | "edit";
   project: TaskProject | null;
+  initialWorkflowId?: string | null;
   userOptions: TaskManagerUserOption[];
   onOpenChange: (open: boolean) => void;
   onSubmit: (payload: {
@@ -42,6 +49,7 @@ type ProjectDialogProps = {
     owner: string;
     members: string[];
     type: ProjectType;
+    workflowId?: string;
   }) => void;
 };
 
@@ -52,6 +60,7 @@ type FormState = {
   owner: string;
   members: string[];
   type: ProjectType;
+  workflowId: string;
 };
 
 const EMPTY_STATE: FormState = {
@@ -61,19 +70,79 @@ const EMPTY_STATE: FormState = {
   owner: "",
   members: [],
   type: "SCRUM",
+  workflowId: "",
 };
+
+const WORKFLOW_SELECT_PAGE_SIZE = 200;
+
+function filterWorkflows(
+  workflows: Awaited<ReturnType<typeof listWorkflows>>["items"],
+  keyword: string,
+) {
+  const normalizedKeyword = keyword.trim().toLowerCase();
+  if (!normalizedKeyword) {
+    return workflows;
+  }
+
+  return workflows.filter((workflow) =>
+    workflow.name.toLowerCase().includes(normalizedKeyword),
+  );
+}
 
 export function ProjectDialog({
   open,
   mode,
   project,
+  initialWorkflowId,
   userOptions,
   onOpenChange,
   onSubmit,
 }: ProjectDialogProps) {
   const [form, setForm] = useState<FormState>(() =>
-    getInitialFormState(project),
+    getInitialFormState(project, initialWorkflowId),
   );
+  const [workflowOpen, setWorkflowOpen] = useState(false);
+  const [workflowKeyword, setWorkflowKeyword] = useState("");
+  const workflowsQuery = useQuery({
+    queryKey: ["project-dialog-workflows", WORKFLOW_SELECT_PAGE_SIZE],
+    queryFn: () => listWorkflows({ page: 1, size: WORKFLOW_SELECT_PAGE_SIZE }),
+    enabled: open,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const workflowOptions = workflowsQuery.data?.items || [];
+  const filteredWorkflowOptions = useMemo(
+    () => filterWorkflows(workflowOptions, workflowKeyword),
+    [workflowKeyword, workflowOptions],
+  );
+  const selectedWorkflow =
+    workflowOptions.find((workflow) => workflow.id === form.workflowId) || null;
+
+  useEffect(() => {
+    setForm(getInitialFormState(project, initialWorkflowId));
+  }, [initialWorkflowId, project]);
+
+  useEffect(() => {
+    if (workflowOptions.length === 0) {
+      return;
+    }
+
+    setForm((previous) => {
+      if (previous.workflowId) {
+        return previous;
+      }
+
+      const nextWorkflowId =
+        initialWorkflowId &&
+        workflowOptions.some((workflow) => workflow.id === initialWorkflowId)
+          ? initialWorkflowId
+          : workflowOptions[0]?.id || "";
+
+      return nextWorkflowId
+        ? { ...previous, workflowId: nextWorkflowId }
+        : previous;
+    });
+  }, [initialWorkflowId, workflowOptions]);
 
   const canSubmit = useMemo(
     () =>
@@ -91,13 +160,17 @@ export function ProjectDialog({
             {mode === "create" ? "Create project" : "Update project"}
           </DialogTitle>
           <DialogDescription>
-            Configure workspace information, owner, members and project type.
+            Configure workspace information, owner, members, project type and
+            workflow. <span className="text-destructive">*</span> indicates a
+            required field.
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-3">
           <div className="grid gap-1.5">
-            <Label htmlFor="project-name">Project name</Label>
+            <Label htmlFor="project-name" required>
+              Project name
+            </Label>
             <Input
               id="project-name"
               value={form.name}
@@ -110,7 +183,9 @@ export function ProjectDialog({
 
           <div className="grid gap-1.5 sm:grid-cols-2">
             <div className="grid gap-1.5">
-              <Label htmlFor="project-key">Project key</Label>
+              <Label htmlFor="project-key" required>
+                Project key
+              </Label>
               <Input
                 id="project-key"
                 value={form.key}
@@ -125,7 +200,9 @@ export function ProjectDialog({
             </div>
 
             <div className="grid gap-1.5">
-              <Label htmlFor="project-type">Project type</Label>
+              <Label htmlFor="project-type" required>
+                Project type
+              </Label>
               <Select
                 value={form.type}
                 onValueChange={(value) =>
@@ -147,7 +224,114 @@ export function ProjectDialog({
           </div>
 
           <div className="grid gap-1.5">
-            <Label htmlFor="project-owner">Owner</Label>
+            <Label htmlFor="project-workflow">Workflow</Label>
+            <Popover
+              open={workflowOpen}
+              onOpenChange={(nextOpen) => {
+                setWorkflowOpen(nextOpen);
+                if (!nextOpen) {
+                  setWorkflowKeyword("");
+                }
+              }}
+            >
+              <PopoverTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  id="project-workflow"
+                  disabled={
+                    workflowsQuery.isLoading || workflowOptions.length === 0
+                  }
+                  className="text-foreground h-auto min-h-8 w-full justify-between"
+                >
+                  <span
+                    className={cn(
+                      "text-foreground truncate text-left text-sm font-normal",
+                      !selectedWorkflow && "text-muted-foreground",
+                    )}
+                  >
+                    {selectedWorkflow?.name ||
+                      (workflowsQuery.isLoading
+                        ? "Loading workflows..."
+                        : "Select workflow")}
+                  </span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="start"
+                className="w-[360px] rounded-xl p-2 [zoom:var(--app-scale)]"
+              >
+                <div className="relative mb-2">
+                  <HugeiconsIcon
+                    icon={Search01Icon}
+                    className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2"
+                  />
+                  <Input
+                    value={workflowKeyword}
+                    onChange={(event) => setWorkflowKeyword(event.target.value)}
+                    placeholder="Search workflow by name"
+                    className="pl-8"
+                  />
+                </div>
+
+                <div className="max-h-72 space-y-1 overflow-y-auto pr-1">
+                  {filteredWorkflowOptions.length === 0 ? (
+                    <div className="text-muted-foreground rounded-lg border border-dashed px-3 py-6 text-center text-sm">
+                      No workflows found
+                    </div>
+                  ) : (
+                    filteredWorkflowOptions.map((workflow) => (
+                      <button
+                        key={workflow.id}
+                        type="button"
+                        onClick={() => {
+                          setForm((prev) => ({
+                            ...prev,
+                            workflowId: workflow.id,
+                          }));
+                          setWorkflowOpen(false);
+                          setWorkflowKeyword("");
+                        }}
+                        className={cn(
+                          "hover:bg-muted/60 flex w-full items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left transition",
+                          form.workflowId === workflow.id
+                            ? "border-primary/40 bg-primary/[0.06]"
+                            : "border-transparent",
+                        )}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-medium">
+                            {workflow.name}
+                          </p>
+                          <p className="text-muted-foreground truncate text-xs">
+                            {workflow.description || workflow.id}
+                          </p>
+                        </div>
+                        {form.workflowId === workflow.id ? (
+                          <HugeiconsIcon
+                            icon={Tick02Icon}
+                            className="text-primary size-4 shrink-0"
+                          />
+                        ) : null}
+                      </button>
+                    ))
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
+            {workflowsQuery.isError ? (
+              <p className="text-destructive text-xs">
+                {workflowsQuery.error instanceof Error
+                  ? workflowsQuery.error.message
+                  : "Failed to load workflows"}
+              </p>
+            ) : null}
+          </div>
+
+          <div className="grid gap-1.5">
+            <Label htmlFor="project-owner" required>
+              Owner
+            </Label>
             <TaskUserSingleSelect
               users={userOptions}
               value={form.owner}
@@ -155,7 +339,9 @@ export function ProjectDialog({
                 setForm((prev) => ({
                   ...prev,
                   owner: value,
-                  members: prev.members.filter((memberId) => memberId !== value),
+                  members: prev.members.filter(
+                    (memberId) => memberId !== value,
+                  ),
                 }))
               }
               placeholder="Select project owner"
@@ -207,8 +393,11 @@ export function ProjectDialog({
                 key: form.key,
                 description: form.description,
                 owner: form.owner,
-                members: form.members.filter((memberId) => memberId !== form.owner),
+                members: form.members.filter(
+                  (memberId) => memberId !== form.owner,
+                ),
                 type: form.type,
+                workflowId: form.workflowId || undefined,
               });
             }}
           >
@@ -220,9 +409,15 @@ export function ProjectDialog({
   );
 }
 
-function getInitialFormState(project: TaskProject | null): FormState {
+function getInitialFormState(
+  project: TaskProject | null,
+  initialWorkflowId?: string | null,
+): FormState {
   if (!project) {
-    return EMPTY_STATE;
+    return {
+      ...EMPTY_STATE,
+      workflowId: initialWorkflowId || "",
+    };
   }
 
   return {
@@ -232,5 +427,6 @@ function getInitialFormState(project: TaskProject | null): FormState {
     owner: project.owner,
     members: project.members,
     type: project.type,
+    workflowId: initialWorkflowId || "",
   };
 }

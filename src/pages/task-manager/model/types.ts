@@ -116,9 +116,12 @@ export type WorkflowTemplate = {
 
 export type CreateProjectPayload = Omit<TaskProject, "id" | "members"> & {
   members?: string[];
+  workflowId?: string;
 };
 
-export type UpdateProjectPayload = Omit<TaskProject, "id">;
+export type UpdateProjectPayload = Omit<TaskProject, "id"> & {
+  workflowId?: string;
+};
 
 export type CreateTaskPayload = Omit<
   TaskItem,

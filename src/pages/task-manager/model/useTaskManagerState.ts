@@ -119,9 +119,16 @@ export function useTaskManagerState() {
         previous.workflowTemplates.length > 0
           ? previous.workflowTemplates
           : [fallbackWorkflow];
+      const selectedWorkflowId =
+        payload.workflowId &&
+        workflowTemplates.some(
+          (workflowTemplate) => workflowTemplate.id === payload.workflowId,
+        )
+          ? payload.workflowId
+        : fallbackWorkflow.id;
       const workflowIdByProject = {
         ...previous.workflowIdByProject,
-        [nextProject.id]: fallbackWorkflow.id,
+        [nextProject.id]: selectedWorkflowId,
       };
 
       return {
@@ -153,6 +160,17 @@ export function useTaskManagerState() {
       const members = payload.members
         .filter(Boolean)
         .filter((member) => member !== owner);
+      const fallbackWorkflowId =
+        previous.workflowTemplates[0]?.id ||
+        previous.workflowIdByProject[projectId] ||
+        "";
+      const selectedWorkflowId =
+        payload.workflowId &&
+        previous.workflowTemplates.some(
+          (workflowTemplate) => workflowTemplate.id === payload.workflowId,
+        )
+          ? payload.workflowId
+        : previous.workflowIdByProject[projectId] || fallbackWorkflowId;
       const nextProjects = previous.projects.map((project) =>
         project.id === projectId
           ? {
@@ -177,12 +195,29 @@ export function useTaskManagerState() {
               ? { ...task, sprintId: null, updatedAt: new Date().toISOString() }
               : task,
           );
+      const nextWorkflowIdByProject = {
+        ...previous.workflowIdByProject,
+        [projectId]: selectedWorkflowId,
+      };
 
       return {
         ...previous,
         projects: nextProjects,
-        tasks: nextTasks,
+        tasks: nextTasks.map((task) =>
+          sanitizeTaskStatus(
+            task,
+            task.projectId,
+            previous.workflowTemplates,
+            nextWorkflowIdByProject,
+          ),
+        ),
         sprints: nextSprints,
+        workflowIdByProject: nextWorkflowIdByProject,
+        workflowByProject: buildWorkflowByProjectMap(
+          nextProjects,
+          previous.workflowTemplates,
+          nextWorkflowIdByProject,
+        ),
         memberRolesByProject: {
           ...previous.memberRolesByProject,
           [projectId]: buildNextMemberRoles(
