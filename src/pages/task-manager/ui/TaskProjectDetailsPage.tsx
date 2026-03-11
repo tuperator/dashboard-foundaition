@@ -1,10 +1,13 @@
 import { useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { AppShell } from "@/widgets/app-shell";
 import { appRoutes } from "@/shared/constants/routes";
 import { useI18n } from "@/shared/providers/i18n/I18nProvider";
 import { useAppToast } from "@/shared/providers/toast/ToastProvider";
+import { Button } from "@/shared/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
+import { Spinner } from "@/shared/ui/spinner";
 import { useTaskManagerState } from "../model/useTaskManagerState";
 import { useTaskManagerUsers } from "../model/useTaskManagerUsers";
 import {
@@ -12,14 +15,20 @@ import {
   getTaskProjectParticipantIds,
 } from "../model/helpers/userHelpers";
 import {
+  createTask as createTaskApi,
+  getProjectDetail,
+  listTasks,
+  updateTask as updateTaskApi,
+  type TaskProjectDetail,
+} from "../model/projectManagement.api";
+import { getWorkflowDetail } from "../model/workflowManagement.api";
+import {
   type SprintItem,
   type TaskManagerUserOption,
   type TaskItem,
   type TaskPriority,
-  type TaskProject,
-  type WorkflowTemplate,
 } from "../model/types";
-import { ProjectDialog } from "./components/ProjectDialog";
+import ProjectDialog from "./components/ProjectDialog";
 import { ProjectSettingsDialog } from "./components/ProjectSettingsDialog";
 import { SprintDialog } from "./components/SprintDialog";
 import { TaskDialog } from "./components/TaskDialog";
@@ -33,10 +42,6 @@ import { TaskPriorityManagerDialog } from "./components/project-details/TaskPrio
 
 type ProjectDetailsActions = Pick<
   ReturnType<typeof useTaskManagerState>,
-  | "tasks"
-  | "sprints"
-  | "workflowTemplates"
-  | "workflowIdByProject"
   | "taskPriorities"
   | "updateProject"
   | "deleteProject"
@@ -44,8 +49,6 @@ type ProjectDetailsActions = Pick<
   | "removeMember"
   | "updateMemberRole"
   | "memberRolesByProject"
-  | "createTask"
-  | "updateTask"
   | "deleteTask"
   | "assignTask"
   | "changeTaskStatus"
@@ -62,18 +65,33 @@ type ProjectDetailsActions = Pick<
   | "deleteTaskPriority"
 >;
 
+const TASK_PROJECT_TASKS_QUERY_KEY = "task-project-tasks";
+
 export function TaskProjectDetailsPage() {
   const navigate = useNavigate();
   const { projectId = "" } = useParams<{ projectId: string }>();
-  const { projects, ...actions } = useTaskManagerState();
-  const { userOptions, userOptionById, resolveUserLabel } = useTaskManagerUsers();
+  const { t } = useI18n();
+  const actions = useTaskManagerState();
+  const { userOptions, userOptionById, resolveUserLabel } =
+    useTaskManagerUsers();
+  const projectQuery = useQuery({
+    queryKey: ["task-project-detail", projectId],
+    queryFn: () => getProjectDetail(projectId),
+    enabled: Boolean(projectId),
+  });
 
-  const project = useMemo(
-    () => projects.find((item) => item.id === projectId) || null,
-    [projectId, projects],
-  );
+  if (projectQuery.isLoading) {
+    return (
+      <AppShell>
+        <section className="text-muted-foreground flex min-h-40 items-center justify-center gap-2 rounded-2xl border border-dashed text-sm">
+          <Spinner className="size-4" />
+          {t("tasks.projects.table.loading")}
+        </section>
+      </AppShell>
+    );
+  }
 
-  if (!project) {
+  if (projectQuery.isError || !projectQuery.data) {
     return (
       <TaskProjectDetailsNotFound
         onBack={() => navigate(appRoutes.tasksProjects)}
@@ -83,8 +101,8 @@ export function TaskProjectDetailsPage() {
 
   return (
     <ProjectDetailsContent
-      key={project.id}
-      project={project}
+      key={projectQuery.data.id}
+      project={projectQuery.data}
       actions={actions}
       userOptions={userOptions}
       userOptionById={userOptionById}
@@ -102,7 +120,7 @@ function ProjectDetailsContent({
   resolveUserLabel,
   onBack,
 }: {
-  project: TaskProject;
+  project: TaskProjectDetail;
   actions: ProjectDetailsActions;
   userOptions: TaskManagerUserOption[];
   userOptionById: Map<string, TaskManagerUserOption>;
@@ -112,24 +130,16 @@ function ProjectDetailsContent({
   const navigate = useNavigate();
   const { t, tp } = useI18n();
   const appToast = useAppToast();
-  const workflowTemplate = useMemo<WorkflowTemplate | null>(() => {
-    const workflowId = actions.workflowIdByProject[project.id];
-    return (
-      actions.workflowTemplates.find(
-        (template) => template.id === workflowId,
-      ) ||
-      actions.workflowTemplates[0] ||
-      null
-    );
-  }, [actions.workflowIdByProject, actions.workflowTemplates, project.id]);
+  const queryClient = useQueryClient();
+  const workflowDetailQuery = useQuery({
+    queryKey: ["task-project-workflow-detail", project.workflowId],
+    queryFn: () => getWorkflowDetail(project.workflowId as string),
+    enabled: Boolean(project.workflowId),
+  });
+  const workflowTemplate = workflowDetailQuery.data || null;
   const workflow = useMemo(
     () =>
-      workflowTemplate?.statuses.map((status) => status.code) || [
-        "TODO",
-        "IN_PROGRESS",
-        "REVIEW",
-        "DONE",
-      ],
+      workflowTemplate?.statuses.map((status) => status.code) || [],
     [workflowTemplate],
   );
   const workflowStatusByCode = useMemo(
@@ -143,6 +153,39 @@ function ProjectDetailsContent({
     [workflowTemplate],
   );
   const taskPriorities = actions.taskPriorities;
+  const projectTasksQuery = useQuery({
+    queryKey: [TASK_PROJECT_TASKS_QUERY_KEY, project.id],
+    queryFn: () =>
+      listTasks({
+        projectId: project.id,
+        page: 1,
+        size: 200,
+        sortBy: "UPDATED_AT",
+        sortDirection: "DESC",
+      }),
+  });
+  const createTaskMutation = useMutation({
+    mutationFn: createTaskApi,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: [TASK_PROJECT_TASKS_QUERY_KEY, project.id],
+      });
+    },
+  });
+  const updateTaskMutation = useMutation({
+    mutationFn: ({
+      taskId,
+      payload,
+    }: {
+      taskId: string;
+      payload: Parameters<typeof updateTaskApi>[1];
+    }) => updateTaskApi(taskId, payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: [TASK_PROJECT_TASKS_QUERY_KEY, project.id],
+      });
+    },
+  });
   const taskPriorityByCode = useMemo(
     () => new Map(taskPriorities.map((p) => [p.code, p])),
     [taskPriorities],
@@ -155,17 +198,11 @@ function ProjectDetailsContent({
     () => buildTaskUserOptionsByIds(participantIds, userOptionById),
     [participantIds, userOptionById],
   );
-  const projectTasks = useMemo(
-    () => actions.tasks.filter((task) => task.projectId === project.id),
-    [actions.tasks, project.id],
+  const projectTasks = useMemo<TaskItem[]>(
+    () => projectTasksQuery.data?.items || [],
+    [projectTasksQuery.data],
   );
-  const projectSprints = useMemo(
-    () =>
-      actions.sprints
-        .filter((sprint) => sprint.projectId === project.id)
-        .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)),
-    [actions.sprints, project.id],
-  );
+  const projectSprints = useMemo<SprintItem[]>(() => [], []);
 
   const [activeTab, setActiveTab] = useState("issues");
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -388,6 +425,33 @@ function ProjectDetailsContent({
             </TabsTrigger>
           </TabsList>
 
+          {projectTasksQuery.isLoading ? (
+            <section className="text-muted-foreground flex min-h-40 items-center justify-center gap-2 rounded-2xl border border-dashed text-sm">
+              <Spinner className="size-4" />
+              {t("tasks.projectDetails.loadingTasks")}
+            </section>
+          ) : projectTasksQuery.isError ? (
+            <section className="flex min-h-40 flex-col items-center justify-center gap-3 rounded-2xl border border-dashed px-4 text-center">
+              <p className="text-foreground text-sm font-medium">
+                {t("tasks.projectDetails.loadTasksFailedTitle")}
+              </p>
+              <p className="text-muted-foreground text-sm">
+                {projectTasksQuery.error instanceof Error
+                  ? projectTasksQuery.error.message
+                  : t("tasks.projectDetails.loadTasksFailedDescription")}
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  void projectTasksQuery.refetch();
+                }}
+              >
+                {t("tasks.common.retry")}
+              </Button>
+            </section>
+          ) : (
+            <>
           <TabsContent value="issues" className="space-y-4">
             <TaskProjectDetailsIssuesTab
               project={project}
@@ -473,6 +537,8 @@ function ProjectDetailsContent({
               onOpenWorkflowManager={() => navigate(appRoutes.tasksWorkflows)}
             />
           </TabsContent>
+            </>
+          )}
         </Tabs>
       </section>
 
@@ -481,7 +547,7 @@ function ProjectDetailsContent({
         open={editDialogOpen}
         mode="edit"
         project={project}
-        initialWorkflowId={actions.workflowIdByProject[project.id] || null}
+        initialWorkflowId={project.workflowId}
         userOptions={userOptions}
         onOpenChange={setEditDialogOpen}
         onSubmit={(payload) => {
@@ -489,6 +555,7 @@ function ProjectDetailsContent({
             ...project,
             ...payload,
             members: payload.members,
+            workflowId: payload.workflowId || undefined,
           });
           appToast.success({
             title: t("tasks.projectDetails.toast.projectUpdatedTitle"),
@@ -554,27 +621,63 @@ function ProjectDetailsContent({
         }}
         onSubmit={(payload) => {
           if (taskDialogMode === "create") {
-            actions.createTask(payload);
-            appToast.success({
-              title: t("tasks.projectDetails.toast.issueCreatedTitle"),
-              description: tp(
-                "tasks.projectDetails.toast.issueCreatedDescription",
-                {
-                  name: payload.title,
-                },
-              ),
-            });
+            void createTaskMutation
+              .mutateAsync(payload)
+              .then(() => {
+                appToast.success({
+                  title: t("tasks.projectDetails.toast.issueCreatedTitle"),
+                  description: tp(
+                    "tasks.projectDetails.toast.issueCreatedDescription",
+                    {
+                      name: payload.title,
+                    },
+                  ),
+                });
+                setTaskDialogOpen(false);
+              })
+              .catch((error: unknown) => {
+                appToast.warning({
+                  title: t("tasks.projectDetails.toast.taskRequestFailedTitle"),
+                  description:
+                    error instanceof Error
+                      ? error.message
+                      : t(
+                          "tasks.projectDetails.toast.taskRequestFailedDescription",
+                        ),
+                });
+              });
+            return;
           } else if (editingTask) {
-            actions.updateTask(editingTask.id, payload);
-            appToast.success({
-              title: t("tasks.projectDetails.toast.issueUpdatedTitle"),
-              description: tp(
-                "tasks.projectDetails.toast.issueUpdatedDescription",
-                {
-                  name: payload.title,
-                },
-              ),
-            });
+            void updateTaskMutation
+              .mutateAsync({
+                taskId: editingTask.id,
+                payload,
+              })
+              .then(() => {
+                appToast.success({
+                  title: t("tasks.projectDetails.toast.issueUpdatedTitle"),
+                  description: tp(
+                    "tasks.projectDetails.toast.issueUpdatedDescription",
+                    {
+                      name: payload.title,
+                    },
+                  ),
+                });
+                setTaskDialogOpen(false);
+                setEditingTask(null);
+              })
+              .catch((error: unknown) => {
+                appToast.warning({
+                  title: t("tasks.projectDetails.toast.taskRequestFailedTitle"),
+                  description:
+                    error instanceof Error
+                      ? error.message
+                      : t(
+                          "tasks.projectDetails.toast.taskRequestFailedDescription",
+                        ),
+                });
+              });
+            return;
           }
           setTaskDialogOpen(false);
         }}

@@ -24,6 +24,18 @@ export const API_ENDPOINTS = {
     me: "/api/v1/companies/me",
   },
   taskManagement: {
+    projects: {
+      list: `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/projects`,
+      byId: (projectId: string) =>
+        `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/projects/${projectId}`,
+      members: (projectId: string) =>
+        `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/projects/${projectId}/members`,
+    },
+    tasks: {
+      list: `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/tasks`,
+      byId: (taskId: string) =>
+        `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/tasks/${taskId}`,
+    },
     workflows: {
       list: `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/workflows`,
       byId: (workflowId: string) =>

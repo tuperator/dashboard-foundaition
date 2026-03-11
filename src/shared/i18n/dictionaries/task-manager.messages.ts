@@ -34,12 +34,18 @@ export const taskManagerMessages = {
     "tasks.projects.table.membersTasks": "Thành viên / Task",
     "tasks.projects.table.progress": "Tiến độ",
     "tasks.projects.table.action": "Thao tác",
+    "tasks.projects.table.loading": "Đang tải project...",
     "tasks.projects.emptyFiltered":
       "Không có project phù hợp với bộ lọc hiện tại.",
+    "tasks.projects.pagination.rowsPerPage": "Số dòng mỗi trang",
+    "tasks.projects.pagination.range": "{start}-{end} / {total}",
     "tasks.projects.stat.members": "{count} thành viên",
     "tasks.projects.stat.tasks": "{count} tasks",
     "tasks.projects.toast.projectCreatedTitle": "Đã tạo project",
     "tasks.projects.toast.projectCreatedDescription": "{name} đã được tạo.",
+    "tasks.projects.toast.loadingFailedTitle": "Không thể tải project",
+    "tasks.projects.toast.profileNotReady":
+      "Thông tin người dùng hiện tại chưa sẵn sàng.",
 
     "tasks.workflow.pageTitle": "Workflow manager",
     "tasks.workflow.pageDescription":
@@ -148,6 +154,10 @@ export const taskManagerMessages = {
     "tasks.projectDetails.table.reorder": "Sắp xếp",
     "tasks.projectDetails.table.addToSprint": "Thêm vào sprint",
     "tasks.projectDetails.emptyIssue": "Không có issue nào trong project.",
+    "tasks.projectDetails.loadingTasks": "Đang tải issue...",
+    "tasks.projectDetails.loadTasksFailedTitle": "Không thể tải issue",
+    "tasks.projectDetails.loadTasksFailedDescription":
+      "Vui lòng thử lại sau.",
     "tasks.projectDetails.defaultSprintLabel": "Sprint mặc định",
     "tasks.projectDetails.backlogLabel": "Backlog",
     "tasks.projectDetails.toast.transitionNotAllowedTitle":
@@ -189,6 +199,10 @@ export const taskManagerMessages = {
       "Project {name} đã được cập nhật.",
     "tasks.projectDetails.toast.issueCreatedTitle": "Đã tạo issue",
     "tasks.projectDetails.toast.issueCreatedDescription": "{name} đã được tạo.",
+    "tasks.projectDetails.toast.taskRequestFailedTitle":
+      "Thao tác issue thất bại",
+    "tasks.projectDetails.toast.taskRequestFailedDescription":
+      "Vui lòng thử lại sau.",
     "tasks.projectDetails.toast.issueUpdatedTitle": "Đã sửa issue",
     "tasks.projectDetails.toast.issueUpdatedDescription":
       "{name} đã được cập nhật.",
@@ -228,12 +242,18 @@ export const taskManagerMessages = {
     "tasks.projects.table.membersTasks": "Members / Tasks",
     "tasks.projects.table.progress": "Progress",
     "tasks.projects.table.action": "Action",
+    "tasks.projects.table.loading": "Loading projects...",
     "tasks.projects.emptyFiltered": "No project matches current filters.",
+    "tasks.projects.pagination.rowsPerPage": "Rows per page",
+    "tasks.projects.pagination.range": "{start}-{end} of {total}",
     "tasks.projects.stat.members": "{count} members",
     "tasks.projects.stat.tasks": "{count} tasks",
     "tasks.projects.toast.projectCreatedTitle": "Project created",
     "tasks.projects.toast.projectCreatedDescription":
       "{name} has been created.",
+    "tasks.projects.toast.loadingFailedTitle": "Failed to load projects",
+    "tasks.projects.toast.profileNotReady":
+      "Current user profile is not ready.",
 
     "tasks.workflow.pageTitle": "Workflow manager",
     "tasks.workflow.pageDescription":
@@ -342,6 +362,10 @@ export const taskManagerMessages = {
     "tasks.projectDetails.table.reorder": "Reorder",
     "tasks.projectDetails.table.addToSprint": "Add to sprint",
     "tasks.projectDetails.emptyIssue": "No issues in this project.",
+    "tasks.projectDetails.loadingTasks": "Loading issues...",
+    "tasks.projectDetails.loadTasksFailedTitle": "Failed to load issues",
+    "tasks.projectDetails.loadTasksFailedDescription":
+      "Please try again later.",
     "tasks.projectDetails.defaultSprintLabel": "Default sprint",
     "tasks.projectDetails.backlogLabel": "Backlog",
     "tasks.projectDetails.toast.transitionNotAllowedTitle":
@@ -384,6 +408,10 @@ export const taskManagerMessages = {
     "tasks.projectDetails.toast.issueCreatedTitle": "Issue created",
     "tasks.projectDetails.toast.issueCreatedDescription":
       "{name} has been created.",
+    "tasks.projectDetails.toast.taskRequestFailedTitle":
+      "Task request failed",
+    "tasks.projectDetails.toast.taskRequestFailedDescription":
+      "Please try again later.",
     "tasks.projectDetails.toast.issueUpdatedTitle": "Issue updated",
     "tasks.projectDetails.toast.issueUpdatedDescription":
       "{name} has been updated.",

@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/shared/ui/table";
 import { cn } from "@/shared/lib/utils";
+import { StatusKanbanBoard } from "@/shared/ui/kanban/StatusKanbanBoard";
 import { TASK_TABLE_MIN_WIDTH_CLASS } from "../../../model/constants";
 import {
   type TaskItem,
@@ -300,100 +301,66 @@ export function TaskProjectDetailsIssuesTab({
           </TableBody>
         </Table>
       ) : (
-        <div className="overflow-x-auto">
-          <div className="grid min-w-[760px] gap-3 xl:grid-cols-4">
-            {workflow.map((status) => (
-              <section
-                key={status}
-                onDragOver={(event) => event.preventDefault()}
-                onDrop={() => {
-                  if (!dragTaskId) return;
-                  onTaskChangeStatus(dragTaskId, status);
-                  setDragTaskId(null);
-                }}
-                className="bg-muted/15 min-h-[360px] rounded-xl border p-2.5"
-              >
-                <header className="mb-2 flex items-center justify-between">
-                  <Badge
-                    className="h-6 rounded-full border border-transparent px-2 text-[11px]"
-                    style={{
-                      backgroundColor: `${workflowStatusByCode.get(status)?.color || "#6B7280"}20`,
-                      color:
-                        workflowStatusByCode.get(status)?.color ||
-                        "currentColor",
-                    }}
-                  >
-                    {workflowStatusByCode.get(status)?.name || status}
-                  </Badge>
-                  <span className="text-muted-foreground text-xs">
-                    {issueTasksByStatus.get(status)?.length || 0}
-                  </span>
-                </header>
-                <div className="space-y-2">
-                  {(issueTasksByStatus.get(status) || []).map((task) => (
-                    <article
-                      key={task.id}
-                      draggable
-                      onDragStart={() => setDragTaskId(task.id)}
-                      onDragEnd={() => setDragTaskId(null)}
-                      className="bg-card cursor-grab rounded-lg border p-2.5 active:cursor-grabbing"
-                    >
-                      <p className="text-foreground line-clamp-2 text-sm font-medium">
-                        {task.title}
-                      </p>
-                      <p className="text-muted-foreground mt-1 line-clamp-2 text-xs">
-                        {task.description || t("tasks.common.noDescription")}
-                      </p>
-                      <div className="mt-2 flex items-center justify-between gap-2">
-                        <Badge
-                          className={cn(priorityBadgeClassName(), "font-medium")}
-                          style={getPriorityStyle(task.priority)}
-                        >
-                          {task.priority}
-                        </Badge>
-                        <span className="text-muted-foreground truncate text-xs">
-                          {task.assignee
-                            ? resolveUserLabel(task.assignee)
-                            : t("tasks.common.unassigned")}
-                        </span>
-                      </div>
-                      <div className="mt-2 flex items-center justify-between gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => onTaskEdit(task)}
-                        >
-                          {t("tasks.common.edit")}
-                        </Button>
-                        <Select
-                          value={task.status}
-                          onValueChange={(value) =>
-                            onTaskChangeStatus(task.id, value)
-                          }
-                        >
-                          <SelectTrigger className="h-7 w-[128px]">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {workflow.map((workflowStatus) => (
-                              <SelectItem
-                                key={workflowStatus}
-                                value={workflowStatus}
-                              >
-                                {workflowStatusByCode.get(workflowStatus)
-                                  ?.name || workflowStatus}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
-        </div>
+        <StatusKanbanBoard
+          columns={workflow.map((status) => ({
+            id: status,
+            label: workflowStatusByCode.get(status)?.name || status,
+            color: workflowStatusByCode.get(status)?.color,
+          }))}
+          itemsByColumn={issueTasksByStatus}
+          dragValue={dragTaskId}
+          onDragValueChange={setDragTaskId}
+          onDropToColumn={(taskId, status) => onTaskChangeStatus(taskId, status)}
+          getItemKey={(task) => task.id}
+          renderCard={(task) => (
+            <>
+              <p className="text-foreground line-clamp-2 text-sm font-medium">
+                {task.title}
+              </p>
+              <p className="text-muted-foreground mt-1 line-clamp-2 text-xs">
+                {task.description || t("tasks.common.noDescription")}
+              </p>
+              <div className="mt-2 flex items-center justify-between gap-2">
+                <Badge
+                  className={cn(priorityBadgeClassName(), "font-medium")}
+                  style={getPriorityStyle(task.priority)}
+                >
+                  {task.priority}
+                </Badge>
+                <span className="text-muted-foreground truncate text-xs">
+                  {task.assignee
+                    ? resolveUserLabel(task.assignee)
+                    : t("tasks.common.unassigned")}
+                </span>
+              </div>
+              <div className="mt-2 flex items-center justify-between gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onTaskEdit(task)}
+                >
+                  {t("tasks.common.edit")}
+                </Button>
+                <Select
+                  value={task.status}
+                  onValueChange={(value) => onTaskChangeStatus(task.id, value)}
+                >
+                  <SelectTrigger className="h-7 w-[128px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {workflow.map((workflowStatus) => (
+                      <SelectItem key={workflowStatus} value={workflowStatus}>
+                        {workflowStatusByCode.get(workflowStatus)?.name ||
+                          workflowStatus}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </>
+          )}
+        />
       )}
     </section>
   );

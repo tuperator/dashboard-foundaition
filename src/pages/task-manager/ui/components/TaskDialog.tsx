@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/shared/ui/button";
+import { cn } from "@/shared/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -79,66 +80,154 @@ export function TaskDialog({
   onOpenChange,
   onSubmit,
 }: TaskDialogProps) {
-  const [form, setForm] = useState<FormState>(() =>
-    getInitialFormState(
-      task,
+  const initialFormState = useMemo(
+    () =>
+      getInitialFormState(
+        task,
+        defaultProjectId,
+        lockProjectId,
+        projects,
+        statusOptions,
+        taskPriorities,
+      ),
+    [
       defaultProjectId,
       lockProjectId,
       projects,
       statusOptions,
+      task,
       taskPriorities,
-    ),
+    ],
   );
+  const formSeedKey = useMemo(
+    () =>
+      [
+        open ? "open" : "closed",
+        mode,
+        task?.id || "new",
+        task?.updatedAt || "",
+        lockProjectId || "",
+        defaultProjectId || "",
+        projects.map((project) => project.id).join(","),
+        statusOptions.join(","),
+        taskPriorities.map((priority) => priority.code).join(","),
+      ].join("::"),
+    [
+      defaultProjectId,
+      lockProjectId,
+      mode,
+      open,
+      projects,
+      statusOptions,
+      task,
+      taskPriorities,
+    ],
+  );
+  const [draftState, setDraftState] = useState(() => ({
+    seedKey: formSeedKey,
+    form: initialFormState,
+  }));
+  const form = draftState.seedKey === formSeedKey ? draftState.form : initialFormState;
+
+  const updateForm = (
+    updater: FormState | ((previous: FormState) => FormState),
+  ) => {
+    setDraftState((previous) => {
+      const baseForm =
+        previous.seedKey === formSeedKey ? previous.form : initialFormState;
+      const nextForm =
+        typeof updater === "function" ? updater(baseForm) : updater;
+
+      return {
+        seedKey: formSeedKey,
+        form: nextForm,
+      };
+    });
+  };
 
   const canSubmit = useMemo(
-    () => form.title.trim().length > 0 && form.projectId.trim().length > 0,
-    [form.projectId, form.title],
+    () =>
+      form.title.trim().length > 0 &&
+      form.projectId.trim().length > 0 &&
+      statusOptions.includes(form.status) &&
+      taskPriorities.some((priority) => priority.code === form.priority),
+    [form.priority, form.projectId, form.status, form.title, statusOptions, taskPriorities],
   );
+  const selectedProject = useMemo(
+    () => projects.find((project) => project.id === (lockProjectId || form.projectId)) || null,
+    [form.projectId, lockProjectId, projects],
+  );
+  const selectedPriority = useMemo(
+    () => taskPriorities.find((priority) => priority.code === form.priority) || null,
+    [form.priority, taskPriorities],
+  );
+  const isUnassigned = form.assignee === "__UNASSIGNED__";
+
+  const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!canSubmit) {
+      return;
+    }
+
+    onSubmit({
+      title: form.title.trim(),
+      description: form.description.trim(),
+      projectId: lockProjectId || form.projectId,
+      assignee: isUnassigned ? null : form.assignee,
+      status: form.status,
+      priority: form.priority,
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="[zoom:var(--app-scale)] sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>
-            {mode === "create" ? "Create task" : "Update task"}
-          </DialogTitle>
+      <DialogContent className="bg-card gap-0 overflow-hidden p-0 [zoom:var(--app-scale)] sm:max-w-2xl">
+        <DialogHeader className="border-b px-6 pt-6 pb-5">
+          <div className="flex flex-wrap items-center gap-2">
+            <DialogTitle>
+              {mode === "create" ? "Create task" : "Update task"}
+            </DialogTitle>
+            {selectedProject ? (
+              <span className="bg-muted text-muted-foreground inline-flex h-6 max-w-full items-center rounded-full border px-2.5 text-[11px] font-medium">
+                <span className="truncate">
+                  {selectedProject.key || selectedProject.name}
+                </span>
+              </span>
+            ) : null}
+          </div>
           <DialogDescription>
             Capture issue details, assignee, status and priority.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-3">
-          <div className="grid gap-1.5">
-            <Label htmlFor="task-title">Task title</Label>
-            <Input
-              id="task-title"
-              value={form.title}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, title: event.target.value }))
-              }
-              placeholder="Thiết kế màn quản lý user"
-            />
-          </div>
+        <form onSubmit={submitForm}>
+          <div className="grid gap-5 border-y px-6 py-5">
+            <div className="grid gap-2">
+              <Label htmlFor="task-title">Task title</Label>
+              <Input
+                id="task-title"
+                value={form.title}
+                onChange={(event) =>
+                  updateForm((prev) => ({ ...prev, title: event.target.value }))
+                }
+                placeholder="Thiết kế màn quản lý user"
+                className="h-10 rounded-lg px-3 text-sm"
+              />
+            </div>
 
-          <div className="grid gap-1.5 sm:grid-cols-2">
-            {lockProjectId ? (
-              <div className="grid gap-1.5">
-                <Label>Project</Label>
-                <div className="bg-muted/40 text-foreground rounded-md border px-3 py-2 text-sm">
-                  {projects.find((project) => project.id === lockProjectId)
-                    ?.name || "Current project"}
-                </div>
-              </div>
-            ) : (
-              <div className="grid gap-1.5">
+            {!lockProjectId ? (
+              <div className="grid gap-2">
                 <Label htmlFor="task-project">Project</Label>
                 <Select
                   value={form.projectId}
                   onValueChange={(value) =>
-                    setForm((prev) => ({ ...prev, projectId: value }))
+                    updateForm((prev) => ({ ...prev, projectId: value }))
                   }
                 >
-                  <SelectTrigger id="task-project">
+                  <SelectTrigger
+                    id="task-project"
+                    className="h-10 w-full rounded-lg px-3 text-sm"
+                  >
                     <SelectValue placeholder="Choose project" />
                   </SelectTrigger>
                   <SelectContent>
@@ -150,126 +239,156 @@ export function TaskDialog({
                   </SelectContent>
                 </Select>
               </div>
-            )}
+            ) : null}
 
-            <div className="grid gap-1.5">
-              <Label htmlFor="task-assignee">Assignee</Label>
+            <div className="grid gap-2">
+              <div className="flex items-center justify-between gap-3">
+                <Label htmlFor="task-assignee">Assignee</Label>
+                <Button
+                  type="button"
+                  variant={isUnassigned ? "secondary" : "ghost"}
+                  size="sm"
+                  className={cn(
+                    "h-7 rounded-full px-2.5 text-xs",
+                    !isUnassigned && "text-muted-foreground",
+                  )}
+                  onClick={() =>
+                    updateForm((prev) => ({
+                      ...prev,
+                      assignee: "__UNASSIGNED__",
+                    }))
+                  }
+                >
+                  Unassigned
+                </Button>
+              </div>
               <TaskUserSingleSelect
                 users={assigneeOptions}
-                value={
-                  form.assignee === "__UNASSIGNED__" ? "" : form.assignee
-                }
+                value={isUnassigned ? "" : form.assignee}
                 onChange={(value) =>
-                  setForm((prev) => ({ ...prev, assignee: value }))
+                  updateForm((prev) => ({ ...prev, assignee: value }))
                 }
                 placeholder="Select assignee"
                 searchPlaceholder="Search assignee"
                 emptyLabel="No users found"
+                triggerClassName="min-h-11 rounded-lg px-3 py-2"
               />
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-fit px-0"
-                onClick={() =>
-                  setForm((prev) => ({ ...prev, assignee: "__UNASSIGNED__" }))
-                }
-              >
-                Unassigned
-              </Button>
-            </div>
-          </div>
-
-          <div className="grid gap-1.5 sm:grid-cols-2">
-            <div className="grid gap-1.5">
-              <Label htmlFor="task-status">Status</Label>
-              <Select
-                value={form.status}
-                onValueChange={(value) =>
-                  setForm((prev) => ({ ...prev, status: value }))
-                }
-              >
-                <SelectTrigger id="task-status">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  {statusOptions.map((status) => (
-                    <SelectItem key={status} value={status}>
-                      {status}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
 
-            <div className="grid gap-1.5">
-              <Label htmlFor="task-priority">Priority</Label>
-              <Select
-                value={form.priority}
-                onValueChange={(value) =>
-                  setForm((prev) => ({
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label htmlFor="task-status">Status</Label>
+                <Select
+                  value={form.status}
+                  onValueChange={(value) =>
+                    updateForm((prev) => ({ ...prev, status: value }))
+                  }
+                  disabled={statusOptions.length === 0}
+                >
+                  <SelectTrigger
+                    id="task-status"
+                    className="h-11 w-full rounded-lg px-3 text-sm"
+                  >
+                    <SelectValue
+                      placeholder={
+                        statusOptions.length === 0
+                          ? "No statuses available"
+                          : "Status"
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {statusOptions.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {status}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="task-priority">Priority</Label>
+                <Select
+                  value={form.priority}
+                  onValueChange={(value) =>
+                    updateForm((prev) => ({
+                      ...prev,
+                      priority: value as TaskPriority,
+                    }))
+                  }
+                  disabled={taskPriorities.length === 0}
+                >
+                  <SelectTrigger
+                    id="task-priority"
+                    className="h-11 w-full rounded-lg px-3 text-sm"
+                  >
+                    {selectedPriority ? (
+                      <span className="flex min-w-0 items-center gap-2 text-sm font-normal">
+                        <span
+                          className="size-2.5 shrink-0 rounded-full"
+                          style={{ backgroundColor: selectedPriority.color }}
+                        />
+                        <span className="truncate">{selectedPriority.name}</span>
+                      </span>
+                    ) : (
+                      <SelectValue
+                        placeholder={
+                          taskPriorities.length === 0
+                            ? "No priorities available"
+                            : "Priority"
+                        }
+                      />
+                    )}
+                  </SelectTrigger>
+                  <SelectContent>
+                    {taskPriorities.map((priority) => (
+                      <SelectItem key={priority.code} value={priority.code}>
+                        <span className="flex items-center gap-2">
+                          <span
+                            className="size-2 rounded-full"
+                            style={{ backgroundColor: priority.color }}
+                          />
+                          {priority.name}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="task-description">Description</Label>
+              <Textarea
+                id="task-description"
+                value={form.description}
+                onChange={(event) =>
+                  updateForm((prev) => ({
                     ...prev,
-                    priority: value as TaskPriority,
+                    description: event.target.value,
                   }))
                 }
-              >
-                <SelectTrigger id="task-priority">
-                  <SelectValue placeholder="Priority" />
-                </SelectTrigger>
-                <SelectContent>
-                  {taskPriorities.map((priority) => (
-                    <SelectItem key={priority.code} value={priority.code}>
-                      <span className="flex items-center gap-2">
-                        <span
-                          className="size-2 rounded-full"
-                          style={{ backgroundColor: priority.color }}
-                        />
-                        {priority.name}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                placeholder="Task detail..."
+                className="min-h-32 rounded-xl px-3 py-2 text-sm"
+              />
             </div>
           </div>
 
-          <div className="grid gap-1.5">
-            <Label htmlFor="task-description">Description</Label>
-            <Textarea
-              id="task-description"
-              value={form.description}
-              onChange={(event) =>
-                setForm((prev) => ({
-                  ...prev,
-                  description: event.target.value,
-                }))
-              }
-              placeholder="Task detail..."
-              className="min-h-[76px]"
-            />
-          </div>
-        </div>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button
-            disabled={!canSubmit}
-            onClick={() =>
-              onSubmit({
-                title: form.title,
-                description: form.description,
-                projectId: lockProjectId || form.projectId,
-                assignee:
-                  form.assignee === "__UNASSIGNED__" ? null : form.assignee,
-                status: form.status,
-                priority: form.priority,
-              })
-            }
-          >
-            {mode === "create" ? "Create task" : "Save changes"}
-          </Button>
-        </DialogFooter>
+          <DialogFooter className="px-6 py-4 sm:justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              onClick={() => onOpenChange(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" size="lg" disabled={!canSubmit}>
+              {mode === "create" ? "Create task" : "Save changes"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );
@@ -283,21 +402,82 @@ function getInitialFormState(
   statusOptions: string[],
   taskPriorities: TaskPriorityItem[],
 ): FormState {
+  const projectId = getValidProjectId(
+    task?.projectId,
+    lockProjectId,
+    defaultProjectId,
+    projects,
+  );
+
   if (task) {
     return {
       title: task.title,
       description: task.description,
-      projectId: task.projectId,
+      projectId,
       assignee: task.assignee || "__UNASSIGNED__",
-      status: task.status,
-      priority: task.priority,
+      status: getValidStatus(task.status, statusOptions),
+      priority: getValidPriority(task.priority, taskPriorities),
     };
   }
 
   return {
     ...EMPTY_STATE,
-    projectId: lockProjectId || defaultProjectId || projects[0]?.id || "",
-    status: statusOptions[0] || "TODO",
-    priority: taskPriorities[Math.floor(taskPriorities.length / 2)]?.code || "MEDIUM",
+    projectId,
+    status: getValidStatus(EMPTY_STATE.status, statusOptions),
+    priority: getValidPriority(EMPTY_STATE.priority, taskPriorities),
   };
+}
+
+function getValidProjectId(
+  projectId: string | null | undefined,
+  lockProjectId: string | undefined,
+  defaultProjectId: string | null,
+  projects: TaskProject[],
+) {
+  if (lockProjectId) {
+    return lockProjectId;
+  }
+
+  if (projectId && projects.some((project) => project.id === projectId)) {
+    return projectId;
+  }
+
+  if (
+    defaultProjectId &&
+    projects.some((project) => project.id === defaultProjectId)
+  ) {
+    return defaultProjectId;
+  }
+
+  return projects[0]?.id || "";
+}
+
+function getValidStatus(
+  status: string | null | undefined,
+  statusOptions: string[],
+) {
+  if (status && statusOptions.includes(status)) {
+    return status;
+  }
+
+  return statusOptions[0] || "";
+}
+
+function getValidPriority(
+  priority: string | null | undefined,
+  taskPriorities: TaskPriorityItem[],
+) {
+  if (
+    priority &&
+    taskPriorities.some((priorityItem) => priorityItem.code === priority)
+  ) {
+    return priority;
+  }
+
+  return (
+    taskPriorities.find((priorityItem) => priorityItem.code === EMPTY_STATE.priority)
+      ?.code ||
+    taskPriorities[0]?.code ||
+    ""
+  );
 }

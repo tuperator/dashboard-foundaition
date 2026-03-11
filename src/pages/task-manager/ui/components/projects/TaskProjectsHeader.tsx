@@ -12,7 +12,7 @@ import {
 } from "@/shared/ui/select";
 import { PROJECT_TYPE_VALUES } from "../../../model/types";
 
-type SortMode = "UPDATED" | "NAME" | "PROGRESS";
+type SortMode = "UPDATED_AT" | "NAME" | "PROGRESS";
 
 type TaskProjectsHeaderProps = {
   search: string;
@@ -117,7 +117,7 @@ export function TaskProjectsHeader({
             <SelectValue placeholder={t("tasks.projects.filter.sortBy")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="UPDATED">
+            <SelectItem value="UPDATED_AT">
               {t("tasks.projects.sort.latestUpdated")}
             </SelectItem>
             <SelectItem value="NAME">

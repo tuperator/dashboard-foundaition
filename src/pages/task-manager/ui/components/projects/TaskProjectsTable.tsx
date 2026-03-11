@@ -4,24 +4,15 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Progress } from "@/shared/ui/progress";
 import { getTaskProjectDetailsRoute } from "@/shared/constants/routes";
-import type { TaskProject } from "../../../model/types";
-
-type TaskProjectStats = {
-  total: number;
-  done: number;
-  inProgress: number;
-  updatedAt: number;
-};
+import type { TaskProjectListItem } from "../../../model/projectManagement.api";
 
 type TaskProjectsTableProps = {
-  projects: TaskProject[];
-  taskStatsByProject: Map<string, TaskProjectStats>;
+  projects: TaskProjectListItem[];
   resolveUserLabel: (value: string | null | undefined) => string;
 };
 
 export function TaskProjectsTable({
   projects,
-  taskStatsByProject,
   resolveUserLabel,
 }: TaskProjectsTableProps) {
   const { t, tp } = useI18n();
@@ -47,16 +38,10 @@ export function TaskProjectsTable({
       ) : (
         <div className="space-y-2">
           {projects.map((project) => {
-            const stats = taskStatsByProject.get(project.id) || {
-              total: 0,
-              done: 0,
-              inProgress: 0,
-              updatedAt: 0,
-            };
-            const completion =
-              stats.total === 0
-                ? 0
-                : Math.round((stats.done / stats.total) * 100);
+            const completion = Math.max(
+              0,
+              Math.min(100, Math.round(project.stats.completionRate || 0)),
+            );
 
             return (
               <article
@@ -73,7 +58,7 @@ export function TaskProjectsTable({
                     </Badge>
                   </div>
                   <p className="text-muted-foreground truncate text-xs">
-                    {project.description}
+                    {project.description || t("tasks.common.noDescription")}
                   </p>
                 </div>
 
@@ -85,17 +70,19 @@ export function TaskProjectsTable({
                 </Badge>
 
                 <span className="text-foreground truncate text-sm">
-                  {resolveUserLabel(project.owner)}
+                  {resolveUserLabel(project.ownerId)}
                 </span>
 
                 <div className="text-sm">
                   <p className="text-foreground font-medium">
                     {tp("tasks.projects.stat.members", {
-                      count: new Set([project.owner, ...project.members]).size,
+                      count: project.memberCount,
                     })}
                   </p>
                   <p className="text-muted-foreground text-xs">
-                    {tp("tasks.projects.stat.tasks", { count: stats.total })}
+                    {tp("tasks.projects.stat.tasks", {
+                      count: project.stats.totalIssues,
+                    })}
                   </p>
                 </div>
 

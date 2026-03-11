@@ -1,30 +1,19 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  Cancel01Icon,
-  Search01Icon,
-  Tick02Icon,
-  UserCircleIcon,
-} from "@hugeicons/core-free-icons";
+import { Cancel01Icon, Tick02Icon, UserCircleIcon } from "@hugeicons/core-free-icons";
 import { cn } from "@/shared/lib/utils";
 import { Badge } from "@/shared/ui/badge";
-import { Button } from "@/shared/ui/button";
-import { Input } from "@/shared/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
+import { SearchableSelect } from "@/shared/ui/searchable-select";
 import type { TaskManagerUserOption } from "../../../model/types";
 import { getInitials } from "../../../model/helpers/userHelpers";
 
-function filterUsers(users: TaskManagerUserOption[], keyword: string) {
-  const normalizedKeyword = keyword.trim().toLowerCase();
-  if (!normalizedKeyword) {
-    return users;
-  }
-
-  return users.filter((user) =>
-    `${user.label} ${user.email} ${user.status}`
-      .toLowerCase()
-      .includes(normalizedKeyword),
-  );
+function matchesUserKeyword(
+  user: TaskManagerUserOption,
+  normalizedKeyword: string,
+) {
+  return `${user.label} ${user.email} ${user.status}`
+    .toLowerCase()
+    .includes(normalizedKeyword);
 }
 
 function getStatusTone(status: string) {
@@ -86,6 +75,7 @@ export function TaskUserSingleSelect({
   searchPlaceholder,
   emptyLabel,
   disabled,
+  triggerClassName,
 }: {
   users: TaskManagerUserOption[];
   value: string;
@@ -94,83 +84,40 @@ export function TaskUserSingleSelect({
   searchPlaceholder: string;
   emptyLabel: string;
   disabled?: boolean;
+  triggerClassName?: string;
 }) {
-  const [open, setOpen] = useState(false);
-  const [keyword, setKeyword] = useState("");
-
   const selectedUser =
     users.find((user) => user.id === value) ||
     (value ? toFallbackUserOption(value) : null);
-  const filteredUsers = useMemo(
-    () => filterUsers(users, keyword),
-    [users, keyword],
-  );
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          type="button"
-          variant="outline"
-          disabled={disabled}
-          className="h-auto min-h-8 w-full justify-between"
-        >
-          {selectedUser ? (
-            <UserOptionRow user={selectedUser} selected={false} />
-          ) : (
-            <span className="text-muted-foreground flex items-center gap-2 text-sm">
-              <HugeiconsIcon icon={UserCircleIcon} className="size-4" />
-              {placeholder}
-            </span>
-          )}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        align="start"
-        className="w-[360px] rounded-xl p-2 [zoom:var(--app-scale)]"
-      >
-        <div className="relative">
-          <HugeiconsIcon
-            icon={Search01Icon}
-            className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2"
-          />
-          <Input
-            value={keyword}
-            onChange={(event) => setKeyword(event.target.value)}
-            placeholder={searchPlaceholder}
-            className="pl-8"
-          />
-        </div>
-
-        <div className="max-h-72 space-y-1 overflow-y-auto pr-1">
-          {filteredUsers.length === 0 ? (
-            <div className="text-muted-foreground rounded-lg border border-dashed px-3 py-6 text-center text-sm">
-              {emptyLabel}
-            </div>
-          ) : (
-            filteredUsers.map((user) => (
-              <button
-                key={user.id}
-                type="button"
-                onClick={() => {
-                  onChange(user.id);
-                  setOpen(false);
-                  setKeyword("");
-                }}
-                className={cn(
-                  "hover:bg-muted/60 w-full rounded-lg border px-3 py-2 text-left transition",
-                  value === user.id
-                    ? "border-primary/40 bg-primary/[0.06]"
-                    : "border-transparent",
-                )}
-              >
-                <UserOptionRow user={user} selected={value === user.id} />
-              </button>
-            ))
-          )}
-        </div>
-      </PopoverContent>
-    </Popover>
+    <SearchableSelect
+      value={value}
+      options={users}
+      onValueChange={onChange}
+      getOptionValue={(user) => user.id}
+      getOptionLabel={(user) => user.label}
+      getOptionDescription={(user) => user.email}
+      filterOption={(user, normalizedKeyword) =>
+        matchesUserKeyword(user, normalizedKeyword)
+      }
+      placeholder={placeholder}
+      searchPlaceholder={searchPlaceholder}
+      emptyLabel={emptyLabel}
+      disabled={disabled}
+      triggerClassName={triggerClassName}
+      renderTrigger={() =>
+        selectedUser ? (
+          <UserOptionRow user={selectedUser} selected={false} />
+        ) : (
+          <span className="text-muted-foreground flex items-center gap-2 text-sm">
+            <HugeiconsIcon icon={UserCircleIcon} className="size-4" />
+            {placeholder}
+          </span>
+        )
+      }
+      renderOption={(user) => <UserOptionRow user={user} selected={false} />}
+    />
   );
 }
 
@@ -191,13 +138,6 @@ export function TaskUserMultiSelect({
   emptyLabel: string;
   disabled?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
-  const [keyword, setKeyword] = useState("");
-
-  const filteredUsers = useMemo(
-    () => filterUsers(users, keyword),
-    [users, keyword],
-  );
   const selectedUsers = useMemo(
     () =>
       values.map(
@@ -209,58 +149,48 @@ export function TaskUserMultiSelect({
   );
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          type="button"
-          variant="outline"
-          disabled={disabled}
-          className="h-auto min-h-10 w-full justify-between px-3 py-2"
-        >
-          <div className="min-w-0 text-left">
-            {selectedUsers.length === 0 ? (
-              <span className="text-muted-foreground text-sm">
-                {placeholder}
-              </span>
-            ) : (
-              <div className="flex flex-wrap gap-1.5">
-                {selectedUsers.slice(0, 3).map((user) => (
-                  <Badge
-                    key={user.id}
-                    variant="outline"
-                    className="h-6 rounded-full px-2"
-                  >
-                    {user.label}
-                  </Badge>
-                ))}
-                {selectedUsers.length > 3 ? (
-                  <Badge variant="outline" className="h-6 rounded-full px-2">
-                    +{selectedUsers.length - 3}
-                  </Badge>
-                ) : null}
-              </div>
-            )}
-          </div>
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        align="start"
-        className="w-[360px] rounded-xl p-2 [zoom:var(--app-scale)]"
-      >
-        <div className="relative mb-2">
-          <HugeiconsIcon
-            icon={Search01Icon}
-            className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2"
-          />
-          <Input
-            value={keyword}
-            onChange={(event) => setKeyword(event.target.value)}
-            placeholder={searchPlaceholder}
-            className="pl-8"
-          />
+    <SearchableSelect
+      multiple
+      values={values}
+      options={users}
+      onValuesChange={onChange}
+      getOptionValue={(user) => user.id}
+      getOptionLabel={(user) => user.label}
+      getOptionDescription={(user) => user.email}
+      filterOption={(user, normalizedKeyword) =>
+        matchesUserKeyword(user, normalizedKeyword)
+      }
+      placeholder={placeholder}
+      searchPlaceholder={searchPlaceholder}
+      emptyLabel={emptyLabel}
+      disabled={disabled}
+      triggerClassName="min-h-10 px-3 py-2"
+      renderTrigger={() => (
+        <div className="min-w-0 text-left">
+          {selectedUsers.length === 0 ? (
+            <span className="text-muted-foreground text-sm">{placeholder}</span>
+          ) : (
+            <div className="flex flex-wrap gap-1.5">
+              {selectedUsers.slice(0, 3).map((user) => (
+                <Badge
+                  key={user.id}
+                  variant="outline"
+                  className="h-6 rounded-full px-2"
+                >
+                  {user.label}
+                </Badge>
+              ))}
+              {selectedUsers.length > 3 ? (
+                <Badge variant="outline" className="h-6 rounded-full px-2">
+                  +{selectedUsers.length - 3}
+                </Badge>
+              ) : null}
+            </div>
+          )}
         </div>
-
-        {selectedUsers.length > 0 ? (
+      )}
+      renderSelectionSummary={({ removeValue }) =>
+        selectedUsers.length > 0 ? (
           <div className="mb-1 flex flex-wrap gap-1.5 border-b pb-2">
             {selectedUsers.map((user) => (
               <Badge
@@ -272,7 +202,7 @@ export function TaskUserMultiSelect({
                   type="button"
                   onClick={(event) => {
                     event.stopPropagation();
-                    onChange(values.filter((item) => item !== user.id));
+                    removeValue(user.id);
                   }}
                   className="hover:text-foreground rounded-full"
                 >
@@ -281,41 +211,9 @@ export function TaskUserMultiSelect({
               </Badge>
             ))}
           </div>
-        ) : null}
-
-        <div className="max-h-72 space-y-1 overflow-y-auto pr-1">
-          {filteredUsers.length === 0 ? (
-            <div className="text-muted-foreground rounded-lg border border-dashed px-3 py-6 text-center text-sm">
-              {emptyLabel}
-            </div>
-          ) : (
-            filteredUsers.map((user) => {
-              const selected = values.includes(user.id);
-              return (
-                <button
-                  key={user.id}
-                  type="button"
-                  onClick={() =>
-                    onChange(
-                      selected
-                        ? values.filter((item) => item !== user.id)
-                        : [...values, user.id],
-                    )
-                  }
-                  className={cn(
-                    "hover:bg-muted/60 w-full rounded-lg border px-3 py-1 text-left transition",
-                    selected
-                      ? "border-primary/40 bg-primary/[0.06]"
-                      : "border-transparent",
-                  )}
-                >
-                  <UserOptionRow user={user} selected={selected} />
-                </button>
-              );
-            })
-          )}
-        </div>
-      </PopoverContent>
-    </Popover>
+        ) : null
+      }
+      renderOption={(user) => <UserOptionRow user={user} selected={false} />}
+    />
   );
 }

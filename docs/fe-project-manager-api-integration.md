@@ -55,44 +55,9 @@ Content-Type: application/json
   "type": "SCRUM",
   "createdById": "user-uuid-1",
   "companyId": "company-uuid",
-  "owner": {
-    "id": "user-uuid",
-    "username": "Nguyen Van A",
-    "email": "operadmin1.1@gmail.com",
-    "status": "WORKING"
-  },
-  "members": [
-    {
-      "userId": "user-uuid-1",
-      "role": "OWNER",
-      "joinedAt": "2026-03-10T02:30:00Z",
-      "user": {
-        "id": "user-uuid-1",
-        "username": "Nguyen Van A",
-        "email": "operadmin1.1@gmail.com",
-        "status": "WORKING"
-      }
-    },
-    {
-      "userId": "user-uuid-2",
-      "role": "ADMIN",
-      "joinedAt": "2026-03-10T02:35:00Z",
-      "user": {
-        "id": "user-uuid-2",
-        "username": "Tran Thi B",
-        "email": "manager@company.com",
-        "status": "WORKING"
-      }
-    }
-  ],
+  "owner": "String user Id",
+  "members": ["String User Id"],
   "workflowId": "workflow-uuid",
-  "stats": {
-    "totalIssues": 42,
-    "doneIssues": 18,
-    "inProgressIssues": 7,
-    "completionRate": 42,
-    "updatedAt": "2026-03-10T03:00:00Z"
-  },
   "createdAt": "2026-03-01T08:00:00Z",
   "updatedAt": "2026-03-10T03:00:00Z"
 }
@@ -128,7 +93,7 @@ Rule đề xuất:
 
 ## 4.1 List Projects In My Company
 
-`GET /api/v1/projects`
+`GET /task-management-service/api/v1/projects`
 
 Query params:
 
@@ -143,7 +108,7 @@ Query params:
 Ví dụ:
 
 ```http
-GET /api/v1/projects?page=1&size=20&search=erp&type=SCRUM&sortBy=UPDATED_AT&sortDirection=DESC
+GET /task-management-service/api/v1/projects?page=1&size=20&search=erp&type=SCRUM&sortBy=UPDATED_AT&sortDirection=DESC
 ```
 
 Response `200`:
@@ -159,12 +124,7 @@ Response `200`:
       "type": "SCRUM",
       "createdById": "user-uuid-1",
       "companyId": "company-uuid",
-      "owner": {
-        "id": "user-uuid",
-        "username": "Nguyen Van A",
-        "email": "operadmin1.1@gmail.com",
-        "status": "WORKING"
-      },
+      "owner": "StringId",
       "memberCount": 6,
       "workflowId": "workflow-uuid",
       "stats": {
