@@ -1,5 +1,6 @@
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { Badge } from "@/shared/ui/badge";
+import { Spinner } from "@/shared/ui/spinner";
 
 type KanbanColumn = {
   id: string;
@@ -15,6 +16,11 @@ type StatusKanbanBoardProps<T> = {
   onDropToColumn: (dragValue: string, columnId: string) => void;
   getItemKey: (item: T) => string;
   renderCard: (item: T) => ReactNode;
+  hasMore?: boolean;
+  isLoadingMore?: boolean;
+  onLoadMore?: () => void;
+  loadMoreLabel?: string;
+  loadingMoreLabel?: string;
 };
 
 export function StatusKanbanBoard<T>({
@@ -25,7 +31,36 @@ export function StatusKanbanBoard<T>({
   onDropToColumn,
   getItemKey,
   renderCard,
+  hasMore = false,
+  isLoadingMore = false,
+  onLoadMore,
+  loadMoreLabel = "Scroll to load more",
+  loadingMoreLabel = "Loading more items...",
 }: StatusKanbanBoardProps<T>) {
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!hasMore || isLoadingMore || !onLoadMore || !loadMoreRef.current) {
+      return;
+    }
+
+    const target = loadMoreRef.current;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          onLoadMore();
+        }
+      },
+      {
+        rootMargin: "240px 0px",
+      },
+    );
+
+    observer.observe(target);
+
+    return () => observer.disconnect();
+  }, [hasMore, isLoadingMore, onLoadMore]);
+
   return (
     <div className="overflow-x-auto">
       <div
@@ -78,6 +113,21 @@ export function StatusKanbanBoard<T>({
           </section>
         ))}
       </div>
+      {hasMore || isLoadingMore ? (
+        <div
+          ref={loadMoreRef}
+          className="text-muted-foreground flex min-h-14 items-center justify-center gap-2 py-4 text-sm"
+        >
+          {isLoadingMore ? (
+            <>
+              <Spinner className="size-4" />
+              {loadingMoreLabel}
+            </>
+          ) : (
+            loadMoreLabel
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }

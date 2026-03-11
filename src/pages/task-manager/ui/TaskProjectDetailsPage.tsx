@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { AppShell } from "@/widgets/app-shell";
 import { appRoutes } from "@/shared/constants/routes";
@@ -15,18 +15,15 @@ import {
   getTaskProjectParticipantIds,
 } from "../model/helpers/userHelpers";
 import {
-  createTask as createTaskApi,
   getProjectDetail,
-  listTasks,
-  updateTask as updateTaskApi,
   type TaskProjectDetail,
 } from "../model/projectManagement.api";
+import { useTaskProjectTasks } from "../model/hooks/useTaskProjectTasks";
 import { getWorkflowDetail } from "../model/workflowManagement.api";
 import {
   type SprintItem,
   type TaskManagerUserOption,
   type TaskItem,
-  type TaskPriority,
 } from "../model/types";
 import ProjectDialog from "./components/ProjectDialog";
 import { ProjectSettingsDialog } from "./components/ProjectSettingsDialog";
@@ -64,8 +61,6 @@ type ProjectDetailsActions = Pick<
   | "updateTaskPriority"
   | "deleteTaskPriority"
 >;
-
-const TASK_PROJECT_TASKS_QUERY_KEY = "task-project-tasks";
 
 export function TaskProjectDetailsPage() {
   const navigate = useNavigate();
@@ -130,7 +125,20 @@ function ProjectDetailsContent({
   const navigate = useNavigate();
   const { t, tp } = useI18n();
   const appToast = useAppToast();
-  const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState("issues");
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
+  const [taskDialogMode, setTaskDialogMode] = useState<"create" | "edit">(
+    "create",
+  );
+  const [taskDialogOpen, setTaskDialogOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<TaskItem | null>(null);
+  const [sprintDialogOpen, setSprintDialogOpen] = useState(false);
+  const [editingSprint, setEditingSprint] = useState<SprintItem | null>(null);
+  const [priorityManagerOpen, setPriorityManagerOpen] = useState(false);
+  const [backlogSprintTarget, setBacklogSprintTarget] = useState<
+    Record<string, string>
+  >({});
   const workflowDetailQuery = useQuery({
     queryKey: ["task-project-workflow-detail", project.workflowId],
     queryFn: () => getWorkflowDetail(project.workflowId as string),
@@ -138,8 +146,7 @@ function ProjectDetailsContent({
   });
   const workflowTemplate = workflowDetailQuery.data || null;
   const workflow = useMemo(
-    () =>
-      workflowTemplate?.statuses.map((status) => status.code) || [],
+    () => workflowTemplate?.statuses.map((status) => status.code) || [],
     [workflowTemplate],
   );
   const workflowStatusByCode = useMemo(
@@ -153,41 +160,8 @@ function ProjectDetailsContent({
     [workflowTemplate],
   );
   const taskPriorities = actions.taskPriorities;
-  const projectTasksQuery = useQuery({
-    queryKey: [TASK_PROJECT_TASKS_QUERY_KEY, project.id],
-    queryFn: () =>
-      listTasks({
-        projectId: project.id,
-        page: 1,
-        size: 200,
-        sortBy: "UPDATED_AT",
-        sortDirection: "DESC",
-      }),
-  });
-  const createTaskMutation = useMutation({
-    mutationFn: createTaskApi,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: [TASK_PROJECT_TASKS_QUERY_KEY, project.id],
-      });
-    },
-  });
-  const updateTaskMutation = useMutation({
-    mutationFn: ({
-      taskId,
-      payload,
-    }: {
-      taskId: string;
-      payload: Parameters<typeof updateTaskApi>[1];
-    }) => updateTaskApi(taskId, payload),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: [TASK_PROJECT_TASKS_QUERY_KEY, project.id],
-      });
-    },
-  });
   const taskPriorityByCode = useMemo(
-    () => new Map(taskPriorities.map((p) => [p.code, p])),
+    () => new Map(taskPriorities.map((priority) => [priority.code, priority])),
     [taskPriorities],
   );
   const participantIds = useMemo(
@@ -198,172 +172,55 @@ function ProjectDetailsContent({
     () => buildTaskUserOptionsByIds(participantIds, userOptionById),
     [participantIds, userOptionById],
   );
-  const projectTasks = useMemo<TaskItem[]>(
-    () => projectTasksQuery.data?.items || [],
-    [projectTasksQuery.data],
-  );
-  const projectSprints = useMemo<SprintItem[]>(() => [], []);
-
-  const [activeTab, setActiveTab] = useState("issues");
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
-  const [taskDialogMode, setTaskDialogMode] = useState<"create" | "edit">(
-    "create",
-  );
-  const [taskDialogOpen, setTaskDialogOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<TaskItem | null>(null);
-  const [sprintDialogOpen, setSprintDialogOpen] = useState(false);
-  const [editingSprint, setEditingSprint] = useState<SprintItem | null>(null);
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"ALL" | string>("ALL");
-  const [assigneeFilter, setAssigneeFilter] = useState<string>("ALL");
-  const [priorityFilter, setPriorityFilter] = useState<"ALL" | TaskPriority>(
-    "ALL",
-  );
-  const [sortBy, setSortBy] = useState<"LATEST" | "PRIORITY" | "BACKLOG_ORDER">(
-    "LATEST",
-  );
-  const [issueViewMode, setIssueViewMode] = useState<"LIST" | "KANBAN">("LIST");
-  const [dragTaskId, setDragTaskId] = useState<string | null>(null);
-  const [priorityManagerOpen, setPriorityManagerOpen] = useState(false);
-  const [backlogSprintTarget, setBacklogSprintTarget] = useState<
-    Record<string, string>
-  >({});
-
-  const progress = useMemo(() => {
-    const total = projectTasks.length;
-    const done = projectTasks.filter((task) => task.status === "DONE").length;
-    const inProgress = projectTasks.filter(
-      (task) => task.status === "IN_PROGRESS",
-    ).length;
-    const completion = total === 0 ? 0 : Math.round((done / total) * 100);
-    return { total, done, inProgress, completion };
-  }, [projectTasks]);
-
-  const filteredTasks = useMemo(() => {
-    let nextTasks = [...projectTasks];
-
-    if (statusFilter !== "ALL") {
-      nextTasks = nextTasks.filter((task) => task.status === statusFilter);
-    }
-    if (assigneeFilter !== "ALL") {
-      nextTasks = nextTasks.filter(
-        (task) => (task.assignee || "__UNASSIGNED__") === assigneeFilter,
-      );
-    }
-    if (priorityFilter !== "ALL") {
-      nextTasks = nextTasks.filter((task) => task.priority === priorityFilter);
-    }
-    if (search.trim()) {
-      const keyword = search.trim().toLowerCase();
-      nextTasks = nextTasks.filter((task) =>
-        `${task.title} ${task.description} ${resolveUserLabel(task.assignee)}`
-          .toLowerCase()
-          .includes(keyword),
-      );
-    }
-
-    if (sortBy === "BACKLOG_ORDER") {
-      nextTasks.sort((a, b) => a.backlogOrder - b.backlogOrder);
-      return nextTasks;
-    }
-
-    if (sortBy === "PRIORITY") {
-      nextTasks.sort((a, b) => {
-        const orderA = taskPriorityByCode.get(a.priority)?.order || 0;
-        const orderB = taskPriorityByCode.get(b.priority)?.order || 0;
-        return orderB - orderA;
-      });
-      return nextTasks;
-    }
-
-    nextTasks.sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt));
-    return nextTasks;
-  }, [
-    assigneeFilter,
-    priorityFilter,
-    projectTasks,
-    search,
-    sortBy,
-    statusFilter,
-    taskPriorityByCode,
-    resolveUserLabel,
-  ]);
-
-  const backlogTasks = useMemo(
-    () =>
-      filteredTasks
-        .filter((task) => task.sprintId === null)
-        .sort((a, b) => a.backlogOrder - b.backlogOrder),
-    [filteredTasks],
-  );
-
-  const activeSprint = useMemo(
-    () => projectSprints.find((sprint) => sprint.status === "ACTIVE") || null,
-    [projectSprints],
-  );
-
-  const availableSprintTargets = useMemo(
-    () => projectSprints.filter((sprint) => sprint.status !== "CLOSED"),
-    [projectSprints],
-  );
-
-  const issueTasksByStatus = useMemo(() => {
-    const grouped = new Map<string, TaskItem[]>();
-    workflow.forEach((status) => grouped.set(status, []));
-    for (const task of filteredTasks) {
-      if (!grouped.has(task.status)) {
-        grouped.set(task.status, []);
-      }
-      grouped.get(task.status)?.push(task);
-    }
-    return grouped;
-  }, [filteredTasks, workflow]);
-
-  const activeSprintTasksByStatus = useMemo(() => {
-    const grouped = new Map<string, TaskItem[]>();
-    workflow.forEach((status) => grouped.set(status, []));
-    if (!activeSprint) {
-      return grouped;
-    }
-
-    for (const task of projectTasks) {
-      if (task.sprintId !== activeSprint.id) {
-        continue;
-      }
-      if (!grouped.has(task.status)) {
-        grouped.set(task.status, []);
-      }
-      grouped.get(task.status)?.push(task);
-    }
-    return grouped;
-  }, [activeSprint, projectTasks, workflow]);
 
   const memberRoles = actions.memberRolesByProject[project.id] || {};
-  const sprintIssuesBySprintId = useMemo(() => {
-    const grouped = new Map<string, TaskItem[]>();
-    projectTasks.forEach((task) => {
-      if (!task.sprintId) {
-        return;
-      }
-      const current = grouped.get(task.sprintId) || [];
-      current.push(task);
-      grouped.set(task.sprintId, current);
-    });
-    return grouped;
-  }, [projectTasks]);
 
-  const handleStatusChange = (taskId: string, nextStatus: string) => {
-    const changed = actions.changeTaskStatus(taskId, nextStatus);
-    if (!changed) {
-      appToast.warning({
-        title: t("tasks.projectDetails.toast.transitionNotAllowedTitle"),
-        description: t(
-          "tasks.projectDetails.toast.transitionNotAllowedDescription",
-        ),
-      });
-    }
-  };
+  const {
+    search,
+    statusFilter,
+    assigneeFilter,
+    priorityFilter,
+    sortBy,
+    issuePage,
+    issuePageSize,
+    issueViewMode,
+    dragTaskId,
+    projectSprints,
+    activeSprint,
+    availableSprintTargets,
+    progress,
+    backlogTasks,
+    paginatedIssueTasks,
+    issueTotal,
+    issueRowStart,
+    issueRowEnd,
+    visibleIssuePages,
+    issueTasksByStatus,
+    activeSprintTasksByStatus,
+    sprintIssuesBySprintId,
+    getAvailableStatuses,
+    hasMoreKanbanTasks,
+    isLoadingMoreKanbanTasks,
+    taskDataState,
+    onLoadMoreKanbanTasks,
+    onIssuePageChange,
+    onIssuePageSizeChange,
+    onIssueViewModeChange,
+    onDragTaskIdChange,
+    onSearchChange,
+    onStatusFilterChange,
+    onPriorityFilterChange,
+    onAssigneeFilterChange,
+    onSortByChange,
+    onTaskChangeStatus,
+  } = useTaskProjectTasks({
+    projectId: project.id,
+    activeTab,
+    workflow,
+    workflowTemplate,
+    taskPriorities,
+    resolveUserLabel,
+  });
 
   return (
     <AppShell>
@@ -402,11 +259,11 @@ function ProjectDetailsContent({
             });
             onBack();
           }}
-          onSearchChange={setSearch}
-          onStatusFilterChange={setStatusFilter}
-          onPriorityFilterChange={setPriorityFilter}
-          onAssigneeFilterChange={setAssigneeFilter}
-          onSortByChange={setSortBy}
+          onSearchChange={onSearchChange}
+          onStatusFilterChange={onStatusFilterChange}
+          onPriorityFilterChange={onPriorityFilterChange}
+          onAssigneeFilterChange={onAssigneeFilterChange}
+          onSortByChange={onSortByChange}
         />
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -425,26 +282,26 @@ function ProjectDetailsContent({
             </TabsTrigger>
           </TabsList>
 
-          {projectTasksQuery.isLoading ? (
+          {taskDataState.isLoading ? (
             <section className="text-muted-foreground flex min-h-40 items-center justify-center gap-2 rounded-2xl border border-dashed text-sm">
               <Spinner className="size-4" />
               {t("tasks.projectDetails.loadingTasks")}
             </section>
-          ) : projectTasksQuery.isError ? (
+          ) : taskDataState.isError ? (
             <section className="flex min-h-40 flex-col items-center justify-center gap-3 rounded-2xl border border-dashed px-4 text-center">
               <p className="text-foreground text-sm font-medium">
                 {t("tasks.projectDetails.loadTasksFailedTitle")}
               </p>
               <p className="text-muted-foreground text-sm">
-                {projectTasksQuery.error instanceof Error
-                  ? projectTasksQuery.error.message
+                {taskDataState.error instanceof Error
+                  ? taskDataState.error.message
                   : t("tasks.projectDetails.loadTasksFailedDescription")}
               </p>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  void projectTasksQuery.refetch();
+                  void taskDataState.refetch();
                 }}
               >
                 {t("tasks.common.retry")}
@@ -452,91 +309,105 @@ function ProjectDetailsContent({
             </section>
           ) : (
             <>
-          <TabsContent value="issues" className="space-y-4">
-            <TaskProjectDetailsIssuesTab
-              project={project}
-              projectSprints={projectSprints}
-              filteredTasks={filteredTasks}
-              workflow={workflow}
-              workflowStatusByCode={workflowStatusByCode}
-              activeSprint={activeSprint}
-              issueTasksByStatus={issueTasksByStatus}
-              issueViewMode={issueViewMode}
-              setIssueViewMode={setIssueViewMode}
-              taskPriorities={taskPriorities}
-              taskPriorityByCode={taskPriorityByCode}
-              assigneeOptions={participantOptions}
-              dragTaskId={dragTaskId}
-              setDragTaskId={setDragTaskId}
-              resolveUserLabel={resolveUserLabel}
-              onTaskChangePriority={(taskId, priority) =>
-                actions.changeTaskPriority(taskId, priority)
-              }
-              onTaskChangeStatus={handleStatusChange}
-              onTaskChangeAssignee={(taskId, assignee) =>
-                actions.assignTask(taskId, assignee)
-              }
-              onTaskEdit={(task) => {
-                setTaskDialogMode("edit");
-                setEditingTask(task);
-                setTaskDialogOpen(true);
-              }}
-              onTaskDelete={(taskId) => actions.deleteTask(taskId)}
-            />
-          </TabsContent>
+              <TabsContent value="issues" className="space-y-4">
+                <TaskProjectDetailsIssuesTab
+                  project={project}
+                  projectSprints={projectSprints}
+                  filteredTasks={paginatedIssueTasks}
+                  workflow={workflow}
+                  getAvailableStatuses={getAvailableStatuses}
+                  workflowStatusByCode={workflowStatusByCode}
+                  activeSprint={activeSprint}
+                  issueTasksByStatus={issueTasksByStatus}
+                  issueViewMode={issueViewMode}
+                  setIssueViewMode={onIssueViewModeChange}
+                  issuePage={issuePage}
+                  issuePageSize={issuePageSize}
+                  issueRowStart={issueRowStart}
+                  issueRowEnd={issueRowEnd}
+                  issueTotal={issueTotal}
+                  visibleIssuePages={visibleIssuePages}
+                  onIssuePageChange={onIssuePageChange}
+                  onIssuePageSizeChange={onIssuePageSizeChange}
+                  hasMoreKanbanTasks={hasMoreKanbanTasks}
+                  isLoadingMoreKanbanTasks={isLoadingMoreKanbanTasks}
+                  onLoadMoreKanbanTasks={onLoadMoreKanbanTasks}
+                  taskPriorities={taskPriorities}
+                  taskPriorityByCode={taskPriorityByCode}
+                  assigneeOptions={participantOptions}
+                  dragTaskId={dragTaskId}
+                  setDragTaskId={onDragTaskIdChange}
+                  resolveUserLabel={resolveUserLabel}
+                  onTaskChangePriority={(taskId, priority) =>
+                    actions.changeTaskPriority(taskId, priority)
+                  }
+                  onTaskChangeStatus={onTaskChangeStatus}
+                  onTaskChangeAssignee={(taskId, assignee) =>
+                    actions.assignTask(taskId, assignee)
+                  }
+                  onTaskEdit={(task) => {
+                    setTaskDialogMode("edit");
+                    setEditingTask(task);
+                    setTaskDialogOpen(true);
+                  }}
+                  onTaskDelete={(taskId) => actions.deleteTask(taskId)}
+                />
+              </TabsContent>
 
-          <TabsContent value="backlog" className="space-y-4">
-            <TaskProjectDetailsBacklogTab
-              project={project}
-              backlogTasks={backlogTasks}
-              availableSprintTargets={availableSprintTargets}
-              activeSprint={activeSprint}
-              backlogSprintTarget={backlogSprintTarget}
-              setBacklogSprintTarget={setBacklogSprintTarget}
-              onMoveBacklogTask={actions.moveBacklogTask}
-              onAddIssueToSprint={(taskId, sprintId) => {
-                actions.addIssueToSprint(taskId, sprintId);
-                appToast.success({
-                  title: t("tasks.projectDetails.sprintManagement"),
-                  description: "Đã thêm issue vào sprint.",
-                });
-              }}
-            />
-          </TabsContent>
+              <TabsContent value="backlog" className="space-y-4">
+                <TaskProjectDetailsBacklogTab
+                  project={project}
+                  backlogTasks={backlogTasks}
+                  availableSprintTargets={availableSprintTargets}
+                  activeSprint={activeSprint}
+                  backlogSprintTarget={backlogSprintTarget}
+                  setBacklogSprintTarget={setBacklogSprintTarget}
+                  onMoveBacklogTask={actions.moveBacklogTask}
+                  onAddIssueToSprint={(taskId, sprintId) => {
+                    actions.addIssueToSprint(taskId, sprintId);
+                    appToast.success({
+                      title: t("tasks.projectDetails.sprintManagement"),
+                      description: "Đã thêm issue vào sprint.",
+                    });
+                  }}
+                />
+              </TabsContent>
 
-          <TabsContent value="sprints" className="space-y-4">
-            <TaskProjectDetailsSprintsTab
-              project={project}
-              projectSprints={projectSprints}
-              sprintIssuesBySprintId={sprintIssuesBySprintId}
-              workflow={workflow}
-              workflowStatusByCode={workflowStatusByCode}
-              activeSprint={activeSprint}
-              activeSprintTasksByStatus={activeSprintTasksByStatus}
-              resolveUserLabel={resolveUserLabel}
-              dragTaskId={dragTaskId}
-              setDragTaskId={setDragTaskId}
-              onSprintCreate={() => {
-                setEditingSprint(null);
-                setSprintDialogOpen(true);
-              }}
-              onSprintStart={actions.startSprint}
-              onSprintClose={actions.closeSprint}
-              onIssueRemoveFromSprint={actions.removeIssueFromSprint}
-              onTaskChangeStatus={handleStatusChange}
-            />
-          </TabsContent>
+              <TabsContent value="sprints" className="space-y-4">
+                <TaskProjectDetailsSprintsTab
+                  project={project}
+                  projectSprints={projectSprints}
+                  sprintIssuesBySprintId={sprintIssuesBySprintId}
+                  workflow={workflow}
+                  workflowStatusByCode={workflowStatusByCode}
+                  activeSprint={activeSprint}
+                  activeSprintTasksByStatus={activeSprintTasksByStatus}
+                  resolveUserLabel={resolveUserLabel}
+                  dragTaskId={dragTaskId}
+                  setDragTaskId={onDragTaskIdChange}
+                  onSprintCreate={() => {
+                    setEditingSprint(null);
+                    setSprintDialogOpen(true);
+                  }}
+                  onSprintStart={actions.startSprint}
+                  onSprintClose={actions.closeSprint}
+                  onIssueRemoveFromSprint={actions.removeIssueFromSprint}
+                  onTaskChangeStatus={onTaskChangeStatus}
+                />
+              </TabsContent>
 
-          <TabsContent value="overview" className="space-y-4">
-            <TaskProjectDetailsOverviewTab
-              project={project}
-              progress={progress}
-              workflowTemplate={workflowTemplate}
-              workflow={workflow}
-              workflowStatusByCode={workflowStatusByCode}
-              onOpenWorkflowManager={() => navigate(appRoutes.tasksWorkflows)}
-            />
-          </TabsContent>
+              <TabsContent value="overview" className="space-y-4">
+                <TaskProjectDetailsOverviewTab
+                  project={project}
+                  progress={progress}
+                  workflowTemplate={workflowTemplate}
+                  workflow={workflow}
+                  workflowStatusByCode={workflowStatusByCode}
+                  onOpenWorkflowManager={() =>
+                    navigate(appRoutes.tasksWorkflows)
+                  }
+                />
+              </TabsContent>
             </>
           )}
         </Tabs>
@@ -612,74 +483,13 @@ function ProjectDetailsContent({
         lockProjectId={project.id}
         assigneeOptions={participantOptions}
         statusOptions={workflow}
+        workflowStatusByCode={workflowStatusByCode}
         taskPriorities={taskPriorities}
         onOpenChange={(open) => {
           setTaskDialogOpen(open);
           if (!open) {
             setEditingTask(null);
           }
-        }}
-        onSubmit={(payload) => {
-          if (taskDialogMode === "create") {
-            void createTaskMutation
-              .mutateAsync(payload)
-              .then(() => {
-                appToast.success({
-                  title: t("tasks.projectDetails.toast.issueCreatedTitle"),
-                  description: tp(
-                    "tasks.projectDetails.toast.issueCreatedDescription",
-                    {
-                      name: payload.title,
-                    },
-                  ),
-                });
-                setTaskDialogOpen(false);
-              })
-              .catch((error: unknown) => {
-                appToast.warning({
-                  title: t("tasks.projectDetails.toast.taskRequestFailedTitle"),
-                  description:
-                    error instanceof Error
-                      ? error.message
-                      : t(
-                          "tasks.projectDetails.toast.taskRequestFailedDescription",
-                        ),
-                });
-              });
-            return;
-          } else if (editingTask) {
-            void updateTaskMutation
-              .mutateAsync({
-                taskId: editingTask.id,
-                payload,
-              })
-              .then(() => {
-                appToast.success({
-                  title: t("tasks.projectDetails.toast.issueUpdatedTitle"),
-                  description: tp(
-                    "tasks.projectDetails.toast.issueUpdatedDescription",
-                    {
-                      name: payload.title,
-                    },
-                  ),
-                });
-                setTaskDialogOpen(false);
-                setEditingTask(null);
-              })
-              .catch((error: unknown) => {
-                appToast.warning({
-                  title: t("tasks.projectDetails.toast.taskRequestFailedTitle"),
-                  description:
-                    error instanceof Error
-                      ? error.message
-                      : t(
-                          "tasks.projectDetails.toast.taskRequestFailedDescription",
-                        ),
-                });
-              });
-            return;
-          }
-          setTaskDialogOpen(false);
         }}
       />
 

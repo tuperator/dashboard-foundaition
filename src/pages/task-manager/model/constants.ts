@@ -9,6 +9,11 @@ export const TASK_WORKFLOW_DEFAULT_PAGE = 1;
 export const TASK_WORKFLOW_DEFAULT_PAGE_SIZE = 10;
 export const TASK_WORKFLOW_PAGE_SIZE_OPTIONS = [10, 15, 20] as const;
 export const TASK_WORKFLOW_MAX_VISIBLE_PAGES = 7;
+export const TASK_ISSUE_DEFAULT_PAGE = 1;
+export const TASK_ISSUE_DEFAULT_PAGE_SIZE = 10;
+export const TASK_ISSUE_PAGE_SIZE_OPTIONS = [10, 15, 20] as const;
+export const TASK_ISSUE_MAX_VISIBLE_PAGES = 7;
+export const TASK_KANBAN_LOAD_PAGE_SIZE = 40;
 
 export const DEFAULT_WORKFLOW = ["TODO", "IN_PROGRESS", "REVIEW", "DONE"];
 

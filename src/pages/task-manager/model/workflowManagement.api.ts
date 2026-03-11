@@ -8,6 +8,10 @@ import {
   type WorkflowStatusItem,
   type WorkflowTransitionItem,
 } from "./types";
+import {
+  normalizeStatusCode,
+  normalizeStatusCategory as normalizeWorkflowStatusCategory,
+} from "./helpers/workflowHelpers";
 import type {
   CreateWorkflowRequest,
   CreateWorkflowStatusRequest,
@@ -274,12 +278,17 @@ function mapWorkflowDetail(item: BackendWorkflowDetail): WorkflowDetail {
 }
 
 function mapWorkflowStatus(item: BackendWorkflowStatus): WorkflowStatusItem {
+  const code = normalizeStatusCode(item.code);
+
   return {
     id: item.id,
-    code: item.code,
+    code,
     name: item.name,
     color: item.color,
-    category: normalizeStatusCategory(item.category),
+    category: normalizeWorkflowStatusCategory(
+      normalizeStatusCategory(item.category),
+      code,
+    ),
   };
 }
 
@@ -288,8 +297,8 @@ function mapWorkflowTransition(
 ): WorkflowTransitionItem {
   return {
     id: item.id,
-    fromStatusCode: item.fromStatusCode,
-    toStatusCode: item.toStatusCode,
+    fromStatusCode: normalizeStatusCode(item.fromStatusCode),
+    toStatusCode: normalizeStatusCode(item.toStatusCode),
   };
 }
 

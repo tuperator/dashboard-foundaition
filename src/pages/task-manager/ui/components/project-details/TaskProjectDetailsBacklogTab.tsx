@@ -1,4 +1,3 @@
-import type { Dispatch, SetStateAction } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowDown01Icon, ArrowUp01Icon } from "@hugeicons/core-free-icons";
 import { useI18n } from "@/shared/providers/i18n/I18nProvider";
@@ -27,6 +26,7 @@ import {
   type TaskProject,
 } from "../../../model/types";
 import { TaskStatusBadge } from "../TaskStatusBadge";
+import type { Dispatch, SetStateAction } from "react";
 
 export interface TaskProjectDetailsBacklogTabProps {
   project: TaskProject;

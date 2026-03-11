@@ -1,5 +1,6 @@
 import { API_ENDPOINTS } from "@/shared/api/endpoints";
 import { apiClient } from "@/shared/api/http";
+import { normalizeStatusCode } from "./helpers/workflowHelpers";
 import type {
   CreateTaskPayload,
   CreateProjectPayload,
@@ -253,7 +254,7 @@ export async function listTasks(
         page: params.page ?? 1,
         size: params.size ?? 200,
         search: params.search?.trim() || undefined,
-        status: params.status || undefined,
+        status: params.status ? normalizeStatusCode(params.status) : undefined,
         assigneeId: params.assigneeId || undefined,
         priority: params.priority || undefined,
         sprintId: params.sprintId || undefined,
@@ -304,7 +305,7 @@ function mapTaskListItem(item: BackendTaskListItem): TaskItem {
     description: item.description || "",
     projectId: item.projectId,
     assignee: item.assignee,
-    status: item.status,
+    status: normalizeStatusCode(item.status),
     priority: item.priority,
     sprintId: item.sprintId,
     backlogOrder: item.backlogOrder ?? 0,

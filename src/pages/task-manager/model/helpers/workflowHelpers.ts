@@ -293,7 +293,10 @@ export function isWorkflowTransitionAllowed(
   fromStatusCode: string,
   toStatusCode: string,
 ) {
-  if (fromStatusCode === toStatusCode) {
+  const normalizedFromStatusCode = normalizeStatusCode(fromStatusCode);
+  const normalizedToStatusCode = normalizeStatusCode(toStatusCode);
+
+  if (normalizedFromStatusCode === normalizedToStatusCode) {
     return true;
   }
 
@@ -307,8 +310,9 @@ export function isWorkflowTransitionAllowed(
 
   return workflowTemplate.transitions.some(
     (transition) =>
-      transition.fromStatusCode === fromStatusCode &&
-      transition.toStatusCode === toStatusCode,
+      normalizeStatusCode(transition.fromStatusCode) ===
+        normalizedFromStatusCode &&
+      normalizeStatusCode(transition.toStatusCode) === normalizedToStatusCode,
   );
 }
 
@@ -316,7 +320,13 @@ export function normalizeStatusCode(value: string | null | undefined) {
   if (!value) {
     return "";
   }
-  return value.trim().replaceAll(" ", "_").toUpperCase();
+  const normalized = value.trim().replaceAll(" ", "_").toUpperCase();
+
+  if (normalized === "IN_PROGESS") {
+    return "IN_PROGRESS";
+  }
+
+  return normalized;
 }
 
 export function getDefaultStatusColor(code: string) {

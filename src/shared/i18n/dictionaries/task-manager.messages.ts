@@ -154,10 +154,14 @@ export const taskManagerMessages = {
     "tasks.projectDetails.table.reorder": "Sắp xếp",
     "tasks.projectDetails.table.addToSprint": "Thêm vào sprint",
     "tasks.projectDetails.emptyIssue": "Không có issue nào trong project.",
+    "tasks.projectDetails.pagination.rowsPerPage": "Số dòng mỗi trang",
+    "tasks.projectDetails.pagination.range": "{start}-{end} / {total}",
     "tasks.projectDetails.loadingTasks": "Đang tải issue...",
     "tasks.projectDetails.loadTasksFailedTitle": "Không thể tải issue",
     "tasks.projectDetails.loadTasksFailedDescription":
       "Vui lòng thử lại sau.",
+    "tasks.projectDetails.kanban.loadMore": "Cuộn để tải thêm issue",
+    "tasks.projectDetails.kanban.loadingMore": "Đang tải thêm issue...",
     "tasks.projectDetails.defaultSprintLabel": "Sprint mặc định",
     "tasks.projectDetails.backlogLabel": "Backlog",
     "tasks.projectDetails.toast.transitionNotAllowedTitle":
@@ -362,10 +366,14 @@ export const taskManagerMessages = {
     "tasks.projectDetails.table.reorder": "Reorder",
     "tasks.projectDetails.table.addToSprint": "Add to sprint",
     "tasks.projectDetails.emptyIssue": "No issues in this project.",
+    "tasks.projectDetails.pagination.rowsPerPage": "Rows per page",
+    "tasks.projectDetails.pagination.range": "{start}-{end} of {total}",
     "tasks.projectDetails.loadingTasks": "Loading issues...",
     "tasks.projectDetails.loadTasksFailedTitle": "Failed to load issues",
     "tasks.projectDetails.loadTasksFailedDescription":
       "Please try again later.",
+    "tasks.projectDetails.kanban.loadMore": "Scroll to load more issues",
+    "tasks.projectDetails.kanban.loadingMore": "Loading more issues...",
     "tasks.projectDetails.defaultSprintLabel": "Default sprint",
     "tasks.projectDetails.backlogLabel": "Backlog",
     "tasks.projectDetails.toast.transitionNotAllowedTitle":
