@@ -23,12 +23,10 @@ import { getWorkflowDetail } from "../model/workflowManagement.api";
 import {
   type SprintItem,
   type TaskManagerUserOption,
-  type TaskItem,
 } from "../model/types";
 import ProjectDialog from "./components/ProjectDialog";
 import { ProjectSettingsDialog } from "./components/ProjectSettingsDialog";
 import { SprintDialog } from "./components/SprintDialog";
-import { TaskDialog } from "./components/TaskDialog";
 import { TaskProjectDetailsHeader } from "./components/project-details/TaskProjectDetailsHeader";
 import { TaskProjectDetailsNotFound } from "./components/project-details/TaskProjectDetailsNotFound";
 import { TaskProjectDetailsIssuesTab } from "./components/project-details/TaskProjectDetailsIssuesTab";
@@ -128,11 +126,6 @@ function ProjectDetailsContent({
   const [activeTab, setActiveTab] = useState("issues");
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
-  const [taskDialogMode, setTaskDialogMode] = useState<"create" | "edit">(
-    "create",
-  );
-  const [taskDialogOpen, setTaskDialogOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<TaskItem | null>(null);
   const [sprintDialogOpen, setSprintDialogOpen] = useState(false);
   const [editingSprint, setEditingSprint] = useState<SprintItem | null>(null);
   const [priorityManagerOpen, setPriorityManagerOpen] = useState(false);
@@ -241,11 +234,6 @@ function ProjectDetailsContent({
           onOpenSettings={() => setSettingsDialogOpen(true)}
           onOpenWorkflowManager={() => navigate(appRoutes.tasksWorkflows)}
           onOpenPriorityManager={() => setPriorityManagerOpen(true)}
-          onCreateIssue={() => {
-            setTaskDialogMode("create");
-            setEditingTask(null);
-            setTaskDialogOpen(true);
-          }}
           onDeleteProject={() => {
             actions.deleteProject(project.id);
             appToast.warning({
@@ -338,19 +326,6 @@ function ProjectDetailsContent({
                   dragTaskId={dragTaskId}
                   setDragTaskId={onDragTaskIdChange}
                   resolveUserLabel={resolveUserLabel}
-                  onTaskChangePriority={(taskId, priority) =>
-                    actions.changeTaskPriority(taskId, priority)
-                  }
-                  onTaskChangeStatus={onTaskChangeStatus}
-                  onTaskChangeAssignee={(taskId, assignee) =>
-                    actions.assignTask(taskId, assignee)
-                  }
-                  onTaskEdit={(task) => {
-                    setTaskDialogMode("edit");
-                    setEditingTask(task);
-                    setTaskDialogOpen(true);
-                  }}
-                  onTaskDelete={(taskId) => actions.deleteTask(taskId)}
                 />
               </TabsContent>
 
@@ -471,26 +446,6 @@ function ProjectDetailsContent({
         onUpdateMemberRole={(projectId, member, role) =>
           actions.updateMemberRole(projectId, member, role)
         }
-      />
-
-      <TaskDialog
-        key={`${project.id}-${taskDialogMode}-${editingTask?.id || "new"}-${taskDialogOpen ? "open" : "closed"}`}
-        open={taskDialogOpen}
-        mode={taskDialogMode}
-        task={taskDialogMode === "edit" ? editingTask : null}
-        projects={[project]}
-        defaultProjectId={project.id}
-        lockProjectId={project.id}
-        assigneeOptions={participantOptions}
-        statusOptions={workflow}
-        workflowStatusByCode={workflowStatusByCode}
-        taskPriorities={taskPriorities}
-        onOpenChange={(open) => {
-          setTaskDialogOpen(open);
-          if (!open) {
-            setEditingTask(null);
-          }
-        }}
       />
 
       <SprintDialog

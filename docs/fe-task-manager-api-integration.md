@@ -1,8 +1,8 @@
 # Task Manager APIs - FE Integration Guide
 
-Tài liệu này mô tả API cho flow **list task**, **create task** và **update task** theo đúng dữ liệu hiện tại mà FE đang dùng ở `TaskProjectDetailsPage` và `TaskDialog`.
+Tài liệu này mô tả API cho flow **list task**, **create task**, **update task** và **archive task** theo đúng dữ liệu hiện tại mà FE đang dùng ở `TaskProjectDetailsPage`, `TaskDialog` và `TaskProjectDetailsIssuesTable`.
 
-Phạm vi tài liệu này chỉ bao gồm **task / issue list + create + update**.
+Phạm vi tài liệu này chỉ bao gồm **task / issue list + create + update + archive**.
 
 Base URL (ví dụ): `https://<host>/api/v1`
 
@@ -13,6 +13,7 @@ Base URL (ví dụ): `https://<host>/api/v1`
 1. `GET /tasks`
 2. `POST /tasks`
 3. `PUT /tasks/{taskId}`
+4. `POST /tasks/{taskId}/archive`
 
 Lý do:
 
@@ -42,6 +43,7 @@ FE hiện có các flow chính:
 1. list task theo project trong `TaskProjectDetailsPage`
 2. tạo task mới trong `TaskDialog`
 3. cập nhật task hiện có trong `TaskDialog`
+4. lưu trữ task từ action menu trong `TaskProjectDetailsIssuesTable`
 
 Payload FE hiện submit:
 
@@ -228,6 +230,47 @@ Rule đề xuất:
 Response `200`:
 
 - trả về `Task Object Response`
+
+## 5.4 Archive Task
+
+`POST /task-management-service/api/v1/tasks/{taskId}/archive`
+
+FE hiện dùng action này ở dropdown menu của bảng issue. Khi user bấm `Lưu trữ`, FE sẽ mở popup confirm trước khi gọi API.
+
+Ví dụ:
+
+```http
+POST /task-management-service/api/v1/tasks/task-uuid/archive
+```
+
+Request body:
+
+- không cần body
+
+Validation đề xuất:
+
+- `taskId`: required, uuid hợp lệ
+- user request phải thuộc owner hoặc member của project chứa task
+
+Rule đề xuất:
+
+- đây là soft-delete / archive, không nên xóa cứng khỏi database
+- task đã archive không nên còn xuất hiện trong `GET /tasks` mặc định
+- backend nên lưu metadata archive nếu domain có hỗ trợ
+- nếu task đã archive trước đó, backend nên xử lý idempotent rõ ràng
+
+Response đề xuất:
+
+- `200 OK` hoặc `204 No Content`
+
+Ví dụ response `200`:
+
+```json
+{
+  "id": "task-uuid",
+  "archived": true
+}
+```
 
 ## 6) Error Response Format
 

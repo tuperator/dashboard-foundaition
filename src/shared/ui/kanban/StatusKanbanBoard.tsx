@@ -104,7 +104,7 @@ export function StatusKanbanBoard<T>({
                   draggable
                   onDragStart={() => onDragValueChange(getItemKey(item))}
                   onDragEnd={() => onDragValueChange(null)}
-                  className="bg-card cursor-grab rounded-lg border p-2.5 active:cursor-grabbing"
+                  className="cursor-grab active:cursor-grabbing"
                 >
                   {renderCard(item)}
                 </article>

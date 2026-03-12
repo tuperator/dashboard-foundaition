@@ -35,6 +35,8 @@ export const API_ENDPOINTS = {
       list: `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/tasks`,
       byId: (taskId: string) =>
         `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/tasks/${taskId}`,
+      archive: (taskId: string) =>
+        `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/tasks/${taskId}/archive`,
     },
     workflows: {
       list: `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/workflows`,

@@ -49,7 +49,6 @@ type TaskProjectDetailsHeaderProps = {
   onOpenSettings: () => void;
   onOpenWorkflowManager: () => void;
   onOpenPriorityManager: () => void;
-  onCreateIssue: () => void;
   onDeleteProject: () => void;
   onSearchChange: (value: string) => void;
   onStatusFilterChange: (value: string) => void;
@@ -74,7 +73,6 @@ export function TaskProjectDetailsHeader({
   onOpenSettings,
   onOpenWorkflowManager,
   onOpenPriorityManager,
-  onCreateIssue,
   onDeleteProject,
   onSearchChange,
   onStatusFilterChange,
@@ -114,47 +112,40 @@ export function TaskProjectDetailsHeader({
             {project.type}
           </Badge>
 
-          <div className="flex items-center gap-2 sm:ml-auto">
-            <Button size="sm" onClick={onCreateIssue}>
-              <HugeiconsIcon icon={AddCircleHalfDotIcon} />
-              {t("tasks.projectDetails.newIssue")}
-            </Button>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <HugeiconsIcon icon={MoreHorizontalIcon} />
-                  {t("tasks.common.actions")}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={onOpenEditProject}>
-                  <HugeiconsIcon icon={PencilEdit01Icon} className="mr-2 size-4" />
-                  {t("tasks.common.edit")}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={onOpenWorkflowManager}>
-                  <HugeiconsIcon icon={Task01Icon} className="mr-2 size-4" />
-                  {t("tasks.projectDetails.workflowManager")}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={onOpenPriorityManager}>
-                  <HugeiconsIcon icon={AddCircleHalfDotIcon} className="mr-2 size-4" />
-                  {t("tasks.projectDetails.priorityManager")}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={onOpenSettings}>
-                  <HugeiconsIcon icon={Settings02Icon} className="mr-2 size-4" />
-                  {t("tasks.projectDetails.settings")}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  variant="destructive"
-                  onClick={onDeleteProject}
-                >
-                  <HugeiconsIcon icon={Delete02Icon} className="mr-2 size-4" />
-                  {t("tasks.common.delete")}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <HugeiconsIcon icon={MoreHorizontalIcon} />
+                {t("tasks.common.actions")}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={onOpenEditProject}>
+                <HugeiconsIcon icon={PencilEdit01Icon} className="mr-2 size-4" />
+                {t("tasks.common.edit")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onOpenWorkflowManager}>
+                <HugeiconsIcon icon={Task01Icon} className="mr-2 size-4" />
+                {t("tasks.projectDetails.workflowManager")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onOpenPriorityManager}>
+                <HugeiconsIcon icon={AddCircleHalfDotIcon} className="mr-2 size-4" />
+                {t("tasks.projectDetails.priorityManager")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onOpenSettings}>
+                <HugeiconsIcon icon={Settings02Icon} className="mr-2 size-4" />
+                {t("tasks.projectDetails.settings")}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={onDeleteProject}
+              >
+                <HugeiconsIcon icon={Delete02Icon} className="mr-2 size-4" />
+                {t("tasks.common.delete")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

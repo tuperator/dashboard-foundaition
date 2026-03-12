@@ -4,6 +4,7 @@ export const taskManagerMessages = {
     "tasks.common.save": "Lưu",
     "tasks.common.edit": "Sửa",
     "tasks.common.delete": "Xóa",
+    "tasks.common.archive": "Lưu trữ",
     "tasks.common.remove": "Gỡ",
     "tasks.common.add": "Thêm",
     "tasks.common.retry": "Thử lại",
@@ -210,12 +211,19 @@ export const taskManagerMessages = {
     "tasks.projectDetails.toast.issueUpdatedTitle": "Đã sửa issue",
     "tasks.projectDetails.toast.issueUpdatedDescription":
       "{name} đã được cập nhật.",
+    "tasks.projectDetails.toast.issueArchivedTitle": "Đã lưu trữ issue",
+    "tasks.projectDetails.toast.issueArchivedDescription":
+      "{name} đã được lưu trữ.",
+    "tasks.projectDetails.archive.confirmTitle": "Lưu trữ issue",
+    "tasks.projectDetails.archive.confirmDescription":
+      "Issue {name} sẽ được lưu trữ và không còn hiển thị trong danh sách hiện tại.",
   },
   en: {
     "tasks.common.create": "Create",
     "tasks.common.save": "Save",
     "tasks.common.edit": "Edit",
     "tasks.common.delete": "Delete",
+    "tasks.common.archive": "Archive",
     "tasks.common.remove": "Remove",
     "tasks.common.add": "Add",
     "tasks.common.retry": "Retry",
@@ -423,5 +431,11 @@ export const taskManagerMessages = {
     "tasks.projectDetails.toast.issueUpdatedTitle": "Issue updated",
     "tasks.projectDetails.toast.issueUpdatedDescription":
       "{name} has been updated.",
+    "tasks.projectDetails.toast.issueArchivedTitle": "Issue archived",
+    "tasks.projectDetails.toast.issueArchivedDescription":
+      "{name} has been archived.",
+    "tasks.projectDetails.archive.confirmTitle": "Archive issue",
+    "tasks.projectDetails.archive.confirmDescription":
+      "Issue {name} will be archived and will no longer appear in the current list.",
   },
 } as const;

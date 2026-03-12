@@ -243,6 +243,10 @@ export async function updateTask(
   return mapTaskListItem(response.data);
 }
 
+export async function archiveTask(taskId: string): Promise<void> {
+  await apiClient.post(API_ENDPOINTS.taskManagement.tasks.archive(taskId));
+}
+
 export async function listTasks(
   params: ListTasksParams,
 ): Promise<Omit<BackendTaskListResponse, "items"> & { items: TaskItem[] }> {
