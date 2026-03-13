@@ -46,8 +46,6 @@ type ProjectDetailsActions = Pick<
   | "assignTask"
   | "changeTaskStatus"
   | "changeTaskPriority"
-  | "moveBacklogTask"
-  | "addIssueToSprint"
   | "removeIssueFromSprint"
   | "createTaskPriority"
   | "updateTaskPriority"
@@ -121,9 +119,6 @@ function ProjectDetailsContent({
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const [priorityManagerOpen, setPriorityManagerOpen] = useState(false);
-  const [backlogSprintTarget, setBacklogSprintTarget] = useState<
-    Record<string, string>
-  >({});
   const workflowDetailQuery = useQuery({
     queryKey: ["task-project-workflow-detail", project.workflowId],
     queryFn: () => getWorkflowDetail(project.workflowId as string),
@@ -174,7 +169,6 @@ function ProjectDetailsContent({
     activeSprint,
     availableSprintTargets,
     progress,
-    backlogTasks,
     paginatedIssueTasks,
     issueTotal,
     issueRowStart,
@@ -324,19 +318,12 @@ function ProjectDetailsContent({
               <TabsContent value="backlog" className="space-y-4">
                 <TaskProjectDetailsBacklogTab
                   project={project}
-                  backlogTasks={backlogTasks}
                   availableSprintTargets={availableSprintTargets}
                   activeSprint={activeSprint}
-                  backlogSprintTarget={backlogSprintTarget}
-                  setBacklogSprintTarget={setBacklogSprintTarget}
-                  onMoveBacklogTask={actions.moveBacklogTask}
-                  onAddIssueToSprint={(taskId, sprintId) => {
-                    actions.addIssueToSprint(taskId, sprintId);
-                    appToast.success({
-                      title: t("tasks.projectDetails.sprintManagement"),
-                      description: "Đã thêm issue vào sprint.",
-                    });
-                  }}
+                  assigneeOptions={participantOptions}
+                  taskPriorities={taskPriorities}
+                  workflow={workflow}
+                  workflowStatusByCode={workflowStatusByCode}
                 />
               </TabsContent>
 

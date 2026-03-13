@@ -236,6 +236,9 @@ export function TaskDialog({
       await queryClient.invalidateQueries({
         queryKey: ["task-project-kanban-tasks"],
       });
+      await queryClient.invalidateQueries({
+        queryKey: ["task-project-backlog-tasks"],
+      });
       onOpenChange(false);
     } catch (error: unknown) {
       appToast.warning({
