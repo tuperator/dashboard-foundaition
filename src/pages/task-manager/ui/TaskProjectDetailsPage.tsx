@@ -21,12 +21,10 @@ import {
 import { useTaskProjectTasks } from "../model/hooks/useTaskProjectTasks";
 import { getWorkflowDetail } from "../model/workflowManagement.api";
 import {
-  type SprintItem,
   type TaskManagerUserOption,
 } from "../model/types";
 import ProjectDialog from "./components/ProjectDialog";
 import { ProjectSettingsDialog } from "./components/ProjectSettingsDialog";
-import { SprintDialog } from "./components/SprintDialog";
 import { TaskProjectDetailsHeader } from "./components/project-details/TaskProjectDetailsHeader";
 import { TaskProjectDetailsNotFound } from "./components/project-details/TaskProjectDetailsNotFound";
 import { TaskProjectDetailsIssuesTab } from "./components/project-details/TaskProjectDetailsIssuesTab";
@@ -51,10 +49,6 @@ type ProjectDetailsActions = Pick<
   | "moveBacklogTask"
   | "addIssueToSprint"
   | "removeIssueFromSprint"
-  | "createSprint"
-  | "updateSprint"
-  | "startSprint"
-  | "closeSprint"
   | "createTaskPriority"
   | "updateTaskPriority"
   | "deleteTaskPriority"
@@ -126,8 +120,6 @@ function ProjectDetailsContent({
   const [activeTab, setActiveTab] = useState("issues");
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
-  const [sprintDialogOpen, setSprintDialogOpen] = useState(false);
-  const [editingSprint, setEditingSprint] = useState<SprintItem | null>(null);
   const [priorityManagerOpen, setPriorityManagerOpen] = useState(false);
   const [backlogSprintTarget, setBacklogSprintTarget] = useState<
     Record<string, string>
@@ -360,12 +352,6 @@ function ProjectDetailsContent({
                   resolveUserLabel={resolveUserLabel}
                   dragTaskId={dragTaskId}
                   setDragTaskId={onDragTaskIdChange}
-                  onSprintCreate={() => {
-                    setEditingSprint(null);
-                    setSprintDialogOpen(true);
-                  }}
-                  onSprintStart={actions.startSprint}
-                  onSprintClose={actions.closeSprint}
                   onIssueRemoveFromSprint={actions.removeIssueFromSprint}
                   onTaskChangeStatus={onTaskChangeStatus}
                 />
@@ -446,28 +432,6 @@ function ProjectDetailsContent({
         onUpdateMemberRole={(projectId, member, role) =>
           actions.updateMemberRole(projectId, member, role)
         }
-      />
-
-      <SprintDialog
-        key={`${project.id}-${editingSprint?.id || "new"}-${sprintDialogOpen ? "open" : "closed"}`}
-        open={sprintDialogOpen}
-        mode={editingSprint ? "edit" : "create"}
-        sprint={editingSprint}
-        projectId={project.id}
-        onOpenChange={(open) => {
-          setSprintDialogOpen(open);
-          if (!open) {
-            setEditingSprint(null);
-          }
-        }}
-        onSubmit={(payload) => {
-          if (editingSprint) {
-            actions.updateSprint(editingSprint.id, payload);
-          } else {
-            actions.createSprint(payload);
-          }
-          setSprintDialogOpen(false);
-        }}
       />
 
       <TaskPriorityManagerDialog

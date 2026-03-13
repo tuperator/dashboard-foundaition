@@ -1,4 +1,10 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useI18n } from "@/shared/providers/i18n/I18nProvider";
+import { useAppToast } from "@/shared/providers/toast/ToastProvider";
 import { Button } from "@/shared/ui/button";
 import {
   Dialog,
@@ -10,7 +16,12 @@ import {
 } from "@/shared/ui/dialog";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
+import { Spinner } from "@/shared/ui/spinner";
 import { Textarea } from "@/shared/ui/textarea";
+import {
+  createSprint as createSprintApi,
+  updateSprint as updateSprintApi,
+} from "../../model/sprintManagement.api";
 import type { SprintItem } from "../../model/types";
 
 type SprintDialogProps = {
@@ -19,21 +30,27 @@ type SprintDialogProps = {
   sprint: SprintItem | null;
   projectId: string;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (payload: {
-    projectId: string;
-    name: string;
-    goal: string;
-    startDate: string;
-    endDate: string;
-  }) => void;
 };
 
-type FormState = {
-  name: string;
-  goal: string;
-  startDate: string;
-  endDate: string;
-};
+const TASK_PROJECT_SPRINTS_QUERY_KEY = "task-project-sprints";
+
+const sprintDialogSchema = z
+  .object({
+    name: z
+      .string()
+      .trim()
+      .min(1, "Sprint name is required.")
+      .max(255, "Sprint name must be 255 characters or fewer."),
+    goal: z.string().trim().max(1000, "Goal must be 1000 characters or fewer."),
+    startDate: z.string().min(1, "Start date is required."),
+    endDate: z.string().min(1, "End date is required."),
+  })
+  .refine((values) => values.endDate >= values.startDate, {
+    path: ["endDate"],
+    message: "End date must be the same as or after the start date.",
+  });
+
+type FormState = z.input<typeof sprintDialogSchema>;
 
 const EMPTY_FORM: FormState = {
   name: "",
@@ -48,32 +65,131 @@ export function SprintDialog({
   sprint,
   projectId,
   onOpenChange,
-  onSubmit,
 }: SprintDialogProps) {
-  const [form, setForm] = useState<FormState>(() => {
-    if (!sprint) {
-      return EMPTY_FORM;
+  const { t, tp } = useI18n();
+  const appToast = useAppToast();
+  const queryClient = useQueryClient();
+  const initialValues = useMemo<FormState>(() => {
+    if (mode === "edit" && sprint) {
+      return {
+        name: sprint.name,
+        goal: sprint.goal,
+        startDate: sprint.startDate,
+        endDate: sprint.endDate,
+      };
     }
 
-    return {
-      name: sprint.name,
-      goal: sprint.goal,
-      startDate: sprint.startDate,
-      endDate: sprint.endDate,
-    };
+    return EMPTY_FORM;
+  }, [mode, sprint]);
+  const {
+    register,
+    reset,
+    handleSubmit,
+    formState: { errors, isSubmitting, isValid },
+  } = useForm<FormState>({
+    resolver: zodResolver(sprintDialogSchema),
+    mode: "onChange",
+    defaultValues: initialValues,
+  });
+  const createSprintMutation = useMutation({
+    mutationFn: createSprintApi,
+  });
+  const updateSprintMutation = useMutation({
+    mutationFn: ({
+      sprintId,
+      payload,
+    }: {
+      sprintId: string;
+      payload: Parameters<typeof updateSprintApi>[1];
+    }) => updateSprintApi(sprintId, payload),
   });
 
-  const canSubmit = useMemo(
-    () =>
-      form.name.trim().length > 0 &&
-      form.startDate.trim().length > 0 &&
-      form.endDate.trim().length > 0,
-    [form.endDate, form.name, form.startDate],
-  );
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    reset(initialValues);
+  }, [initialValues, open, reset]);
+
+  const submitForm = handleSubmit(async (values) => {
+    const payload = {
+      projectId,
+      name: values.name.trim(),
+      goal: values.goal.trim(),
+      startDate: values.startDate,
+      endDate: values.endDate,
+    };
+
+    try {
+      if (mode === "create") {
+        await createSprintMutation.mutateAsync(payload);
+        appToast.success({
+          title: t("tasks.projectDetails.toast.sprintCreatedTitle"),
+          description: tp(
+            "tasks.projectDetails.toast.sprintCreatedDescription",
+            {
+              name: payload.name,
+            },
+          ),
+        });
+      } else {
+        if (!sprint) {
+          throw new Error("Sprint not found");
+        }
+
+        await updateSprintMutation.mutateAsync({
+          sprintId: sprint.id,
+          payload: {
+            name: payload.name,
+            goal: payload.goal,
+            startDate: payload.startDate,
+            endDate: payload.endDate,
+          },
+        });
+        appToast.success({
+          title: t("tasks.projectDetails.toast.sprintUpdatedTitle"),
+          description: tp(
+            "tasks.projectDetails.toast.sprintUpdatedDescription",
+            {
+              name: payload.name,
+            },
+          ),
+        });
+      }
+
+      await queryClient.invalidateQueries({
+        queryKey: [TASK_PROJECT_SPRINTS_QUERY_KEY, projectId],
+      });
+      onOpenChange(false);
+    } catch (error: unknown) {
+      appToast.warning({
+        title: t("tasks.projectDetails.toast.sprintRequestFailedTitle"),
+        description:
+          error instanceof Error
+            ? error.message
+            : t("tasks.projectDetails.toast.sprintRequestFailedDescription"),
+      });
+      throw error;
+    }
+  });
+  const submitting =
+    isSubmitting ||
+    createSprintMutation.isPending ||
+    updateSprintMutation.isPending;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="[zoom:var(--app-scale)] sm:max-w-lg">
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (submitting) {
+          return;
+        }
+
+        onOpenChange(nextOpen);
+      }}
+    >
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>
             {mode === "create" ? "Create sprint" : "Update sprint"}
@@ -84,80 +200,95 @@ export function SprintDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-3">
-          <div className="grid gap-1.5">
-            <Label htmlFor="sprint-name">Sprint name</Label>
+        <form className="grid gap-4" onSubmit={submitForm}>
+          <div className="grid gap-2">
+            <Label htmlFor="sprint-name" required>
+              Sprint name
+            </Label>
             <Input
               id="sprint-name"
-              value={form.name}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, name: event.target.value }))
-              }
-              placeholder="Sprint 03"
+              placeholder="Sprint 24"
+              disabled={submitting}
+              aria-invalid={errors.name ? "true" : "false"}
+              {...register("name")}
             />
+            {errors.name ? (
+              <p className="text-destructive text-xs">{errors.name.message}</p>
+            ) : null}
           </div>
 
-          <div className="grid gap-1.5">
-            <Label htmlFor="sprint-goal">Goal</Label>
+          <div className="grid gap-2">
+            <Label htmlFor="sprint-goal" required>
+              Goal
+            </Label>
             <Textarea
               id="sprint-goal"
-              value={form.goal}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, goal: event.target.value }))
-              }
-              placeholder="Ship account onboarding with role permissions."
-              className="min-h-[72px]"
+              rows={4}
+              placeholder="Summarize key delivery goals for the sprint."
+              disabled={submitting}
+              aria-invalid={errors.goal ? "true" : "false"}
+              {...register("goal")}
             />
+            {errors.goal ? (
+              <p className="text-destructive text-xs">{errors.goal.message}</p>
+            ) : null}
           </div>
 
-          <div className="grid gap-1.5 sm:grid-cols-2">
-            <div className="grid gap-1.5">
-              <Label htmlFor="sprint-start-date">Start date</Label>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-2">
+              <Label htmlFor="sprint-start-date" required>
+                Start date
+              </Label>
               <Input
                 id="sprint-start-date"
                 type="date"
-                value={form.startDate}
-                onChange={(event) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    startDate: event.target.value,
-                  }))
-                }
+                disabled={submitting}
+                aria-invalid={errors.startDate ? "true" : "false"}
+                {...register("startDate")}
               />
+              {errors.startDate ? (
+                <p className="text-destructive text-xs">
+                  {errors.startDate.message}
+                </p>
+              ) : null}
             </div>
-            <div className="grid gap-1.5">
-              <Label htmlFor="sprint-end-date">End date</Label>
+
+            <div className="grid gap-2">
+              <Label htmlFor="sprint-end-date" required>
+                End date
+              </Label>
               <Input
                 id="sprint-end-date"
                 type="date"
-                value={form.endDate}
-                onChange={(event) =>
-                  setForm((prev) => ({ ...prev, endDate: event.target.value }))
-                }
+                disabled={submitting}
+                aria-invalid={errors.endDate ? "true" : "false"}
+                {...register("endDate")}
               />
+              {errors.endDate ? (
+                <p className="text-destructive text-xs">
+                  {errors.endDate.message}
+                </p>
+              ) : null}
             </div>
           </div>
-        </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button
-            disabled={!canSubmit}
-            onClick={() =>
-              onSubmit({
-                projectId,
-                name: form.name,
-                goal: form.goal,
-                startDate: form.startDate,
-                endDate: form.endDate,
-              })
-            }
-          >
-            {mode === "create" ? "Create sprint" : "Save changes"}
-          </Button>
-        </DialogFooter>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={submitting}
+              onClick={() => onOpenChange(false)}
+            >
+              {t("tasks.common.close")}
+            </Button>
+            <Button type="submit" disabled={!isValid || submitting}>
+              {submitting ? <Spinner className="size-4" /> : null}
+              {mode === "create"
+                ? t("tasks.projectDetails.createSprint")
+                : t("tasks.common.save")}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

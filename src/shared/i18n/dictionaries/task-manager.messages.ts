@@ -214,9 +214,29 @@ export const taskManagerMessages = {
     "tasks.projectDetails.toast.issueArchivedTitle": "Đã lưu trữ issue",
     "tasks.projectDetails.toast.issueArchivedDescription":
       "{name} đã được lưu trữ.",
+    "tasks.projectDetails.toast.sprintCreatedTitle": "Đã tạo sprint",
+    "tasks.projectDetails.toast.sprintCreatedDescription":
+      "{name} đã được tạo.",
+    "tasks.projectDetails.toast.sprintUpdatedTitle": "Đã cập nhật sprint",
+    "tasks.projectDetails.toast.sprintUpdatedDescription":
+      "{name} đã được cập nhật.",
+    "tasks.projectDetails.toast.sprintStatusUpdatedTitle":
+      "Đã cập nhật trạng thái sprint",
+    "tasks.projectDetails.toast.sprintStatusUpdatedDescription":
+      "Trạng thái sprint đã được cập nhật.",
+    "tasks.projectDetails.toast.sprintArchivedTitle": "Đã lưu trữ sprint",
+    "tasks.projectDetails.toast.sprintArchivedDescription":
+      "Sprint đã được lưu trữ.",
+    "tasks.projectDetails.toast.sprintRequestFailedTitle":
+      "Thao tác sprint thất bại",
+    "tasks.projectDetails.toast.sprintRequestFailedDescription":
+      "Vui lòng thử lại sau.",
     "tasks.projectDetails.archive.confirmTitle": "Lưu trữ issue",
     "tasks.projectDetails.archive.confirmDescription":
       "Issue {name} sẽ được lưu trữ và không còn hiển thị trong danh sách hiện tại.",
+    "tasks.projectDetails.archiveSprint.confirmTitle": "Lưu trữ sprint",
+    "tasks.projectDetails.archiveSprint.confirmDescription":
+      "Sprint này sẽ được lưu trữ và không còn hiển thị trong danh sách hiện tại.",
   },
   en: {
     "tasks.common.create": "Create",
@@ -434,8 +454,28 @@ export const taskManagerMessages = {
     "tasks.projectDetails.toast.issueArchivedTitle": "Issue archived",
     "tasks.projectDetails.toast.issueArchivedDescription":
       "{name} has been archived.",
+    "tasks.projectDetails.toast.sprintCreatedTitle": "Sprint created",
+    "tasks.projectDetails.toast.sprintCreatedDescription":
+      "{name} has been created.",
+    "tasks.projectDetails.toast.sprintUpdatedTitle": "Sprint updated",
+    "tasks.projectDetails.toast.sprintUpdatedDescription":
+      "{name} has been updated.",
+    "tasks.projectDetails.toast.sprintStatusUpdatedTitle":
+      "Sprint status updated",
+    "tasks.projectDetails.toast.sprintStatusUpdatedDescription":
+      "Sprint status has been updated.",
+    "tasks.projectDetails.toast.sprintArchivedTitle": "Sprint archived",
+    "tasks.projectDetails.toast.sprintArchivedDescription":
+      "Sprint has been archived.",
+    "tasks.projectDetails.toast.sprintRequestFailedTitle":
+      "Sprint request failed",
+    "tasks.projectDetails.toast.sprintRequestFailedDescription":
+      "Please try again later.",
     "tasks.projectDetails.archive.confirmTitle": "Archive issue",
     "tasks.projectDetails.archive.confirmDescription":
       "Issue {name} will be archived and will no longer appear in the current list.",
+    "tasks.projectDetails.archiveSprint.confirmTitle": "Archive sprint",
+    "tasks.projectDetails.archiveSprint.confirmDescription":
+      "This sprint will be archived and will no longer appear in the current list.",
   },
 } as const;

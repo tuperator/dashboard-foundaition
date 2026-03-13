@@ -38,6 +38,15 @@ export const API_ENDPOINTS = {
       archive: (taskId: string) =>
         `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/tasks/${taskId}/archive`,
     },
+    sprints: {
+      list: `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/sprints`,
+      byId: (sprintId: string) =>
+        `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/sprints/${sprintId}`,
+      status: (sprintId: string) =>
+        `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/sprints/${sprintId}/status`,
+      archive: (sprintId: string) =>
+        `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/sprints/${sprintId}/archive`,
+    },
     workflows: {
       list: `${TASK_MANAGEMENT_SERVICE_PREFIX}/api/v1/workflows`,
       byId: (workflowId: string) =>

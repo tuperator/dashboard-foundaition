@@ -18,8 +18,8 @@ import {
   listTasks,
   updateTask as updateTaskApi,
 } from "../projectManagement.api";
+import { listSprints } from "../sprintManagement.api";
 import type {
-  SprintItem,
   TaskItem,
   TaskPriority,
   TaskPriorityItem,
@@ -28,6 +28,7 @@ import type {
 
 const TASK_PROJECT_TASKS_QUERY_KEY = "task-project-tasks";
 const TASK_PROJECT_KANBAN_TASKS_QUERY_KEY = "task-project-kanban-tasks";
+const TASK_PROJECT_SPRINTS_QUERY_KEY = "task-project-sprints";
 
 type UseTaskProjectTasksParams = {
   projectId: string;
@@ -143,6 +144,18 @@ export function useTaskProjectTasks({
       lastPage.page < lastPage.totalPages ? lastPage.page + 1 : undefined,
     enabled: activeTab === "issues" && issueViewMode === "KANBAN",
   });
+  const sprintListQuery = useQuery({
+    queryKey: [TASK_PROJECT_SPRINTS_QUERY_KEY, projectId],
+    queryFn: () =>
+      listSprints({
+        projectId,
+        page: 1,
+        size: 100,
+        sortBy: "START_DATE",
+        sortDirection: "DESC",
+      }),
+    enabled: Boolean(projectId),
+  });
 
   const updateTaskMutation = useMutation({
     mutationFn: ({
@@ -239,7 +252,10 @@ export function useTaskProjectTasks({
     );
   }, [activeIssuePage, issueTotalPages]);
 
-  const projectSprints = useMemo<SprintItem[]>(() => [], []);
+  const projectSprints = useMemo(
+    () => sprintListQuery.data?.items || [],
+    [sprintListQuery.data],
+  );
   const activeSprint = useMemo(
     () => projectSprints.find((sprint) => sprint.status === "ACTIVE") || null,
     [projectSprints],
@@ -395,25 +411,31 @@ export function useTaskProjectTasks({
           ? issueViewMode === "KANBAN"
             ? kanbanTasksQuery.isLoading
             : issueListTasksQuery.isLoading
-          : supportingTasksQuery.isLoading,
+          : supportingTasksQuery.isLoading || sprintListQuery.isLoading,
       isError:
         activeTab === "issues"
           ? issueViewMode === "KANBAN"
             ? kanbanTasksQuery.isError
             : issueListTasksQuery.isError
-          : supportingTasksQuery.isError,
+          : supportingTasksQuery.isError || sprintListQuery.isError,
       error:
         activeTab === "issues"
           ? issueViewMode === "KANBAN"
             ? kanbanTasksQuery.error
             : issueListTasksQuery.error
-          : supportingTasksQuery.error,
-      refetch: () =>
-        activeTab === "issues"
-          ? issueViewMode === "KANBAN"
+          : supportingTasksQuery.error || sprintListQuery.error,
+      refetch: async () => {
+        if (activeTab === "issues") {
+          return issueViewMode === "KANBAN"
             ? kanbanTasksQuery.refetch()
-            : issueListTasksQuery.refetch()
-          : supportingTasksQuery.refetch(),
+            : issueListTasksQuery.refetch();
+        }
+
+        await Promise.all([
+          supportingTasksQuery.refetch(),
+          sprintListQuery.refetch(),
+        ]);
+      },
     },
     onLoadMoreKanbanTasks: () => {
       if (kanbanTasksQuery.hasNextPage && !kanbanTasksQuery.isFetchingNextPage) {

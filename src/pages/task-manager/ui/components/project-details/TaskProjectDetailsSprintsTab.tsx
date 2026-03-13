@@ -1,9 +1,31 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import { AddCircleHalfDotIcon } from "@hugeicons/core-free-icons";
+import {
+  AddCircleHalfDotIcon,
+  File01Icon,
+  PencilEdit01Icon,
+} from "@hugeicons/core-free-icons";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { useI18n } from "@/shared/providers/i18n/I18nProvider";
+import { useAppToast } from "@/shared/providers/toast/ToastProvider";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+} from "@/shared/ui/alert-dialog";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Progress } from "@/shared/ui/progress";
+import { SprintDialog } from "../SprintDialog";
+import {
+  archiveSprint as archiveSprintApi,
+  changeSprintStatus,
+} from "../../../model/sprintManagement.api";
 import {
   type SprintItem,
   type TaskItem,
@@ -21,12 +43,13 @@ export interface TaskProjectDetailsSprintsTabProps {
   resolveUserLabel: (value: string | null | undefined) => string;
   dragTaskId: string | null;
   setDragTaskId: (taskId: string | null) => void;
-  onSprintCreate: () => void;
-  onSprintStart: (sprintId: string) => void;
-  onSprintClose: (sprintId: string) => void;
   onIssueRemoveFromSprint: (taskId: string) => void;
   onTaskChangeStatus: (taskId: string, status: string) => void;
 }
+
+const TASK_PROJECT_SPRINTS_QUERY_KEY = "task-project-sprints";
+const TASK_PROJECT_TASKS_QUERY_KEY = "task-project-tasks";
+const TASK_PROJECT_KANBAN_TASKS_QUERY_KEY = "task-project-kanban-tasks";
 
 export function TaskProjectDetailsSprintsTab({
   project,
@@ -39,13 +62,94 @@ export function TaskProjectDetailsSprintsTab({
   resolveUserLabel,
   dragTaskId,
   setDragTaskId,
-  onSprintCreate,
-  onSprintStart,
-  onSprintClose,
   onIssueRemoveFromSprint,
   onTaskChangeStatus,
 }: TaskProjectDetailsSprintsTabProps) {
   const { t } = useI18n();
+  const appToast = useAppToast();
+  const queryClient = useQueryClient();
+  const [sprintDialogOpen, setSprintDialogOpen] = useState(false);
+  const [editingSprint, setEditingSprint] = useState<SprintItem | null>(null);
+  const [archiveTarget, setArchiveTarget] = useState<SprintItem | null>(null);
+
+  const updateSprintStatusMutation = useMutation({
+    mutationFn: ({
+      sprintId,
+      status,
+    }: {
+      sprintId: string;
+      status: "PLANNED" | "ACTIVE" | "CLOSED";
+    }) => changeSprintStatus(sprintId, status),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: [TASK_PROJECT_SPRINTS_QUERY_KEY, project.id],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: [TASK_PROJECT_TASKS_QUERY_KEY, project.id],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: [TASK_PROJECT_KANBAN_TASKS_QUERY_KEY, project.id],
+      });
+    },
+  });
+  const archiveSprintMutation = useMutation({
+    mutationFn: (sprintId: string) => archiveSprintApi(sprintId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: [TASK_PROJECT_SPRINTS_QUERY_KEY, project.id],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: [TASK_PROJECT_TASKS_QUERY_KEY, project.id],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: [TASK_PROJECT_KANBAN_TASKS_QUERY_KEY, project.id],
+      });
+    },
+  });
+
+  const handleSprintStatusChange = async (
+    sprintId: string,
+    status: "PLANNED" | "ACTIVE" | "CLOSED",
+  ) => {
+    try {
+      await updateSprintStatusMutation.mutateAsync({ sprintId, status });
+      appToast.success({
+        title: t("tasks.projectDetails.toast.sprintStatusUpdatedTitle"),
+        description: t("tasks.projectDetails.toast.sprintStatusUpdatedDescription"),
+      });
+    } catch (error: unknown) {
+      appToast.warning({
+        title: t("tasks.projectDetails.toast.sprintRequestFailedTitle"),
+        description:
+          error instanceof Error
+            ? error.message
+            : t("tasks.projectDetails.toast.sprintRequestFailedDescription"),
+      });
+    }
+  };
+
+  const handleArchiveSprint = async () => {
+    if (!archiveTarget) {
+      return;
+    }
+
+    try {
+      await archiveSprintMutation.mutateAsync(archiveTarget.id);
+      appToast.success({
+        title: t("tasks.projectDetails.toast.sprintArchivedTitle"),
+        description: t("tasks.projectDetails.toast.sprintArchivedDescription"),
+      });
+      setArchiveTarget(null);
+    } catch (error: unknown) {
+      appToast.warning({
+        title: t("tasks.projectDetails.toast.sprintRequestFailedTitle"),
+        description:
+          error instanceof Error
+            ? error.message
+            : t("tasks.projectDetails.toast.sprintRequestFailedDescription"),
+      });
+    }
+  };
 
   if (project.type !== "SCRUM") {
     return (
@@ -69,7 +173,12 @@ export function TaskProjectDetailsSprintsTab({
               {t("tasks.projectDetails.sprintManagementDescription")}
             </p>
           </div>
-          <Button onClick={onSprintCreate}>
+          <Button
+            onClick={() => {
+              setEditingSprint(null);
+              setSprintDialogOpen(true);
+            }}
+          >
             <HugeiconsIcon icon={AddCircleHalfDotIcon} />
             {t("tasks.projectDetails.createSprint")}
           </Button>
@@ -135,11 +244,32 @@ export function TaskProjectDetailsSprintsTab({
                   </div>
 
                   <div className="mb-2 flex flex-wrap items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      disabled={
+                        updateSprintStatusMutation.isPending ||
+                        archiveSprintMutation.isPending
+                      }
+                      onClick={() => {
+                        setEditingSprint(sprint);
+                        setSprintDialogOpen(true);
+                      }}
+                    >
+                      <HugeiconsIcon icon={PencilEdit01Icon} />
+                      {t("tasks.common.edit")}
+                    </Button>
                     {sprint.status === "PLANNED" ? (
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => onSprintStart(sprint.id)}
+                        disabled={
+                          updateSprintStatusMutation.isPending ||
+                          archiveSprintMutation.isPending
+                        }
+                        onClick={() =>
+                          void handleSprintStatusChange(sprint.id, "ACTIVE")
+                        }
                       >
                         {t("tasks.projectDetails.startSprint")}
                       </Button>
@@ -148,11 +278,29 @@ export function TaskProjectDetailsSprintsTab({
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => onSprintClose(sprint.id)}
+                        disabled={
+                          updateSprintStatusMutation.isPending ||
+                          archiveSprintMutation.isPending
+                        }
+                        onClick={() =>
+                          void handleSprintStatusChange(sprint.id, "CLOSED")
+                        }
                       >
                         {t("tasks.projectDetails.closeSprint")}
                       </Button>
                     ) : null}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      disabled={
+                        updateSprintStatusMutation.isPending ||
+                        archiveSprintMutation.isPending
+                      }
+                      onClick={() => setArchiveTarget(sprint)}
+                    >
+                      <HugeiconsIcon icon={File01Icon} />
+                      {t("tasks.common.archive")}
+                    </Button>
                   </div>
 
                   <div className="space-y-1">
@@ -251,6 +399,55 @@ export function TaskProjectDetailsSprintsTab({
           </p>
         )}
       </section>
+
+      <SprintDialog
+        key={`${project.id}-${editingSprint?.id || "new"}-${sprintDialogOpen ? "open" : "closed"}`}
+        open={sprintDialogOpen}
+        mode={editingSprint ? "edit" : "create"}
+        sprint={editingSprint}
+        projectId={project.id}
+        onOpenChange={(open) => {
+          setSprintDialogOpen(open);
+          if (!open) {
+            setEditingSprint(null);
+          }
+        }}
+      />
+
+      <AlertDialog
+        open={Boolean(archiveTarget)}
+        onOpenChange={(open) => {
+          if (!open && !archiveSprintMutation.isPending) {
+            setArchiveTarget(null);
+          }
+        }}
+      >
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogMedia>
+              <HugeiconsIcon icon={File01Icon} className="size-4" />
+            </AlertDialogMedia>
+            <AlertDialogTitle>
+              {t("tasks.projectDetails.archiveSprint.confirmTitle")}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("tasks.projectDetails.archiveSprint.confirmDescription")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={archiveSprintMutation.isPending}>
+              {t("tasks.common.close")}
+            </AlertDialogCancel>
+            <Button
+              variant="destructive"
+              disabled={archiveSprintMutation.isPending}
+              onClick={() => void handleArchiveSprint()}
+            >
+              {t("tasks.common.archive")}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
